@@ -25,7 +25,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final FieldCentric drive = new FieldCentric()
@@ -36,7 +36,6 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(10, 0, 0);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private boolean isBraked = false;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -54,8 +53,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> {
-                double[] leftDeadbanded = AllDeadbands.applyCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .95);
-                Rotation2d heading = getHeadingFromStick(joystick::getRightX, joystick::getRightY);
+                double[] leftDeadbanded = AllDeadbands.applyCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .05);
+                Rotation2d heading = getHeadingFromStick(() -> -joystick.getRightY(), () -> -joystick.getRightX());
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                         .withVelocityY(leftDeadbanded[0] * MaxSpeed)
