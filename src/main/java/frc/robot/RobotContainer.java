@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.FieldCentricHeading;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -37,7 +36,7 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(10, 0, 0);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final FieldCentricFacingAngle point = new FieldCentricFacingAngle();
+    private boolean isBraked = false;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -55,15 +54,16 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> {
+                double[] leftDeadbanded = AllDeadbands.applyCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .95);
                 Rotation2d heading = getHeadingFromStick(joystick::getRightX, joystick::getRightY);
                 if(heading != null) {
-                    return driveHeading.withVelocityX(joystick.getLeftY() * MaxSpeed)
-                        .withVelocityY(joystick.getLeftX() * MaxSpeed)
+                    return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                         .withTargetDirection(heading);
                 }
 
-                return drive.withVelocityX(joystick.getLeftY() * MaxSpeed)
-                    .withVelocityY(joystick.getLeftX() * MaxSpeed)
+                return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withRotationalRate((joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()) * MaxAngularRate);
             })
                 
@@ -76,8 +76,9 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        
+        
+        joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
