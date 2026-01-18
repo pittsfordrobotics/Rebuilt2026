@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.*;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,7 +29,7 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final FieldCentricHeading drive = new FieldCentricHeading()
+    private final FieldCentric drive = new FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -49,11 +51,11 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     
                     .withRotationalRate((joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis()) * MaxAngularRate) //Rotate with triggers
-                    .withTargetDirection(getHeadingFromStick(joystick::getRightX, joystick::getRightY))
+                    // .withTargetDirection(getHeadingFromStick(joystick::getRightX, joystick::getRightY))
             )
         );
 
@@ -65,8 +67,12 @@ public class RobotContainer {
         );
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        joystick.b().whileTrue(drivetrain.applyRequest(() -> {
+            Rotation2d heading = getHeadingFromStick(joystick::getRightX, joystick::getRightY);
+            if(heading != null) return point.withModuleDirection(heading);
+            return null;
+        }
+            
         ));
 
         // Run SysId routines when holding back/start and X/Y.
