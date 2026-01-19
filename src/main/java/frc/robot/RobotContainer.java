@@ -29,10 +29,8 @@ public class RobotContainer {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final FieldCentric drive = new FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(10, 0, 0);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -53,7 +51,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> {
-                double[] leftDeadbanded = AllDeadbands.applyCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .05);
+                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
                 Rotation2d heading = getHeadingFromStick(() -> -joystick.getRightY(), () -> -joystick.getRightX());
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
@@ -95,7 +93,7 @@ public class RobotContainer {
     public Rotation2d getHeadingFromStick(DoubleSupplier rotationX, DoubleSupplier rotationY) {
         Rotation2d heading;
         double[] deadbandRotationInputs = AllDeadbands
-                .applyCircularDeadband(new double[] { rotationX.getAsDouble(), rotationY.getAsDouble() }, 0.95);
+                .applyScalingCircularDeadband(new double[] { rotationX.getAsDouble(), rotationY.getAsDouble() }, 0.95);
         if (deadbandRotationInputs[0] != 0 || deadbandRotationInputs[1] != 0) {
             heading = Rotation2d.fromRadians(Math.atan2(deadbandRotationInputs[1], deadbandRotationInputs[0]));
         } else {
