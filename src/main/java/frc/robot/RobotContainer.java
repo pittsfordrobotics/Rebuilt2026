@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -49,14 +50,19 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     private final Intake intake;
- 
-    private GenericEntry speedEntry;
+    private final Shooter shooter;
+    private GenericEntry intakeSpeed;
+    private GenericEntry shooterSpeed;
 
     public RobotContainer() {
         configureBindings();
         intake= new Intake();
-        speedEntry = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Intake", intake.runIntake(() -> speedEntry.getDouble(0.25)));
+        shooter = new Shooter();
+
+        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
+        Shuffleboard.getTab("testing").add("Run Intake", intake.runIntake(() -> intakeSpeed.getDouble(0.25)));
+        shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .25).getEntry();
+        Shuffleboard.getTab("testing").add("Run Shooter", shooter.runShooter(() -> shooterSpeed.getDouble(0.25)));
     }
 
     private void configureBindings() {
