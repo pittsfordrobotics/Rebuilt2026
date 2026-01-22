@@ -6,10 +6,13 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -284,5 +287,53 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    // *******************
+    // Logging methods
+    // *******************
+    /*@Logged(name = "Rotation Degrees")
+    public double getRotationDegrees() {
+        return swerveDrive.getYaw().getDegrees();
+    }*/
+
+    @Logged(name = "FR Drive Motor")
+    public TalonFX getFrontRightDriveMotor() {
+        return this.getModule(1).getDriveMotor();
+    }
+
+    @Logged(name = "FR Steer Motor")
+    public TalonFX getFrontRightSteerMotor() {
+        return this.getModule(1).getSteerMotor();
+    }
+
+    @Logged(name = "FL Drive Motor")
+    public TalonFX getFrontLeftDriveMotor() {
+        return this.getModule(0).getDriveMotor();
+    }
+
+    @Logged(name = "FL Steer Motor")
+    public TalonFX getFrontLeftSteerMotor() {
+        return this.getModule(0).getSteerMotor();
+    }
+
+    @Logged(name = "BR Drive Motor")
+    public TalonFX getBackRightDriveMotor() {
+        return this.getModule(3).getSteerMotor();
+    }
+
+    @Logged(name = "BR Steer Motor")
+    public TalonFX getBackRightSteerMotor() {
+        return this.getModule(3).getSteerMotor();
+    }
+
+    @Logged(name = "BL Drive Motor")
+    public TalonFX getBackLeftDriveMotor() {
+        return this.getModule(2).getDriveMotor();
+    }
+
+    @Logged(name = "BL Steer Motor")
+    public TalonFX getBackLeftAngleMotor() {
+        return this.getModule(2).getSteerMotor();
     }
 }

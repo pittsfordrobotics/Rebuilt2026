@@ -26,10 +26,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 public class RobotContainer {
-
-
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -47,7 +47,11 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    @Logged(name = "PDH")
+    private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     public RobotContainer() {
         DataLogManager.start();
