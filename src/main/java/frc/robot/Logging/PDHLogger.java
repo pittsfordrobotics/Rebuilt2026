@@ -7,8 +7,8 @@ import edu.wpi.first.epilogue.CustomLoggerFor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 
 @CustomLoggerFor(PowerDistribution.class)
-public class PHDLogger extends ClassSpecificLogger<PowerDistribution>{
-    public PHDLogger () {
+public class PDHLogger extends ClassSpecificLogger<PowerDistribution>{
+    public PDHLogger() {
         super(PowerDistribution.class);
     }
 
