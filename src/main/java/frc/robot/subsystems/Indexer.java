@@ -19,35 +19,35 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class Intake extends SubsystemBase {
-  private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
-  // private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
+public class Indexer extends SubsystemBase {
+  // private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
+  private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
 
 
 
 
   /** Creates a new intake. */
-  public Intake() {
+  public Indexer() {
     SparkFlexConfig config = new SparkFlexConfig();
     config.smartCurrentLimit(20);
     config.idleMode(IdleMode.kBrake);
 
-    REVLibError err = intakeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    System.out.println("Init error code: " + err.value);
+    // REVLibError err = intakeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // System.out.println("Init error code: " + err.value);
 
-    // REVLibError err2 = indexMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // System.out.println("Init error code: " + err2.value);
+    REVLibError err2 = indexMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    System.out.println("Init error code: " + err2.value);
   }
 
 
-  public Command runIntake(DoubleSupplier speed){
-    return run(() -> intakeMotor.set(speed.getAsDouble())).finallyDo(() -> intakeMotor.set(0));
-  }
+  // public Command runIntake(DoubleSupplier speed){
+  //   return run(() -> intakeMotor.set(speed.getAsDouble())).finallyDo(() -> intakeMotor.set(0));
+  // }
   
 
-  // public Command runIndex(DoubleSupplier speed){
-  //   return run(() -> indexMotor.set(speed.getAsDouble())).finallyDo(() -> indexMotor.set(0));
-  // }
+  public Command runIndex(DoubleSupplier speed){
+    return run(() -> indexMotor.set(speed.getAsDouble())).finallyDo(() -> indexMotor.set(0));
+  }
   
   @Override
   public void periodic() {

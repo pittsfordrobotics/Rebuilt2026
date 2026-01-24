@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
@@ -50,6 +51,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     private final Intake intake;
+    private final Indexer indexer;
     private final Shooter shooter;
     private GenericEntry intakeSpeed;
     private GenericEntry shooterSpeed;
@@ -59,6 +61,7 @@ public class RobotContainer {
         configureBindings();
         intake= new Intake();
         shooter = new Shooter();
+        indexer = new Indexer();
 
 
 
@@ -68,7 +71,7 @@ public class RobotContainer {
 
 
         indexSpeed = Shuffleboard.getTab("testing").add("Intake Mover Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Intake", intake.runIndex(() -> indexSpeed.getDouble(0.25)));
+        Shuffleboard.getTab("testing").add("Run Indexer", indexer.runIndex(() -> indexSpeed.getDouble(0.25)));
 
 
         shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .25).getEntry();
