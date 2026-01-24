@@ -53,14 +53,24 @@ public class RobotContainer {
     private final Shooter shooter;
     private GenericEntry intakeSpeed;
     private GenericEntry shooterSpeed;
+    private GenericEntry indexSpeed;
 
     public RobotContainer() {
         configureBindings();
         intake= new Intake();
         shooter = new Shooter();
 
+
+
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", intake.runIntake(() -> intakeSpeed.getDouble(0.25)));
+
+
+
+        indexSpeed = Shuffleboard.getTab("testing").add("Intake Mover Speed", .25).getEntry();
+        Shuffleboard.getTab("testing").add("Run Intake", intake.runIndex(() -> indexSpeed.getDouble(0.25)));
+
+
         shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Shooter", shooter.runShooter(() -> shooterSpeed.getDouble(0.25)));
     }
