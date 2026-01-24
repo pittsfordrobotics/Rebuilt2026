@@ -55,7 +55,12 @@ public class TunerConstants {
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+        .withCurrentLimits(
+            new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(60)
+            .withStatorCurrentLimitEnable(true)
+        );
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
         .withCurrentLimits(
             new CurrentLimitsConfigs()
@@ -81,7 +86,7 @@ public class TunerConstants {
     private static final double kCoupleRatio = 4.5;
 
     private static final double kDriveGearRatio = 5.4;
-    private static final double kSteerGearRatio = 1;
+    private static final double kSteerGearRatio = 12;
     private static final Distance kWheelRadius = Inches.of(4);
 
     private static final boolean kInvertLeftSide = false;
