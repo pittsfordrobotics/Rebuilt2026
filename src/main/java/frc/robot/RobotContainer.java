@@ -11,6 +11,8 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,7 +23,13 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 // import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.lib.VisionData;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+
+import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionIO;
+import frc.robot.subsystems.Vision.VisionIOLimelight;
+import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -39,11 +47,18 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    public final Vision vision;
+
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public RobotContainer() {
+        vision = new Vision(
+            VisionConstants.LIMELIGHT_LEFT,
+            VisionConstants.LIMELIGHT_RIGHT, 
+            null, null, null);
+
         configureBindings();
     }
 
