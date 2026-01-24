@@ -107,7 +107,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         try{
-        return new PathPlannerAuto("Test Path");
+        return new PathPlannerAuto("Test Auto");
         }
         catch(Exception e){
             System.out.println(e.toString());
