@@ -19,7 +19,7 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
 
-final TalonFX shooterMotor = new TalonFX(0);
+final TalonFX shooterMotor = new TalonFX(21);
 
   public Shooter() {
     // instantiate motor controllers
