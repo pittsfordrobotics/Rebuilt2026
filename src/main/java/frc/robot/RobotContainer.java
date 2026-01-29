@@ -15,6 +15,7 @@ import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -57,7 +58,9 @@ public class RobotContainer {
         vision = new Vision(
             VisionConstants.LIMELIGHT_LEFT,
             VisionConstants.LIMELIGHT_RIGHT, 
-            null, null, null);
+            () -> drivetrain.getState().RawHeading,
+            () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
+            drivetrain::addVisionMeasurement);
 
         configureBindings();
     }

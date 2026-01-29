@@ -26,8 +26,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.Timer;
 
-import java.io.File;
-
 public class Vision extends SubsystemBase {
 
     // Initialization
