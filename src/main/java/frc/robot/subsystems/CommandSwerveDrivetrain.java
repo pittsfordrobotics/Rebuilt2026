@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.lib.VisionData;
+import frc.robot.subsystems.Vision.Vision;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -323,4 +325,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
+
+    public void addVisionMeasurement(VisionData visionData) {
+        super.addVisionMeasurement(visionData.visionPose(), visionData.time(), visionData.visionReliability());
+    }
+
 }
