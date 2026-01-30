@@ -11,6 +11,7 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -153,6 +154,12 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        try{
+        return new PathPlannerAuto("Test Auto");
+        }
+        catch(Exception e){
+            System.out.println(e.toString());
+            return null;
+        }
     }
 }
