@@ -16,7 +16,6 @@ public class PDHLogger extends ClassSpecificLogger<PowerDistribution>{
     public void update(EpilogueBackend backend, PowerDistribution pdh) {
         backend.log("PDH Voltage (Volts)", pdh.getVoltage());
         backend.log("PDH Current (Amps)", pdh.getTotalCurrent());
-        backend.log("PDH Temperature (Degrees Celsius)", pdh.getTemperature());
         backend.log("All PDH Currents", pdh.getAllCurrents());
     }
 }
