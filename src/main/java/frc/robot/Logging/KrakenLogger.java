@@ -17,11 +17,11 @@ public class KrakenLogger extends ClassSpecificLogger<TalonFX> {
     public void update(EpilogueBackend backend, TalonFX talonFX) {
         //Log motor IDs
         backend.log("Motor ID", talonFX.getDeviceID());
-        backend.log("Temperature", talonFX.getDeviceTemp().getValue().in(Units.Celsius));
-        backend.log("Voltage", talonFX.getMotorVoltage().getValue());
+        backend.log("Temperature (C)", talonFX.getDeviceTemp().getValue().in(Units.Celsius));
+        backend.log("Voltage (Volts)", talonFX.getMotorVoltage().getValue());
+        backend.log("Current (Amps)", talonFX.getSupplyCurrent().getValue());
         backend.log("Position", talonFX.getPosition().getValue());
         backend.log("Velocity", talonFX.getVelocity().getValue());
-        
     }
     
 }
