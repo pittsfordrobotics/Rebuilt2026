@@ -35,6 +35,12 @@ import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOLimelight;
@@ -58,7 +64,11 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    @Logged(name = "PDH")
+    private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     private final Intake intake;
     private final Indexer indexer;
@@ -68,6 +78,9 @@ public class RobotContainer {
     private GenericEntry indexSpeed;
 
     public RobotContainer() {
+	    DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
+		
         vision = new Vision(
             VisionConstants.LIMELIGHT_LEFT,
             VisionConstants.LIMELIGHT_RIGHT, 
