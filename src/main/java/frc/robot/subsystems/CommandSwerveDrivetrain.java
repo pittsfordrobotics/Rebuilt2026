@@ -2,18 +2,22 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,9 +29,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.AllDeadbands;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.VisionData;
 import frc.robot.subsystems.Vision.Vision;
@@ -325,9 +330,56 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
-
+	
     public void addVisionMeasurement(VisionData visionData) {
         super.addVisionMeasurement(visionData.visionPose(), visionData.time(), visionData.visionReliability());
     }
 
+    // *******************
+    // Logging methods
+    // *******************
+    /*@Logged(name = "Rotation Degrees")
+    public double getRotationDegrees() {
+        return swerveDrive.getYaw().getDegrees();
+    }*/
+
+    @Logged(name = "FR Drive Motor")
+    public TalonFX getFrontRightDriveMotor() {
+        return this.getModule(1).getDriveMotor();
+    }
+
+    @Logged(name = "FR Steer Motor")
+    public TalonFX getFrontRightSteerMotor() {
+        return this.getModule(1).getSteerMotor();
+    }
+
+    @Logged(name = "FL Drive Motor")
+    public TalonFX getFrontLeftDriveMotor() {
+        return this.getModule(0).getDriveMotor();
+    }
+
+    @Logged(name = "FL Steer Motor")
+    public TalonFX getFrontLeftSteerMotor() {
+        return this.getModule(0).getSteerMotor();
+    }
+
+    @Logged(name = "BR Drive Motor")
+    public TalonFX getBackRightDriveMotor() {
+        return this.getModule(3).getSteerMotor();
+    }
+
+    @Logged(name = "BR Steer Motor")
+    public TalonFX getBackRightSteerMotor() {
+        return this.getModule(3).getSteerMotor();
+    }
+
+    @Logged(name = "BL Drive Motor")
+    public TalonFX getBackLeftDriveMotor() {
+        return this.getModule(2).getDriveMotor();
+    }
+
+    @Logged(name = "BL Steer Motor")
+    public TalonFX getBackLeftAngleMotor() {
+        return this.getModule(2).getSteerMotor();
+    }
 }

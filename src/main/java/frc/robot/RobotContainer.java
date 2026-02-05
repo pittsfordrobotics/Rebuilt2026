@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.reflect.Field;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -18,8 +19,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,14 +34,23 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.VisionData;
+import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.lib.util.SwerveHelpers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOLimelight;
+import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -58,7 +71,11 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    @Logged(name = "PDH")
+    private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     private final Intake intake;
     private final Indexer indexer;
@@ -68,6 +85,9 @@ public class RobotContainer {
     private GenericEntry indexSpeed;
 
     public RobotContainer() {
+	    DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
+		
         vision = new Vision(
             VisionConstants.LIMELIGHT_LEFT,
             VisionConstants.LIMELIGHT_RIGHT, 
@@ -113,7 +133,6 @@ public class RobotContainer {
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withRotationalRate((joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()) * MaxAngularRate);
             })
-                
         );
         
 
@@ -126,6 +145,7 @@ public class RobotContainer {
         
         
         joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
+        joystick.b().whileTrue(pointAtHub());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -153,6 +173,8 @@ public class RobotContainer {
         return heading;
     }
 
+    
+
     public Command getAutonomousCommand() {
         try{
         return new PathPlannerAuto("Test Auto");
@@ -161,5 +183,28 @@ public class RobotContainer {
             System.out.println(e.toString());
             return null;
         }
+    }
+
+    public Command pointAt(Translation2d targetPoint) {
+        return drivetrain.applyRequest(() -> {
+                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
+                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint);
+                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
+                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withTargetDirection(targetHeading);
+        });
+    }
+
+    public Command pointAtHub() {
+        return drivetrain.applyRequest(() -> {
+                Translation2d targetPoint = AllianceFlipUtil.apply(FieldConstants.blueHubPosition);
+                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
+                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint);
+                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
+                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withTargetDirection(targetHeading);
+        });
     }
 }
