@@ -80,9 +80,6 @@ public class RobotContainer {
     private final Intake intake;
     private final Indexer indexer;
     private final Shooter shooter;
-    private GenericEntry intakeSpeed;
-    private GenericEntry shooterSpeed;
-    private GenericEntry indexSpeed;
 
     public RobotContainer() {
 	    DataLogManager.start();
@@ -99,8 +96,6 @@ public class RobotContainer {
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
-
-        initDashboard();
     }
 
     private void configureBindings() {
@@ -194,19 +189,5 @@ public class RobotContainer {
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withTargetDirection(targetHeading);
         });
-    }
-
-    private void initDashboard(){
-        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Intake", intake.runIntake(() -> intakeSpeed.getDouble(0.25)));
-
-
-
-        indexSpeed = Shuffleboard.getTab("testing").add("Intake Mover Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Indexer", indexer.runIndex(() -> indexSpeed.getDouble(0.25)));
-
-
-        shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Shooter", shooter.runShooter(() -> shooterSpeed.getDouble(0.25)));
     }
 }

@@ -15,6 +15,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
   private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
   // private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
-
+private GenericEntry intakeSpeed;
 
 
 
@@ -34,6 +36,9 @@ public class Intake extends SubsystemBase {
 
     REVLibError err = intakeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     System.out.println("Init error code: " + err.value);
+
+        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
+        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.25)));
 
     // REVLibError err2 = indexMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     // System.out.println("Init error code: " + err2.value);
