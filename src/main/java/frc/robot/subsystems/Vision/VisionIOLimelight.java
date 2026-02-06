@@ -37,8 +37,6 @@ public class VisionIOLimelight implements VisionIO {
         // Gets the needed data from the networktables
         PoseEstimate botPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
         mt2Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimate.pose);
-        PoseEstimate botPoseEstimateMt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
-        mt1Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimateMt1.pose);
 
         if (botPoseEstimate == null) {
             // BotPoseEstimate is null if the limelight data can't be found in NetworkTables
