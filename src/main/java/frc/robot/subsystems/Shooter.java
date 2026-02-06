@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CanIDConstants;
 
 
 
@@ -19,7 +20,7 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
 
-final TalonFX shooterMotor = new TalonFX(21);
+final TalonFX shooterMotor = new TalonFX(CanIDConstants.ShooterCanID);
 
   public Shooter() {
     // instantiate motor controllers

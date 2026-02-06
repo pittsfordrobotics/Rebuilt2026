@@ -8,6 +8,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.REVLibError;
 import com.revrobotics.ResetMode;
 
+import java.util.concurrent.CancellationException;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.spark.SparkFlex;
@@ -17,11 +18,12 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CanIDConstants;
 
 
 public class Indexer extends SubsystemBase {
   // private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
-  private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
+  private SparkFlex indexMotor = new SparkFlex(CanIDConstants.IndexerCanID, MotorType.kBrushless);
 
 
 

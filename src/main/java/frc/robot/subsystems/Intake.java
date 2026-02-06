@@ -17,10 +17,11 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.CanIDConstants;
 
 
 public class Intake extends SubsystemBase {
-  private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
+  private SparkFlex intakeMotor = new SparkFlex(CanIDConstants.IntakeCanID, MotorType.kBrushless);
   // private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
 
 
