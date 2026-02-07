@@ -97,7 +97,7 @@ public class RobotContainer {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                         .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                        .withTargetDirection(heading);
+                        .withTargetDirection(AllianceFlipUtil.apply(heading));
                 }
 
                 return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)

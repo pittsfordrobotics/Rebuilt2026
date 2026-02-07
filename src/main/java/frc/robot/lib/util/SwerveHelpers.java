@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.AllDeadbands;
 
 public class SwerveHelpers {
@@ -16,9 +17,13 @@ public class SwerveHelpers {
     public static Rotation2d getHeadingFromStick(DoubleSupplier rotationX, DoubleSupplier rotationY) {
         Rotation2d heading = null;
         double[] deadbandRotationInputs = AllDeadbands
-                .applyScalingCircularDeadband(new double[] { rotationX.getAsDouble(), rotationY.getAsDouble() }, 0.95);
+                .applyScalingCircularDeadband(new double[] { -rotationX.getAsDouble(), -rotationY.getAsDouble() }, 0.95);
         if (deadbandRotationInputs[0] != 0 || deadbandRotationInputs[1] != 0) {
             heading = Rotation2d.fromRadians(Math.atan2(deadbandRotationInputs[1], deadbandRotationInputs[0]));
+        }
+
+        if(heading == null) {
+            return null;
         }
 
         return heading;
