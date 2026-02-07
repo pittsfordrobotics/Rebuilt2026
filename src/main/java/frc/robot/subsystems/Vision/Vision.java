@@ -47,7 +47,7 @@ public class Vision extends SubsystemBase {
         this.visionDataConsumer = visionDataConsumer;
         this.gyroangle = gyroangle;
         this.robotRotationalVelocity = robotRotationalVelocity;
-        io = new VisionIO[limelights.length];
+        io = limelights;
         FieldConstants.aprilTags.getTags().forEach((AprilTag tag) -> lastTagDetectionTimes.put(tag.ID, 0.0));
 
         Shuffleboard.getTab("Vision").addBoolean("Is Vison Being Used?", this::usingVision);
