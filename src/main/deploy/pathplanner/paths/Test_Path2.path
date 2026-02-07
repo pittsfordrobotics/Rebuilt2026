@@ -3,48 +3,77 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.668975903614458,
+        "x": 8.84429197,
         "y": 6.745072289156626
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.63831062215849,
-        "y": 6.202011525547993
+        "x": 8.849868849890727,
+        "y": 6.1578812128375295
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.526915662650602,
-        "y": 4.024072289156626
+        "x": 5.8440481927710834,
+        "y": 6.242397590361446
       },
       "prevControl": {
-        "x": 7.60383711344133,
-        "y": 5.418079809974786
+        "x": 5.845975777807286,
+        "y": 7.296895496620562
       },
       "nextControl": {
-        "x": 7.5131415958718435,
-        "y": 3.7744520273901294
+        "x": 5.842120607734881,
+        "y": 5.187899684102331
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.668975903614458,
+        "x": 8.980301204819277,
+        "y": 4.701590361445783
+      },
+      "prevControl": {
+        "x": 8.229822700258584,
+        "y": 5.4843862086498465
+      },
+      "nextControl": {
+        "x": 9.73077970937997,
+        "y": 3.9187945142417195
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.84429197,
         "y": 1.9805903614457838
       },
       "prevControl": {
-        "x": 7.69822268591176,
-        "y": 1.7079184293476142
+        "x": 8.84330631629147,
+        "y": 1.7305923044798008
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 39.257370014872436
+    },
+    {
+      "waypointRelativePos": 1.605809128630697,
+      "rotationDegrees": -76.96598883563948
+    },
+    {
+      "waypointRelativePos": 2.2780082987551906,
+      "rotationDegrees": -150.22003079358697
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
