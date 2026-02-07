@@ -1,7 +1,5 @@
 package frc.robot.lib.util;
 
-import java.lang.reflect.Field;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -50,5 +48,9 @@ public class AllianceFlipUtil {
 
   public static boolean shouldFlip() {
     return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+  }
+
+  public static boolean isRed() {
+    return shouldFlip();
   }
 }
