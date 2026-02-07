@@ -6,17 +6,26 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.lang.reflect.Field;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,11 +34,23 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.VisionData;
+import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.lib.util.SwerveHelpers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Indexer;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO;
 import frc.robot.subsystems.Vision.VisionIOLimelight;
+import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -38,10 +59,8 @@ public class RobotContainer {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final FieldCentric drive = new FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(10, 0, 0);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -52,9 +71,20 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+    @Logged(name = "PDH")
+    private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
+
+    private final Intake intake;
+    private final Indexer indexer;
+    private final Shooter shooter;
+
     public RobotContainer() {
+	    DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
+		
         vision = new Vision(
             () -> drivetrain.getState().RawHeading,
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
@@ -63,6 +93,9 @@ public class RobotContainer {
             VisionConstants.LIMELIGHT_RIGHT);
 
         configureBindings();
+        intake= new Intake();
+        shooter = new Shooter();
+        indexer = new Indexer();
     }
 
     private void configureBindings() {
@@ -71,7 +104,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> {
-                double[] leftDeadbanded = AllDeadbands.applyCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .05);
+                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
                 Rotation2d heading = getHeadingFromStick(() -> -joystick.getRightY(), () -> -joystick.getRightX());
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
@@ -83,7 +116,6 @@ public class RobotContainer {
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withRotationalRate((joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()) * MaxAngularRate);
             })
-                
         );
         
 
@@ -96,6 +128,7 @@ public class RobotContainer {
         
         
         joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
+        joystick.b().whileTrue(pointAtHub());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -108,12 +141,13 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+        
     }
 
     public Rotation2d getHeadingFromStick(DoubleSupplier rotationX, DoubleSupplier rotationY) {
         Rotation2d heading;
         double[] deadbandRotationInputs = AllDeadbands
-                .applyCircularDeadband(new double[] { rotationX.getAsDouble(), rotationY.getAsDouble() }, 0.95);
+                .applyScalingCircularDeadband(new double[] { rotationX.getAsDouble(), rotationY.getAsDouble() }, 0.95);
         if (deadbandRotationInputs[0] != 0 || deadbandRotationInputs[1] != 0) {
             heading = Rotation2d.fromRadians(Math.atan2(deadbandRotationInputs[1], deadbandRotationInputs[0]));
         } else {
@@ -122,7 +156,38 @@ public class RobotContainer {
         return heading;
     }
 
+    
+
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        try{
+        return new PathPlannerAuto("Test Auto");
+        }
+        catch(Exception e){
+            System.out.println(e.toString());
+            return null;
+        }
+    }
+
+    public Command pointAt(Translation2d targetPoint) {
+        return drivetrain.applyRequest(() -> {
+                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
+                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint);
+                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
+                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withTargetDirection(targetHeading);
+        });
+    }
+
+    public Command pointAtHub() {
+        return drivetrain.applyRequest(() -> {
+                Translation2d targetPoint = AllianceFlipUtil.apply(FieldConstants.blueHubPosition);
+                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
+                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint);
+                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
+                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withTargetDirection(targetHeading);
+        });
     }
 }

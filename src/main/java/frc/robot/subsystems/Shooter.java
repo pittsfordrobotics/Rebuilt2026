@@ -9,7 +9,9 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,12 +20,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
 
+  private GenericEntry shooterSpeed;
 
 final TalonFX shooterMotor = new TalonFX(21);
 
   public Shooter() {
     // instantiate motor controllers
       shooterMotor.getConfigurator().apply(new TalonFXConfiguration());
+
+        shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .25).getEntry();
+        Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter(() -> shooterSpeed.getDouble(0.25)));
   }
 
 
