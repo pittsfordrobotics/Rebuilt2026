@@ -42,12 +42,12 @@ public class Vision extends SubsystemBase {
     StructArrayPublisher<Pose2d> visionPoseArrayPublisher = NetworkTableInstance.getDefault()
             .getStructArrayTopic("Vision Poses", Pose2d.struct).publish();
 
-    public Vision(VisionIO ioLimelightLeft, VisionIO ioLimelightRight, Supplier<Rotation2d> gyroangle,
-            Supplier<Double> robotRotationalVelocity, Consumer<VisionData> visionDataConsumer) {
+    public Vision(Supplier<Rotation2d> gyroangle, Supplier<Double> robotRotationalVelocity, 
+    Consumer<VisionData> visionDataConsumer, VisionIO... limelights) {
         this.visionDataConsumer = visionDataConsumer;
         this.gyroangle = gyroangle;
         this.robotRotationalVelocity = robotRotationalVelocity;
-        io = new VisionIO[] {ioLimelightLeft, ioLimelightRight};
+        io = limelights;
         FieldConstants.aprilTags.getTags().forEach((AprilTag tag) -> lastTagDetectionTimes.put(tag.ID, 0.0));
 
         Shuffleboard.getTab("Vision").addBoolean("Is Vison Being Used?", this::usingVision);

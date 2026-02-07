@@ -14,17 +14,12 @@ import edu.wpi.first.wpilibj.Timer;
 public class VisionIOLimelight implements VisionIO {
 
     private final String cameraName;
-
-    private final StructPublisher<Pose2d> mt1Publisher;
     private final StructPublisher<Pose2d> mt2Publisher;
 
     public VisionIOLimelight(String cameraName) {
         this.cameraName = cameraName;
         setLEDs(LED.OFF, cameraName);
         setPipeline(Pipelines.Test);
-
-        mt1Publisher = NetworkTableInstance.getDefault()
-            .getStructTopic("LimelightPoses/" + cameraName + "/MT1", Pose2d.struct).publish();
 
         mt2Publisher = NetworkTableInstance.getDefault()
             .getStructTopic("LimelightPoses/" + cameraName + "/MT2", Pose2d.struct).publish();
@@ -37,8 +32,6 @@ public class VisionIOLimelight implements VisionIO {
         // Gets the needed data from the networktables
         PoseEstimate botPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
         mt2Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimate.pose);
-        PoseEstimate botPoseEstimateMt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
-        mt1Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimateMt1.pose);
 
         if (botPoseEstimate == null) {
             // BotPoseEstimate is null if the limelight data can't be found in NetworkTables

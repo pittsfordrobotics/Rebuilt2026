@@ -73,11 +73,11 @@ public class RobotContainer {
         DriverStation.startDataLog(DataLogManager.getLog());
 		
         vision = new Vision(
-            VisionConstants.LIMELIGHT_LEFT,
-            VisionConstants.LIMELIGHT_RIGHT, 
             () -> drivetrain.getState().RawHeading,
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
-            drivetrain::addVisionMeasurement);
+            drivetrain::addVisionMeasurement,
+            VisionConstants.LIMELIGHT_LEFT,
+            VisionConstants.LIMELIGHT_RIGHT);
 
         configureBindings();
         intake= new Intake();
