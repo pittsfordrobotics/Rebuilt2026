@@ -14,17 +14,12 @@ import edu.wpi.first.wpilibj.Timer;
 public class VisionIOLimelight implements VisionIO {
 
     private final String cameraName;
-
-    private final StructPublisher<Pose2d> mt1Publisher;
     private final StructPublisher<Pose2d> mt2Publisher;
 
     public VisionIOLimelight(String cameraName) {
         this.cameraName = cameraName;
         setLEDs(LED.OFF, cameraName);
         setPipeline(Pipelines.Test);
-
-        mt1Publisher = NetworkTableInstance.getDefault()
-            .getStructTopic("LimelightPoses/" + cameraName + "/MT1", Pose2d.struct).publish();
 
         mt2Publisher = NetworkTableInstance.getDefault()
             .getStructTopic("LimelightPoses/" + cameraName + "/MT2", Pose2d.struct).publish();
