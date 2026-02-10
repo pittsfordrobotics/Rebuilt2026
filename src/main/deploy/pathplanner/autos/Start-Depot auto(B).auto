@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test_Path"
+            "pathName": "Start-Depot(B)"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Blue Alliance Autos",
   "choreoAuto": false
 }
