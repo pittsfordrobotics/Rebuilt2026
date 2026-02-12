@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.lib.util.SwerveHelpers;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -67,6 +68,7 @@ public class RobotContainer {
     private final Intake intake;
     private final Indexer indexer;
     private final Shooter shooter;
+    private final Climber climber;
 
     public RobotContainer() {
 	    DataLogManager.start();
@@ -83,6 +85,7 @@ public class RobotContainer {
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
+        climber = new Climber();
     }
 
     private void configureBindings() {
