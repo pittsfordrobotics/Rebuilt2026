@@ -5,4 +5,5 @@ public class IndexerConstants {
     
     public static final int STALL_LIMIT = 40;
     public static final int FREE_LIMIT = 40;
+
 }

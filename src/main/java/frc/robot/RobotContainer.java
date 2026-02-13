@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
@@ -121,6 +122,13 @@ public class RobotContainer {
         
         joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(pointAtHub());
+
+        joystick.x().whileTrue(
+            Commands.parallel(
+                intake.runIntake(null), 
+                indexer.runIndex(null)));
+
+        joystick.rightTrigger().whileTrue(shooter.runShooter(null));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
