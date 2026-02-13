@@ -3,12 +3,12 @@
   "robotLength": 0.902,
   "holonomicMode": true,
   "pathFolders": [
-    "Red Alliance Paths",
-    "Blue Alliance Paths"
+    "Blue Alliance Paths",
+    "Idk"
   ],
   "autoFolders": [
-    "Red Alliance Autos",
-    "Blue Alliance Autos"
+    "Blue Alliance Autos",
+    "idk(auto)"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
