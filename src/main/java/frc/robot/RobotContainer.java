@@ -12,9 +12,11 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -118,6 +120,7 @@ public class RobotContainer {
         
         joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(pointAtHub());
+        joystick.x().whileFalse(driveToPoint(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -158,5 +161,36 @@ public class RobotContainer {
 
     public Command pointAtHub() {
         return pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
+    }
+
+    public Command driveToPose(Supplier<Pose2d> targetPose) {
+        System.out.println(targetPose.get());
+        try (PhoenixPIDController headingController = new PhoenixPIDController(0, 0, 0)) {
+            return drivetrain.applyRequest(() -> {
+                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
+                Rotation2d targetHeading = targetPose.get().getRotation();
+
+                double toApplyX = headingController.calculate(
+                    drivetrain.getState().Pose.getX(),
+                    targetPose.get().getX(),
+                    DriverStation.getMatchTime()
+                );
+
+                double toApplyY = headingController.calculate(
+                    drivetrain.getState().Pose.getY(),
+                    targetPose.get().getY(),
+                    DriverStation.getMatchTime()
+                );
+                
+                return driveHeading.withVelocityX(toApplyX)
+                    .withVelocityY(toApplyY)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withTargetDirection(targetHeading);
+            });
+        }
+    }
+
+    public Command driveToPoint(Supplier<Translation2d> targetPoint) {
+        return driveToPose(() -> new Pose2d(targetPoint.get(), drivetrain.getState().Pose.getRotation()));
     }
 }
