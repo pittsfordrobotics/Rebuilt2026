@@ -49,10 +49,12 @@ public class RobotContainer {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final FieldCentric drive = new FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
+            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
     private final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(10, 0, 0);
+            .withHeadingPID(10, 0, 0)
+            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -99,13 +101,11 @@ public class RobotContainer {
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                         .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withTargetDirection(AllianceFlipUtil.apply(heading));
                 }
 
                 return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                     .withRotationalRate((joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()) * MaxAngularRate);
             })
         );
@@ -139,10 +139,9 @@ public class RobotContainer {
     
 
     public Command getAutonomousCommand() {
-        try{
-        return new PathPlannerAuto("Test Auto");
-        }
-        catch(Exception e){
+        try {
+            return new PathPlannerAuto("Test Auto");
+        } catch(Exception e) {
             System.out.println(e.toString());
             return null;
         }
@@ -155,7 +154,6 @@ public class RobotContainer {
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
                 return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                     .withTargetDirection(targetHeading);
         });
     }
@@ -168,25 +166,20 @@ public class RobotContainer {
         System.out.println(targetPose.get());
         try (PhoenixPIDController headingController = new PhoenixPIDController(2, 0, 0)) { //obviously tune these
             return drivetrain.applyRequest(() -> {
-                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
-                Rotation2d targetHeading = targetPose.get().getRotation();
 
                 double toApplyX = headingController.calculate(
                     drivetrain.getState().Pose.getX(),
                     targetPose.get().getX(),
-                    Timer.getTimestamp()
-                );
+                    Timer.getTimestamp());
 
                 double toApplyY = headingController.calculate(
                     drivetrain.getState().Pose.getY(),
                     targetPose.get().getY(),
-                    Timer.getTimestamp()
-                );
+                    Timer.getTimestamp());
                 
                 return driveHeading.withVelocityX(toApplyX)
                     .withVelocityY(toApplyY)
-                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                    .withTargetDirection(targetHeading);
+                    .withTargetDirection(targetPose.get().getRotation());
             });
         }
     }
