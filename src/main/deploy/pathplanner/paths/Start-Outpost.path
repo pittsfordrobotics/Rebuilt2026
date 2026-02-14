@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.284893009985733,
-        "y": 4.248487874465051
+        "x": 3.286559116394424,
+        "y": 3.7678472822195217
       },
       "isLocked": false,
       "linkedName": null
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Blue Alliance Paths",
+  "folder": "Basic Paths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
