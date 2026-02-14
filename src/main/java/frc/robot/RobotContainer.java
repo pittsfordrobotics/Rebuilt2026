@@ -127,7 +127,8 @@ public class RobotContainer {
         
         joystick.a().onTrue(Commands.runOnce(() -> isBraked = !isBraked));
         joystick.b().whileTrue(pointAtHub());
-        joystick.x().whileTrue(driveToPoint(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition)));
+        joystick.x().whileTrue(driveToPoint(FieldConstants.flippedHubPosition)); //this is mainly for testing, I don't see why we would need this in comp
+        joystick.b().and(joystick.x()).whileTrue(driveToAndPointAt(FieldConstants.flippedHubPosition));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -169,7 +170,7 @@ public class RobotContainer {
     }
 
     public Command pointAtHub() {
-        return pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
+        return pointAt(FieldConstants.flippedHubPosition);
     }
 
     public Command driveToPose(Supplier<Pose2d> targetPose) {
@@ -198,5 +199,13 @@ public class RobotContainer {
 
     public Command driveToPoint(Supplier<Translation2d> targetPoint) {
         return driveToPose(() -> new Pose2d(targetPoint.get(), drivetrain.getState().Pose.getRotation()));
+    }
+
+    public Command driveToAndPointAt(Supplier<Translation2d> targetPoint) {
+        return driveToPose(() -> {
+            Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
+            Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
+            return new Pose2d(targetPoint.get(), targetHeading);
+        });
     }
 }
