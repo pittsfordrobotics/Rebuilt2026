@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
@@ -56,6 +57,7 @@ public class RobotContainer {
             .withHeadingPID(10, 0, 0)
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private boolean isBraked = false;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -96,6 +98,10 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> {
+                if(isBraked) {
+                    return brake;
+                }
+                
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> joystick.getRightY(), () -> joystick.getRightX());
                 if(heading != null) {
@@ -119,7 +125,7 @@ public class RobotContainer {
         );
         
         
-        joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
+        joystick.a().onTrue(Commands.runOnce(() -> isBraked = !isBraked));
         joystick.b().whileTrue(pointAtHub());
         joystick.x().whileTrue(driveToPoint(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition)));
 
@@ -149,6 +155,10 @@ public class RobotContainer {
 
     public Command pointAt(Supplier<Translation2d> targetPoint) {
         return drivetrain.applyRequest(() -> {
+                if(isBraked) {
+                    return brake;
+                }
+
                 Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
                 Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
@@ -163,9 +173,11 @@ public class RobotContainer {
     }
 
     public Command driveToPose(Supplier<Pose2d> targetPose) {
-        System.out.println(targetPose.get());
-        try (PhoenixPIDController headingController = new PhoenixPIDController(2, 0, 0)) { //obviously tune these
+        try (PhoenixPIDController headingController = new PhoenixPIDController(1, 0, 0)) { //obviously tune these
             return drivetrain.applyRequest(() -> {
+                if(isBraked) {
+                    return brake;
+                }
 
                 double toApplyX = headingController.calculate(
                     drivetrain.getState().Pose.getX(),
