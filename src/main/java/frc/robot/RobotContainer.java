@@ -36,6 +36,7 @@ import frc.robot.subsystems.Shooter;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import frc.robot.subsystems.Vision.Vision;
@@ -120,7 +121,7 @@ public class RobotContainer {
         
         joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(pointAtHub());
-        joystick.x().whileFalse(driveToPoint(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition)));
+        joystick.x().whileTrue(driveToPoint(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -165,7 +166,7 @@ public class RobotContainer {
 
     public Command driveToPose(Supplier<Pose2d> targetPose) {
         System.out.println(targetPose.get());
-        try (PhoenixPIDController headingController = new PhoenixPIDController(0, 0, 0)) {
+        try (PhoenixPIDController headingController = new PhoenixPIDController(2, 0, 0)) { //obviously tune these
             return drivetrain.applyRequest(() -> {
                 Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
                 Rotation2d targetHeading = targetPose.get().getRotation();
@@ -173,13 +174,13 @@ public class RobotContainer {
                 double toApplyX = headingController.calculate(
                     drivetrain.getState().Pose.getX(),
                     targetPose.get().getX(),
-                    DriverStation.getMatchTime()
+                    Timer.getTimestamp()
                 );
 
                 double toApplyY = headingController.calculate(
                     drivetrain.getState().Pose.getY(),
                     targetPose.get().getY(),
-                    DriverStation.getMatchTime()
+                    Timer.getTimestamp()
                 );
                 
                 return driveHeading.withVelocityX(toApplyX)
