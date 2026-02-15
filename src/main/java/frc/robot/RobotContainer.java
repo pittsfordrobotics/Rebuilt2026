@@ -21,6 +21,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,6 +70,9 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    private final SendableChooser<Command> autoChooser;
+
+
     @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -90,6 +95,12 @@ public class RobotContainer {
             VisionConstants.LIMELIGHT_RIGHT);
 
         configureBindings();
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+    // Another option that allows you to specify the default auto by its name
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
@@ -146,9 +157,10 @@ public class RobotContainer {
     
 
     public Command getAutonomousCommand() {
-        try {
-            return new PathPlannerAuto("Test Auto");
-        } catch(Exception e) {
+        try{
+            return autoChooser.getSelected();
+        }
+        catch(Exception e){
             System.out.println(e.toString());
             return null;
         }
