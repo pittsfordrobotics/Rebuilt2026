@@ -82,11 +82,12 @@ public class RobotContainer {
             VisionConstants.LIMELIGHT_LEFT,
             VisionConstants.LIMELIGHT_RIGHT);
 
-        configureBindings();
-        intake= new Intake();
+        intake = new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
         climber = new Climber();
+
+        configureBindings();
     }
 
     private void configureBindings() {
@@ -125,10 +126,10 @@ public class RobotContainer {
 
         joystick.x().whileTrue(
             Commands.parallel(
-                intake.runIntake(null), 
-                indexer.runIndex(null)));
+                intake.runIntake(() -> .4), 
+                indexer.runIndex(() -> .4)));
 
-        joystick.rightTrigger().whileTrue(shooter.runShooter(null));
+        joystick.rightTrigger().whileTrue(shooter.runShooter(() -> .4));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -146,10 +147,9 @@ public class RobotContainer {
     
 
     public Command getAutonomousCommand() {
-        try{
-        return new PathPlannerAuto("Test Auto");
-        }
-        catch(Exception e){
+        try {
+            return new PathPlannerAuto("Test Auto");
+        } catch(Exception e) {
             System.out.println(e.toString());
             return null;
         }
