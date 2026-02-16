@@ -4,58 +4,59 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.REVLibError;
-import com.revrobotics.ResetMode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import static edu.wpi.first.units.Units.Amps;
 
 import java.util.function.DoubleSupplier;
-
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.IndexerConstants;
 
 
 public class Indexer extends SubsystemBase {
-  // private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
-  private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
-private GenericEntry indexSpeed;
+    private TalonFX indexMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR);
+    private GenericEntry indexSpeed;
 
+    /** Creates a new intake. */
+    public Indexer() {
+        TalonFXConfiguration config = new TalonFXConfiguration()
+            .withMotorOutput(
+                            new MotorOutputConfigs()
+                                    .withNeutralMode(NeutralModeValue.Coast))
+                    .withCurrentLimits(
+                            new CurrentLimitsConfigs()
+                                    .withStatorCurrentLimit(Amps.of(120))
+                                    .withStatorCurrentLimitEnable(true))
+                    .withMotorOutput(
+                            new MotorOutputConfigs()
+                                    .withInverted(InvertedValue.Clockwise_Positive));
+        
+        indexMotor.getConfigurator().apply(config);
 
+        indexSpeed = Shuffleboard.getTab("testing").add("Index Speed", .25).getEntry();
 
-  /** Creates a new intake. */
-  public Indexer() {
-    SparkFlexConfig config = new SparkFlexConfig();
-    config.smartCurrentLimit(20);
-    config.idleMode(IdleMode.kBrake);
+        Shuffleboard.getTab("testing").add("Run Indexer", this.runIndex());
+    }
 
-    // REVLibError err = intakeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // System.out.println("Init error code: " + err.value);
+    public Command runIndex(DoubleSupplier speed) {
+        return run(() -> indexMotor.set(speed.getAsDouble())).finallyDo(() -> indexMotor.set(0));
+    }
 
-    REVLibError err2 = indexMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    System.out.println("Init error code: " + err2.value);
+    public Command runIndex() {
+        return this.runIndex(() -> indexSpeed.getDouble(0.25));
+    }
 
-        indexSpeed = Shuffleboard.getTab("testing").add("Intake Mover Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Indexer", this.runIndex(() -> indexSpeed.getDouble(0.25)));
-  }
-
-
-  // public Command runIntake(DoubleSupplier speed){
-  //   return run(() -> intakeMotor.set(speed.getAsDouble())).finallyDo(() -> intakeMotor.set(0));
-  // }
-  
-
-  public Command runIndex(DoubleSupplier speed){
-    return run(() -> indexMotor.set(speed.getAsDouble())).finallyDo(() -> indexMotor.set(0));
-  }
-  
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }

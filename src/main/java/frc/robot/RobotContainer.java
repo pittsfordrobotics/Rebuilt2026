@@ -58,7 +58,8 @@ public class RobotContainer {
 
     public final Vision vision;
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController driverController = new CommandXboxController(0);
+    private final CommandXboxController operatorController = new CommandXboxController(1);
 
     @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -66,10 +67,10 @@ public class RobotContainer {
     @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
-    private final Intake intake;
+    // private final Intake intake;
     private final Indexer indexer;
     private final Shooter shooter;
-    private final Climber climber;
+    // private final Climber climber;
 
     public RobotContainer() {
 	    DataLogManager.start();
@@ -82,10 +83,10 @@ public class RobotContainer {
             VisionConstants.LIMELIGHT_LEFT,
             VisionConstants.LIMELIGHT_RIGHT);
 
-        intake = new Intake();
+        // intake = new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
-        climber = new Climber();
+        // climber = new Climber();
 
         configureBindings();
     }
@@ -96,8 +97,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> {
-                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
-                Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> joystick.getRightY(), () -> joystick.getRightX());
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{driverController.getLeftX(), driverController.getLeftY()}, .1);
+                Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> driverController.getRightY(), () -> driverController.getRightX());
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                         .withVelocityY(leftDeadbanded[0] * MaxSpeed)
@@ -108,7 +109,7 @@ public class RobotContainer {
                 return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                    .withRotationalRate((joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()) * MaxAngularRate);
+                    .withRotationalRate((driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis()) * MaxAngularRate);
             })
         );
         
@@ -121,25 +122,21 @@ public class RobotContainer {
         );
         
         
-        joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(pointAtHub());
+        driverController.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
+        driverController.b().whileTrue(pointAtHub());
 
-        joystick.x().whileTrue(
-            Commands.parallel(
-                intake.runIntake(() -> .4), 
-                indexer.runIndex(() -> .4)));
-
-        joystick.rightTrigger().whileTrue(shooter.runShooter(() -> .4));
+        operatorController.rightBumper().whileTrue(shooter.runShooter());
+        operatorController.leftBumper().whileTrue(indexer.runIndex());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driverController.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
         
@@ -159,7 +156,7 @@ public class RobotContainer {
         return drivetrain.applyRequest(() -> {
                 Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
                 Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
-                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{driverController.getLeftX(), driverController.getLeftY()}, .1);
                 return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
