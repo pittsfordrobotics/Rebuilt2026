@@ -8,10 +8,12 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -36,7 +38,16 @@ public class Shooter extends SubsystemBase {
 					.withNeutralMode(NeutralModeValue.Coast))
 				.withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(Amps.of(120))
-                    .withStatorCurrentLimitEnable(true));
+                    .withStatorCurrentLimitEnable(true)
+                    .withSupplyCurrentLimit(Amps.of(70))
+                    .withSupplyCurrentLimitEnable(true))
+				.withSlot0(
+                	new Slot0Configs()
+                    .withKP(0.5)
+                    .withKI(2)
+                    .withKD(0)
+                    .withKV(12.0 / ShooterConstants.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
+            );
 
         TalonFXConfiguration uptakeConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
