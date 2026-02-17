@@ -19,10 +19,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.subsystems.Climber;
-// import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Indexer;
-// import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.epilogue.Logged;
@@ -50,7 +49,7 @@ public class RobotContainer {
     @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
-    // private final Intake intake;
+    private final Intake intake;
     private final Indexer indexer;
     private final Shooter shooter;
     private final Climber climber;
@@ -66,7 +65,7 @@ public class RobotContainer {
             VisionConstants.LIMELIGHT_LEFT,
             VisionConstants.LIMELIGHT_RIGHT);
 
-        // intake = new Intake();
+        intake = new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
         climber = new Climber();
@@ -91,9 +90,10 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex()));
+        operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex(), drivetrain.pointAtHub()));
         operatorController.y().whileTrue(climbUp());
         operatorController.x().whileTrue(climbDown());
+        operatorController.a().onTrue(intake.pivotOut().andThen(intake.runIntake(() -> .1)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
