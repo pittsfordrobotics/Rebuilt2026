@@ -14,7 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +29,9 @@ public class Shooter extends SubsystemBase {
 	private GenericEntry shooterSpeed;
 	private GenericEntry uptakeSpeed;
 
-	final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
+	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
+
+    @Logged(name="Uptake Motor")
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
 
 	public Shooter() {
@@ -43,7 +45,7 @@ public class Shooter extends SubsystemBase {
                     .withSupplyCurrentLimitEnable(true))
 				.withSlot0(
                 	new Slot0Configs()
-                    .withKP(0.5)
+                    .withKP(50)
                     .withKI(2)
                     .withKD(0)
                     .withKV(12.0 / ShooterConstants.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
@@ -67,8 +69,8 @@ public class Shooter extends SubsystemBase {
 		uptakeMotor.getConfigurator().apply(uptakeConfig);
 		Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter());
 
-        shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .25).getEntry();
-		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .25).getEntry();
+        shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
+		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
 	}
 
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
@@ -93,4 +95,9 @@ public class Shooter extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 	}
+
+    @Logged(name="Middle Motor")
+    public TalonFX getMiddleMotor() {
+        return this.shooterMotors[0];
+    }
 }

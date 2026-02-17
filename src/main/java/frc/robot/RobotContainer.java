@@ -51,6 +51,8 @@ public class RobotContainer {
 
     private final Intake intake;
     private final Indexer indexer;
+
+    @Logged(name="Shooter")
     private final Shooter shooter;
     private final Climber climber;
 
