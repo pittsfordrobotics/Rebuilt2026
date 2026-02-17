@@ -94,7 +94,7 @@ public class RobotContainer {
         operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex()));
         operatorController.y().whileTrue(climbUp());
         operatorController.x().whileTrue(climbDown());
-        
+
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -120,13 +120,13 @@ public class RobotContainer {
     }
 
     public Command climbUp(){
-        return Commands.run(() -> {drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS);})
+        return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
             .alongWith(climber.runClimber(() -> 0.4))
             .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
             .andThen(climber.runClimber(() -> -0.4));
     }
 
     public Command climbDown(){
-        return Commands.run(() -> climber.runClimber(() -> 0.4));
+        return climber.runClimber(() -> 0.4);
     }
 }
