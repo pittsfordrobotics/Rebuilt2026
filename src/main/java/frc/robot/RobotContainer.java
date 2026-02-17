@@ -11,12 +11,14 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.subsystems.Climber;
 // import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Indexer;
@@ -30,6 +32,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 
@@ -50,7 +53,7 @@ public class RobotContainer {
     // private final Intake intake;
     private final Indexer indexer;
     private final Shooter shooter;
-    // private final Climber climber;
+    private final Climber climber;
 
     public RobotContainer() {
 	    DataLogManager.start();
@@ -66,7 +69,7 @@ public class RobotContainer {
         // intake = new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
-        // climber = new Climber();
+        climber = new Climber();
 
         configureBindings();
     }
@@ -88,7 +91,10 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-
+        operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex()));
+        operatorController.y().whileTrue(climbUp());
+        operatorController.x().whileTrue(climbDown());
+        
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -111,5 +117,16 @@ public class RobotContainer {
             System.out.println(e.toString());
             return null;
         }
+    }
+
+    public Command climbUp(){
+        return Commands.run(() -> {drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS);})
+            .alongWith(climber.runClimber(() -> 0.4))
+            .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
+            .andThen(climber.runClimber(() -> -0.4));
+    }
+
+    public Command climbDown(){
+        return Commands.run(() -> climber.runClimber(() -> 0.4));
     }
 }
