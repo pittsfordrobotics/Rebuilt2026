@@ -6,31 +6,20 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
-import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 
 import frc.robot.generated.TunerConstants;
-import frc.robot.lib.util.AllianceFlipUtil;
-import frc.robot.lib.util.SwerveHelpers;
-import frc.robot.subsystems.Climber;
+// import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Intake;
+// import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.epilogue.Logged;
@@ -39,22 +28,10 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final FieldCentric drive = new FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(10, 0, 0);
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
     public final Vision vision;
 
@@ -62,7 +39,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     @Logged(name = "Swerve")
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(driverController);
 
     @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
@@ -96,22 +73,7 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() -> {
-                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{driverController.getLeftX(), driverController.getLeftY()}, .1);
-                Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> driverController.getRightY(), () -> driverController.getRightX());
-                if(heading != null) {
-                    return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                        .withTargetDirection(AllianceFlipUtil.apply(heading));
-                }
-
-                return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                    .withRotationalRate((driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis()) * MaxAngularRate);
-            })
-        );
+            drivetrain.drive());
         
 
         // Idle while the robot is disabled. This ensures the configured
@@ -122,8 +84,8 @@ public class RobotContainer {
         );
         
         
-        driverController.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
-        driverController.b().whileTrue(pointAtHub());
+        driverController.a().toggleOnTrue(drivetrain.brake());
+        driverController.b().whileTrue(drivetrain.pointAtHub());
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
@@ -150,21 +112,5 @@ public class RobotContainer {
             System.out.println(e.toString());
             return null;
         }
-    }
-
-    public Command pointAt(Supplier<Translation2d> targetPoint) {
-        return drivetrain.applyRequest(() -> {
-                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
-                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
-                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{driverController.getLeftX(), driverController.getLeftY()}, .1);
-                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                    .withTargetDirection(targetHeading);
-        });
-    }
-
-    public Command pointAtHub() {
-        return pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
     }
 }

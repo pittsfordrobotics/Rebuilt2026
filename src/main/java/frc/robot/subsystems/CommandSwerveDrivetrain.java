@@ -2,16 +2,18 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -21,6 +23,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -29,13 +32,16 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.AllDeadbands;
+import frc.robot.constants.FieldConstants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.VisionData;
-import frc.robot.subsystems.Vision.Vision;
+import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.lib.util.SwerveHelpers;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -57,6 +63,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    private CommandXboxController controller;
+
+    public final FieldCentric drive = new FieldCentric()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    public final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
+            .withHeadingPID(10, 0, 0);
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private final double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -131,10 +148,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules               Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+        CommandXboxController controller,
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
+        this.controller = controller;
         configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -155,11 +174,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules                 Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+        CommandXboxController controller,
         SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
+        this.controller = controller;
         configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -186,6 +207,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules                   Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+        CommandXboxController controller,
         SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         Matrix<N3, N1> odometryStandardDeviation,
@@ -193,6 +215,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+        this.controller = controller;
         configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -381,5 +404,45 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     @Logged(name = "BL Steer Motor")
     public TalonFX getBackLeftAngleMotor() {
         return this.getModule(2).getSteerMotor();
+    }
+
+    public Command drive() {
+        return this.applyRequest(() -> {
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
+                Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
+                if(heading != null) {
+                    return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                        .withTargetDirection(AllianceFlipUtil.apply(heading));
+                }
+
+                return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
+            }
+        );
+    }
+
+    
+    public Command pointAt(Supplier<Translation2d> targetPoint) {
+        return this.applyRequest(() -> {
+                Translation2d currentPoint = this.getState().Pose.getTranslation();
+                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
+                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withTargetDirection(targetHeading);
+        });
+    }
+
+    public Command pointAtHub() {
+        return this.pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
+    }
+
+    public Command brake() {
+        return this.applyRequest(() -> brake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 }
