@@ -32,25 +32,20 @@ public class Shooter extends SubsystemBase {
 
 	public Shooter() {
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
-				.withMotorOutput(
-						new MotorOutputConfigs()
-								.withNeutralMode(NeutralModeValue.Coast))
-				.withCurrentLimits(
-						new CurrentLimitsConfigs()
-								.withStatorCurrentLimit(Amps.of(120))
-								.withStatorCurrentLimitEnable(true));
+				.withMotorOutput(new MotorOutputConfigs()
+					.withNeutralMode(NeutralModeValue.Coast))
+				.withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimitEnable(true));
 
         TalonFXConfiguration uptakeConfig = new TalonFXConfiguration()
-				.withMotorOutput(
-						new MotorOutputConfigs()
-								.withNeutralMode(NeutralModeValue.Coast))
-				.withCurrentLimits(
-						new CurrentLimitsConfigs()
-								.withStatorCurrentLimit(Amps.of(120))
-								.withStatorCurrentLimitEnable(true))
-                .withMotorOutput(
-                        new MotorOutputConfigs()
-                                .withInverted(InvertedValue.Clockwise_Positive));
+				.withMotorOutput(new MotorOutputConfigs()
+					.withNeutralMode(NeutralModeValue.Coast))
+				.withCurrentLimits(new CurrentLimitsConfigs()
+                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimitEnable(true))
+                .withMotorOutput(new MotorOutputConfigs()
+                    .withInverted(InvertedValue.Clockwise_Positive));
 
 		// instantiate motor controllers
 		for (int i = 0; i < shooterMotors.length; i++) {

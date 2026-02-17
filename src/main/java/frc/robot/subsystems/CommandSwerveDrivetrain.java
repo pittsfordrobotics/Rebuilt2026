@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -18,6 +19,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
@@ -34,6 +36,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.FieldConstants;
@@ -444,5 +447,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command brake() {
         return this.applyRequest(() -> brake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    
+    public Command driveToPose(Supplier<Pose2d> targetPose) {
+        PathConstraints constraints = PathConstraints.unlimitedConstraints(12);
+        return Commands.defer(() -> AutoBuilder.pathfindToPose(targetPose.get(), constraints), Set.of(this));
+    }
+
+    public Command driveToPoint(Supplier<Translation2d> targetPoint) {
+        return driveToPose(() -> new Pose2d(targetPoint.get(), this.getState().Pose.getRotation()));
+    }
+
+    public Command driveToAndPointAt(Supplier<Translation2d> targetPoint) {
+        return driveToPose(() -> {
+            Translation2d currentPoint = this.getState().Pose.getTranslation();
+            Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
+            return new Pose2d(targetPoint.get(), targetHeading);
+        });
     }
 }

@@ -26,11 +26,9 @@ public class Climber extends SubsystemBase {
     /** Creates a new Climber. */
     public Climber() {
         TalonFXConfiguration config = new TalonFXConfiguration()
-                .withMotorOutput(
-                        new MotorOutputConfigs()
-                                .withNeutralMode(NeutralModeValue.Brake))
-                .withCurrentLimits(
-                        new CurrentLimitsConfigs()
+                .withMotorOutput(new MotorOutputConfigs()
+                    .withNeutralMode(NeutralModeValue.Brake))
+                .withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(Amps.of(120))
                     .withStatorCurrentLimitEnable(true));
         

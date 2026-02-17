@@ -29,16 +29,13 @@ public class Indexer extends SubsystemBase {
     /** Creates a new intake. */
     public Indexer() {
         TalonFXConfiguration config = new TalonFXConfiguration()
-            .withMotorOutput(
-                            new MotorOutputConfigs()
-                                    .withNeutralMode(NeutralModeValue.Coast))
-                    .withCurrentLimits(
-                            new CurrentLimitsConfigs()
-                                    .withStatorCurrentLimit(Amps.of(120))
-                                    .withStatorCurrentLimitEnable(true))
-                    .withMotorOutput(
-                            new MotorOutputConfigs()
-                                    .withInverted(InvertedValue.Clockwise_Positive));
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Coast))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(120))
+                .withStatorCurrentLimitEnable(true))
+            .withMotorOutput(new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive));
         
         indexMotor.getConfigurator().apply(config);
 

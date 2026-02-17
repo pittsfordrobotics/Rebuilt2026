@@ -4,9 +4,15 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import static edu.wpi.first.units.Units.Amps;
+
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.networktables.GenericEntry;
@@ -25,8 +31,18 @@ public class Intake extends SubsystemBase {
 
     /** Creates a new intake. */
     public Intake() {
-        TalonFXConfiguration driveConfig = new TalonFXConfiguration();
-        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+        TalonFXConfiguration driveConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Coast))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(120))
+                .withStatorCurrentLimitEnable(true));
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(120))
+                .withStatorCurrentLimitEnable(true));
 
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
