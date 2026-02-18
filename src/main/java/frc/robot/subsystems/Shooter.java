@@ -10,6 +10,8 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -28,6 +30,7 @@ public class Shooter extends SubsystemBase {
 
 	private GenericEntry shooterSpeed;
 	private GenericEntry uptakeSpeed;
+	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
 	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
 
@@ -38,6 +41,10 @@ public class Shooter extends SubsystemBase {
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
 					.withNeutralMode(NeutralModeValue.Coast))
+				.withVoltage(
+					new VoltageConfigs()
+						.withPeakReverseVoltage(Volts.of(0))
+            	)
 				.withCurrentLimits(new CurrentLimitsConfigs()
                     .withStatorCurrentLimit(Amps.of(120))
                     .withStatorCurrentLimitEnable(true)
@@ -45,11 +52,11 @@ public class Shooter extends SubsystemBase {
                     .withSupplyCurrentLimitEnable(true))
 				.withSlot0(
                 	new Slot0Configs()
-                    .withKP(50)
+                    .withKP(0.5)
                     .withKI(2)
                     .withKD(0)
                     .withKV(12.0 / ShooterConstants.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
-            );
+				);
 
         TalonFXConfiguration uptakeConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
@@ -76,7 +83,7 @@ public class Shooter extends SubsystemBase {
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
 		return run(() -> {
 			for (TalonFX motor : shooterMotors) {
-				motor.set(shootSpeed.getAsDouble());
+				motor.setControl(velocityRequest.withVelocity(RPM.of(shootSpeed.getAsDouble()*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60))));
 			}
             uptakeMotor.set(uptakeSpeed.getAsDouble());
 		}).finallyDo(() -> {
