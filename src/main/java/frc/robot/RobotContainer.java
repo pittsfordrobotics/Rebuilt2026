@@ -6,36 +6,22 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.lang.reflect.Field;
-import java.util.function.DoubleSupplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-// import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 
 import frc.robot.generated.TunerConstants;
-import frc.robot.lib.VisionData;
 import frc.robot.lib.util.AllianceFlipUtil;
-import frc.robot.lib.util.SwerveHelpers;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -43,43 +29,37 @@ import frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.subsystems.Vision.VisionIO;
-import frc.robot.subsystems.Vision.VisionIOLimelight;
+import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final FieldCentric drive = new FieldCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-    private final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(10, 0, 0);
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
     public final Vision vision;
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController driverController = new CommandXboxController(0);
+    private final CommandXboxController operatorController = new CommandXboxController(1);
+
+    private final SendableChooser<Command> autoChooser;
+
 
     @Logged(name = "Swerve")
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(driverController);
 
     @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     private final Intake intake;
     private final Indexer indexer;
+
+    @Logged(name="Shooter")
     private final Shooter shooter;
+    private final Climber climber;
 
     public RobotContainer() {
 	    DataLogManager.start();
@@ -93,33 +73,23 @@ public class RobotContainer {
             VisionConstants.LIMELIGHT_RIGHT,
             VisionConstants.LIMELIGHT_FRONT);
 
-        configureBindings();
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        // Another option that allows you to specify the default auto by its name
+        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
+        climber = new Climber();
+
+        configureBindings();
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() -> {
-                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
-                Rotation2d heading = getHeadingFromStick(() -> -joystick.getRightY(), () -> -joystick.getRightX());
-                if(heading != null) {
-                    return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                        .withTargetDirection(heading);
-                }
-
-                return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withRotationalRate((joystick.getLeftTriggerAxis() - joystick.getRightTriggerAxis()) * MaxAngularRate);
-            })
-        );
+        drivetrain.setDefaultCommand(drivetrain.drive());
         
-
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -127,68 +97,50 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
         
-        
-        joystick.a().toggleOnTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(pointAtHub());
+        driverController.a().toggleOnTrue(drivetrain.brake());
+        driverController.b().whileTrue(drivetrain.pointAtHub());
+        driverController.x().whileTrue(drivetrain.driveToPoint(FieldConstants.flippedHubPosition));
+        driverController.x().and(driverController.b()).whileTrue(drivetrain.driveToAndPointAt(FieldConstants.flippedHubPosition));
+
+        operatorController.rightBumper().whileTrue(shooter.runShooter());
+        operatorController.leftBumper().whileTrue(indexer.runIndex());
+        operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex(), drivetrain.pointAtHub()));
+        operatorController.y().whileTrue(climbUp());
+        operatorController.x().whileTrue(climbDown());
+        operatorController.a().onTrue(intake.pivotOut().andThen(intake.runIntake(() -> .1)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        driverController.leftBumper().onTrue(drivetrain.runOnce(
+            () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        
     }
-
-    public Rotation2d getHeadingFromStick(DoubleSupplier rotationX, DoubleSupplier rotationY) {
-        Rotation2d heading;
-        double[] deadbandRotationInputs = AllDeadbands
-                .applyScalingCircularDeadband(new double[] { rotationX.getAsDouble(), rotationY.getAsDouble() }, 0.95);
-        if (deadbandRotationInputs[0] != 0 || deadbandRotationInputs[1] != 0) {
-            heading = Rotation2d.fromRadians(Math.atan2(deadbandRotationInputs[1], deadbandRotationInputs[0]));
-        } else {
-            heading = null; //keep existing heading
-        }
-        return heading;
-    }
-
     
 
     public Command getAutonomousCommand() {
-        try{
-        return new PathPlannerAuto("Test Auto");
-        }
-        catch(Exception e){
+        try {
+            return autoChooser.getSelected();
+        } catch(Exception e) {
             System.out.println(e.toString());
             return null;
         }
     }
 
-    public Command pointAt(Translation2d targetPoint) {
-        return drivetrain.applyRequest(() -> {
-                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
-                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint);
-                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
-                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withTargetDirection(targetHeading);
-        });
+    public Command climbDown() {
+       return climber.runClimber(() -> 0.4);
     }
 
-    public Command pointAtHub() {
-        return drivetrain.applyRequest(() -> {
-                Translation2d targetPoint = AllianceFlipUtil.apply(FieldConstants.blueHubPosition);
-                Translation2d currentPoint = drivetrain.getState().Pose.getTranslation();
-                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint);
-                double[] leftDeadbanded = AllDeadbands.applyScalingCircularDeadband(new double[]{joystick.getLeftX(), joystick.getLeftY()}, .1);
-                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withTargetDirection(targetHeading);
-        });
+    public Command climbUp(){
+        return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
+            .alongWith(climber.runClimber(() -> 0.4))
+            .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
+            .andThen(climber.runClimber(() -> -0.4));
     }
 }
