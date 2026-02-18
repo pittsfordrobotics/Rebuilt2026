@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test_Path"
+            "pathName": "Shooting-Tower"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Basic Autos",
   "choreoAuto": false
 }
