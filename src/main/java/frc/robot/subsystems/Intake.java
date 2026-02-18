@@ -4,58 +4,74 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.REVLibError;
-import com.revrobotics.ResetMode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import static edu.wpi.first.units.Units.Amps;
 
 import java.util.function.DoubleSupplier;
-
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.IntakeConstants;
 
 
 public class Intake extends SubsystemBase {
-  private SparkFlex intakeMotor = new SparkFlex(11, MotorType.kBrushless);
-  // private SparkFlex indexMotor = new SparkFlex(12, MotorType.kBrushless);
-private GenericEntry intakeSpeed;
+    private TalonFX driveMotor = new TalonFX(IntakeConstants.INTAKE_DRIVE);
+    private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
+    private GenericEntry intakeSpeed;
 
 
 
-  /** Creates a new intake. */
-  public Intake() {
-    SparkFlexConfig config = new SparkFlexConfig();
-    config.smartCurrentLimit(20);
-    config.idleMode(IdleMode.kBrake);
+    /** Creates a new intake. */
+    public Intake() {
+        TalonFXConfiguration driveConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Coast))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(120))
+                .withStatorCurrentLimitEnable(true));
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration()
+            .withMotorOutput(new MotorOutputConfigs()
+                .withNeutralMode(NeutralModeValue.Brake))
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(120))
+                .withStatorCurrentLimitEnable(true));
 
-    REVLibError err = intakeMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    System.out.println("Init error code: " + err.value);
+        driveMotor.getConfigurator().apply(driveConfig);
+        pivotMotor.getConfigurator().apply(pivotConfig);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.25)));
-
-    // REVLibError err2 = indexMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // System.out.println("Init error code: " + err2.value);
-  }
+    }
 
 
-  public Command runIntake(DoubleSupplier speed){
-    return run(() -> intakeMotor.set(speed.getAsDouble())).finallyDo(() -> intakeMotor.set(0));
-  }
-  
+    public Command runIntake(DoubleSupplier speed) {
+        return run(() -> driveMotor.set(speed.getAsDouble())).finallyDo(() -> driveMotor.set(0));
+    }
 
-  // public Command runIndex(DoubleSupplier speed){
-  //   return run(() -> indexMotor.set(speed.getAsDouble())).finallyDo(() -> indexMotor.set(0));
-  // }
-  
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public Command pivotOut() {
+        return run(() -> {
+            PositionVoltage control = new PositionVoltage(1).withSlot(0);
+            pivotMotor.setControl(control);
+        });
+    }
+
+    public Command pivotIn() {
+        return run(() -> {
+            PositionVoltage control = new PositionVoltage(0).withSlot(0);
+            pivotMotor.setControl(control);
+        });
+    }
+    
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }
