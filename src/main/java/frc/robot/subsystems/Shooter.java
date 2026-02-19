@@ -31,6 +31,7 @@ public class Shooter extends SubsystemBase {
 
 	private GenericEntry shooterSpeed;
 	private GenericEntry uptakeSpeed;
+	private GenericEntry hoodPercent;
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
 	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
@@ -82,6 +83,8 @@ public class Shooter extends SubsystemBase {
 
         shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
+		hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry();
+		Shuffleboard.getTab("testing").add("Set Hood Pos", this.runHood(() -> hoodPercent.getDouble(0.5)));
 	}
 
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
