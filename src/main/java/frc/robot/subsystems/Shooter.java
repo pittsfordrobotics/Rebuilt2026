@@ -40,7 +40,8 @@ public class Shooter extends SubsystemBase {
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
 
 	@Logged(name="Hood Actuator")
-	final Servo hood = new Servo(ShooterConstants.HOOD_ACTUATOR);
+	final Servo hood_L = new Servo(ShooterConstants.HOOD_ACTUATOR_L);
+	final Servo hood_R = new Servo(ShooterConstants.HOOD_ACTUATOR_R);
 
 	public Shooter() {
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
@@ -116,6 +117,6 @@ public class Shooter extends SubsystemBase {
     }
 
 	public Command runHood(DoubleSupplier position) {
-		return run(() -> hood.set(position.getAsDouble()));
+		return run(() -> {hood_L.set(position.getAsDouble()); hood_R.set(position.getAsDouble());});
 	}
 }
