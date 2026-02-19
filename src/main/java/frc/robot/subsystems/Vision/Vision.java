@@ -157,29 +157,11 @@ public class Vision extends SubsystemBase {
 
             // Gets the average distance to tag
             double avgDistance = inputs[i].avgTagDist;
-            // TODO: Double check this can be over 2 lol
-
-            // ********
-            // The "speaker tag" code should be removed but is being left in for now as
-            // a good example of performing logic based on specific tags.
-            // ********
-            // Check if the robot has both speaker tags for red or blue
-            boolean hasBlueSpeakerTags = (Arrays.binarySearch(inputs[i].tagIDs, 7) >= 0)
-                    && (Arrays.binarySearch(inputs[i].tagIDs, 8) >= 0);
-            boolean hasRedSpeakerTags = (Arrays.binarySearch(inputs[i].tagIDs, 3) >= 0)
-                    && (Arrays.binarySearch(inputs[i].tagIDs, 4) >= 0);
-
-            // Checks if has supergood reading at the speaker
-            boolean hasGreatSpeakerReading = ((inputs[i].tagCount >= 2) && (avgDistance < 4.0)
-                    && (hasBlueSpeakerTags || hasRedSpeakerTags));
 
             // Calculate standard deviation to give to the .addVisionData() swerve method
-            // Standard Deveation is inverse to confidence level
+            // Standard Deviation is inverse to confidence level
             xyStdDev = VisionConstants.XY_STD_DEV_COEF * (avgDistance * avgDistance)
                     / (inputs[i].tagCount * inputs[i].tagCount);
-            if (hasGreatSpeakerReading) {
-                xyStdDev = xyStdDev * 0.5;
-            }
             double thetaStdDev = VisionConstants.THETA_STD_DEV_COEF;
 
             // Add vision data to swerve pose estimator

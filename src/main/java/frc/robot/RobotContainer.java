@@ -76,7 +76,8 @@ public class RobotContainer {
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
             drivetrain::addVisionMeasurement,
             VisionConstants.LIMELIGHT_LEFT,
-            VisionConstants.LIMELIGHT_RIGHT);
+            VisionConstants.LIMELIGHT_RIGHT,
+            VisionConstants.LIMELIGHT_FRONT);
 
         autoChooser = AutoBuilder.buildAutoChooser();
 
