@@ -105,6 +105,7 @@ public class RobotContainer {
         operatorController.leftBumper().whileTrue(indexer.runIndex());
         operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex(), drivetrain.pointAtHub()));
         operatorController.y().whileTrue(climbUp());
+        operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
         operatorController.a().onTrue(intake.pivotOut().andThen(intake.runIntake(() -> .1)));
 
@@ -138,7 +139,7 @@ public class RobotContainer {
 
     public Command climbUp(){
         return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
-            .alongWith(climber.runClimber(() -> 0.4))
+            .alongWith(climber.runClimber(() -> 0))
             .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
             .andThen(climber.runClimber(() -> -0.4));
     }
