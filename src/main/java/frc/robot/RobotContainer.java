@@ -9,7 +9,11 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,7 +35,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
@@ -46,6 +50,8 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final SendableChooser<Command> autoChooser;
+
+    private GenericEntry testingDistToHub;
 
 
     @Logged(name = "Swerve")
@@ -84,6 +90,7 @@ public class RobotContainer {
         climber = new Climber();
 
         configureBindings();
+        testingShuffleboardInit();
     }
 
     private void configureBindings() {
@@ -121,6 +128,11 @@ public class RobotContainer {
             () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    private void testingShuffleboardInit(){
+        testingDistToHub = Shuffleboard.getTab("testing").add("Testing Dist to Hub", 100).getEntry();
+        Shuffleboard.getTab("testing").add("Drive to testing point", drivetrain.driveToDistFromBlueHub(() -> testingDistToHub.getDouble(0)));
     }
     
 
