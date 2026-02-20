@@ -75,8 +75,8 @@ public class RobotContainer {
             () -> drivetrain.getState().RawHeading,
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
             drivetrain::addVisionMeasurement,
-            VisionConstants.LIMELIGHT_LEFT,
-            VisionConstants.LIMELIGHT_RIGHT,
+            // VisionConstants.LIMELIGHT_LEFT,
+            // VisionConstants.LIMELIGHT_RIGHT,
             VisionConstants.LIMELIGHT_FRONT);
 
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -115,7 +115,7 @@ public class RobotContainer {
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
-        operatorController.a().onTrue(intake.pivotOut().andThen(intake.runIntake(() -> .1)));
+        operatorController.a().whileTrue(intake.runIntake());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -128,6 +128,9 @@ public class RobotContainer {
         driverController.leftBumper().onTrue(drivetrain.runOnce(
             () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 
+        // driverController.leftBumper().onTrue(drivetrain.runOnce(
+        //     () -> drivetrain.resetPose(new Pose2d(0, 0, new Rotation2d(0)))
+        // ));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 

@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -131,9 +132,11 @@ public class Vision extends SubsystemBase {
             }
 
             // exit if the gyro does not match the vision
-            double gyroAngle = gyroangle.get().getDegrees();
-            if (Math.abs(gyroAngle - visionCalcPose.getRotation().getDegrees()) > 5) {
-                System.out.println("Gyro and Vision do not match");
+            double gyroAngle = MathUtil.inputModulus(gyroangle.get().getDegrees(), 0, 360);
+            double calcPose = MathUtil.inputModulus(visionCalcPose.getRotation().getDegrees(), 0, 360);
+            if (Math.abs(gyroAngle - calcPose) > 5) {
+                System.out.println(gyroAngle + " " + calcPose);
+                System.out.println("Gyro and Vision do not match\n\n");
                 // continue;
             }
 

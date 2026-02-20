@@ -84,7 +84,7 @@ public class Shooter extends SubsystemBase {
 
         shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
-		hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry();
+		hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry(); // 0.2 to 0.4
 		Shuffleboard.getTab("testing").add("Set Hood Pos", this.runHood(() -> hoodPercent.getDouble(0.5)));
 	}
 
