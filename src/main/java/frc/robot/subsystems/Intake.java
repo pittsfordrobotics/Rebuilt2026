@@ -74,10 +74,10 @@ public class Intake extends SubsystemBase {
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.25)));
 
-        pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
-        pivotInSpeed = Shuffleboard.getTab("testing").add("Intake Pivot In Speed", .2).getEntry();
-        Shuffleboard.getTab("testing").add("Pivot Out", this.pivotOut(() -> pivotOutSpeed.getDouble(0.25)));
-        Shuffleboard.getTab("testing").add("Pivot In", this.pivotIn(() -> pivotInSpeed.getDouble(0.25)));
+        // pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
+        // pivotInSpeed = Shuffleboard.getTab("testing").add("Intake Pivot In Speed", .2).getEntry();
+        Shuffleboard.getTab("testing").add("Pivot Out", this.pivotOut());
+        Shuffleboard.getTab("testing").add("Pivot In", this.pivotIn());
     }
 
 
@@ -89,14 +89,14 @@ public class Intake extends SubsystemBase {
         return runIntake(() -> intakeSpeed.getDouble(.25));
     }
 
-    public Command pivotOut(DoubleSupplier speed) {
+    public Command pivotOut() {
         return run(() -> {
             PositionVoltage control = new PositionVoltage(15).withSlot(0);
             pivotMotor.setControl(control);
         });
     }
 
-    public Command pivotIn(DoubleSupplier speed) {
+    public Command pivotIn() {
         return run(() -> {
             PositionVoltage control = new PositionVoltage(0).withSlot(1);
             pivotMotor.setControl(control);
