@@ -170,7 +170,7 @@ public class Vision extends SubsystemBase {
             // Add vision data to swerve pose estimator
             VisionData visionData = new VisionData(visionCalcPose, inputs[i].captureTimestamp,
                 VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev));
-                visionDataConsumer.accept(visionData);
+            visionDataConsumer.accept(visionData);
 
             // Add robot pose from this camera to a list of all robot poses
             allRobotPoses.add(visionCalcPose);
