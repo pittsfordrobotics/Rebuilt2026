@@ -360,7 +360,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 	
     public void addVisionMeasurement(VisionData visionData) {
-        super.addVisionMeasurement(visionData.visionPose(), visionData.time(), visionData.visionReliability());
+        super.addVisionMeasurement(visionData.visionPose(), Utils.fpgaToCurrentTime(visionData.time()), visionData.visionReliability());
     }
 
     // *******************
@@ -453,7 +453,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     
     public Command driveToPose(Supplier<Pose2d> targetPose) {
-        PathConstraints constraints = PathConstraints.unlimitedConstraints(12);
+        PathConstraints constraints = new PathConstraints(
+            TunerConstants.kSpeedAt12Volts, 
+            MetersPerSecondPerSecond.of(1),
+            DegreesPerSecond.of(180),
+            DegreesPerSecondPerSecond.of(10));
         return Commands.defer(() -> AutoBuilder.pathfindToPose(targetPose.get(), constraints), Set.of(this));
     }
 
