@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -17,11 +18,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.FieldConstants;
 import frc.robot.constants.ShooterConstants;
 
 import static edu.wpi.first.units.Units.*;
@@ -86,6 +90,7 @@ public class Shooter extends SubsystemBase {
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
 		hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry(); // 0.2 to 0.4
 		Shuffleboard.getTab("testing").add("Set Hood Pos", this.runHood(() -> hoodPercent.getDouble(0.5)));
+		// Shuffleboard.getTab("testing").add("Shoot at Hub", this.)
 	}
 
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
@@ -118,5 +123,15 @@ public class Shooter extends SubsystemBase {
 
 	public Command runHood(DoubleSupplier position) {
 		return run(() -> {hood_L.set(position.getAsDouble()); hood_R.set(position.getAsDouble());});
+	}
+
+	public Command shootAtHub(Supplier<Pose2d> currentPose) {
+		System.out.println("\n\n\n\nWE'RE IN SHOOT AT HUB");
+		double hubDist = Units.metersToInches(currentPose.get().getTranslation().getDistance(FieldConstants.flippedHubPosition.get()));
+		if(hubDist < 100) {
+			return runHood(() -> .2).andThen(runShooter(() -> 0.0024*hubDist + 0.245, () -> .6));
+		} else {
+			return runHood(() -> .35).andThen(runShooter(() -> 1.4022*hubDist - 0.1109, () -> .6));
+		}
 	}
 }

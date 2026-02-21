@@ -111,11 +111,11 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex(), drivetrain.pointAtHub()));
+        operatorController.b().whileTrue(Commands.parallel(shooter.shootAtHub(() -> drivetrain.getState().Pose), indexer.runIndex(), drivetrain.pointAtHub()));
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
-        operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
+        operatorController.a().whileTrue(intake.runIntake());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

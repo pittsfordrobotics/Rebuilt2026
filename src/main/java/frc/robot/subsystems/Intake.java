@@ -86,7 +86,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command runIntake() {
-        return runIntake(() -> intakeSpeed.getDouble(.25));
+        return runIntake(() -> intakeSpeed.getDouble(.9));
     }
 
     public Command pivotOut() {
