@@ -72,7 +72,7 @@ public class Intake extends SubsystemBase {
         pivotMotor.getConfigurator().apply(pivotConfig);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
-        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.25)));
+        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));
 
         // pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
         // pivotInSpeed = Shuffleboard.getTab("testing").add("Intake Pivot In Speed", .2).getEntry();

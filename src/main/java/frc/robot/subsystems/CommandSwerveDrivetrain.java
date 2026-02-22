@@ -360,6 +360,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 	
     public void addVisionMeasurement(VisionData visionData) {
+        // this.resetPose(visionData.visionPose());
         super.addVisionMeasurement(visionData.visionPose(), Utils.fpgaToCurrentTime(visionData.time()), visionData.visionReliability());
     }
 

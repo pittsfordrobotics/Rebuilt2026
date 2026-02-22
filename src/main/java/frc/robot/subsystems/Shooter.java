@@ -126,12 +126,16 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public Command shootAtHub(Supplier<Pose2d> currentPose) {
-		System.out.println("\n\n\n\nWE'RE IN SHOOT AT HUB");
+		return runShooter(() -> shootHubSpeed(currentPose), () -> .6);
+	}
+
+	public double shootHubSpeed(Supplier<Pose2d> currentPose) {
 		double hubDist = Units.metersToInches(currentPose.get().getTranslation().getDistance(FieldConstants.flippedHubPosition.get()));
+		System.out.println("\n\n\n" + hubDist + "\n\n\n");
 		if(hubDist < 100) {
-			return runHood(() -> .2).andThen(runShooter(() -> 0.0024*hubDist + 0.245, () -> .6));
+			return 1.4022*hubDist - 0.1109;
 		} else {
-			return runHood(() -> .35).andThen(runShooter(() -> 1.4022*hubDist - 0.1109, () -> .6));
+			return -1.2861 + Math.log(hubDist)*.3709;
 		}
 	}
 }
