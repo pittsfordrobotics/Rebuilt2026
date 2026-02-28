@@ -39,10 +39,15 @@ public class Hood extends SubsystemBase {
 	}
 
   public Command runHoodForShoot(Supplier<Pose2d> currentPose){
+    return runHood(() -> getHoodHeight(currentPose));
+  }
+
+  private double getHoodHeight(Supplier<Pose2d> currentPose){
     double hubDist = ShooterHelpers.getHubDistInches(currentPose);
+    // System.out.println("\n\n\n\n IN HOOD FOR SHOOT hub dist:" + hubDist);
     if (hubDist < 100){
-      return runHood(() -> 0.2);
+      return 0.2;
     }
-    return runHood(() -> 0.35);
+    return 0.35;
   }
 }
