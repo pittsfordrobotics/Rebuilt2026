@@ -120,14 +120,18 @@ public class RobotContainer {
         operatorController.leftBumper().whileTrue(indexer.runIndex());
         //Run Shooter
         operatorController.b().whileTrue(
-            Commands.sequence(Commands.parallel(
+            // Commands.sequence(
+                Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                shooter.shootAtHub(() -> drivetrain.getState().Pose).until(() -> shooter.isAtSpeed()), 
-                drivetrain.pointAtHub()),
-            Commands.parallel(hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                shooter.shootAtHub(() -> drivetrain.getState().Pose), 
+                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
                 indexer.runIndex(), 
-                drivetrain.pointAtHub())));
+                drivetrain.pointAtHub())
+            // Commands.parallel(
+            //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true), 
+            //     indexer.runIndex(), 
+            //     drivetrain.pointAtHub())
+                );
         
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));

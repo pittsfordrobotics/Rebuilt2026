@@ -37,12 +37,15 @@ public class Shooter extends SubsystemBase {
 
 	private GenericEntry shooterSpeed;
 	private GenericEntry uptakeSpeed;
+	private double currentSetSpeed;
 	
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
 	public boolean isAtSpeed() {
-		if (((AngularVelocity) this.getMiddleMotor().getVelocity()).in(RotationsPerSecond) 
-		>= shooterSpeed.getDouble((shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE)) {
+		if (currentSetSpeed == 0) {
+			return false;
+		}
+		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) >= (currentSetSpeed*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
 			return true;
 		} else {
 			return false;
@@ -103,10 +106,13 @@ public class Shooter extends SubsystemBase {
 
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
 		return run(() -> {
+			currentSetSpeed = shootSpeed.getAsDouble();
 			for (TalonFX motor : shooterMotors) {
 				motor.setControl(velocityRequest.withVelocity(RPM.of(shootSpeed.getAsDouble()*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60))));
 			}
+			uptakeMotor.set(uptakeSpeed.getAsDouble());
 		}).finallyDo(() -> {
+			currentSetSpeed = 0;
 			for (TalonFX motor : shooterMotors) {
 				motor.set(0);
 			}
@@ -116,10 +122,10 @@ public class Shooter extends SubsystemBase {
 
 	public Command runShooter() {
 		if (isAtSpeed()){
-			return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), 
+			return runShooter(() -> shooterSpeed.getDouble(shooterSpeed.getDouble(currentSetSpeed)), 
 		() -> uptakeSpeed.getDouble(ShooterConstants.UPTAKE_SPEED));
 		} else {
-			return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), 
+			return runShooter(() -> shooterSpeed.getDouble(shooterSpeed.getDouble(currentSetSpeed)), 
 		() -> uptakeSpeed.getDouble(0));
 		}
         
@@ -136,8 +142,12 @@ public class Shooter extends SubsystemBase {
     }
 
 
+	public Command shootAtHub(Supplier<Pose2d> currentPose, Supplier<Boolean> runUptake) {
+		return runShooter(() -> shootHubSpeed(currentPose), () -> {return runUptake.get() ? .6 : 0;});
+	}
+
 	public Command shootAtHub(Supplier<Pose2d> currentPose) {
-		return runShooter(() -> shootHubSpeed(currentPose), () -> .6);
+		return runShooter(() -> shootHubSpeed(currentPose), () -> .6 );
 	}
 
 	public double shootHubSpeed(Supplier<Pose2d> currentPose) {
