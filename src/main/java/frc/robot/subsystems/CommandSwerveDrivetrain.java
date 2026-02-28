@@ -449,7 +449,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * xy horizontal, z vertical
      * direction: 0 = positive x, 90 = positive y
      * hood angle: 0 = straight up, 90 = horizontal
-     * returns a 3 element array of speed, direction, and hood angle (hood angle is the same)
+     * returns a 3 element array of speed, direction, and hood angle (hood angle is NOT the same aaaaaaaaaaaaaaa god fucking dammit)
      */
     private double[] calculateOffset(double idealSpeed, double idealDirection, double idealHood, double robotSpeed, double robotDirection) {
         double robDirRad = Math.toRadians(robotDirection);
@@ -458,12 +458,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double dirRad = Math.toRadians(idealDirection);
         double hoodRad = Math.toRadians(idealHood);
         double speedXY = idealSpeed * Math.sin(hoodRad);
-        double[] inCart = {speedXY * Math.cos(dirRad), speedXY * Math.sin(dirRad)};
-        double[] outCart = {inCart[0] - vx, inCart[1] - vy};
-        double rsq = Math.pow(outCart[0], 2)+Math.pow(outCart[1], 2);
+        double[] inCart = {speedXY * Math.cos(dirRad), speedXY * Math.sin(dirRad), idealSpeed * Math.cos(hoodRad)};
+        double[] outCart = {inCart[0] - vx, inCart[1] - vy, inCart[2]};
+        double rsq = Math.pow(outCart[0], 2)+Math.pow(outCart[1], 2)+Math.pow(outCart[2], 2);
         double r = Math.pow(rsq, 0.5);
-        r /= Math.sin(Math.toRadians(idealHood));
-        double[] out = {r, Math.toDegrees(Math.atan2(outCart[1], outCart[0])), idealHood};
+        double[] out = {r, Math.toDegrees(Math.atan2(outCart[1], outCart[0])), Math.acos(outCart[2]/r)};
         return out;
     }
 
