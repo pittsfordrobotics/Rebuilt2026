@@ -58,7 +58,7 @@ public class RobotContainer {
     @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(driverController);
 
-    @Logged(name = "PDH")
+    // @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     private final Intake intake;
