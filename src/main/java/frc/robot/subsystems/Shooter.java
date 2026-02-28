@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.lib.util.ShooterHelpers;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -35,7 +36,7 @@ public class Shooter extends SubsystemBase {
 
 	private GenericEntry shooterSpeed;
 	private GenericEntry uptakeSpeed;
-	private GenericEntry hoodPercent;
+	
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
 	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
@@ -43,9 +44,7 @@ public class Shooter extends SubsystemBase {
     @Logged(name="Uptake Motor")
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
 
-	@Logged(name="Hood Actuator")
-	final Servo hood_L = new Servo(ShooterConstants.HOOD_ACTUATOR_L);
-	final Servo hood_R = new Servo(ShooterConstants.HOOD_ACTUATOR_R);
+	
 
 	public Shooter() {
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
@@ -88,8 +87,6 @@ public class Shooter extends SubsystemBase {
 
         shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
-		hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry(); // 0.2 to 0.4
-		Shuffleboard.getTab("testing").add("Set Hood Pos", this.runHood(() -> hoodPercent.getDouble(0.5)));
 		// Shuffleboard.getTab("testing").add("Shoot at Hub", this.)
 	}
 
@@ -121,21 +118,18 @@ public class Shooter extends SubsystemBase {
         return this.shooterMotors[0];
     }
 
-	public Command runHood(DoubleSupplier position) {
-		return run(() -> {hood_L.set(position.getAsDouble()); hood_R.set(position.getAsDouble());});
-	}
 
 	public Command shootAtHub(Supplier<Pose2d> currentPose) {
 		return runShooter(() -> shootHubSpeed(currentPose), () -> .6);
 	}
 
 	public double shootHubSpeed(Supplier<Pose2d> currentPose) {
-		double hubDist = Units.metersToInches(currentPose.get().getTranslation().getDistance(FieldConstants.flippedHubPosition.get()));
-		System.out.println("\n\n\n" + hubDist + "\n\n\n");
+		double hubDist = ShooterHelpers.getHubDistInches(currentPose);
+		// System.out.println("\n\n\n" + hubDist + "\n\n\n");
 		if(hubDist < 100) {
-			return 1.4022*hubDist - 0.1109;
+			return 0.0022*hubDist + 0.2932;
 		} else {
-			return -1.2861 + Math.log(hubDist)*.3709;
+			return 0.0019*hubDist + 0.2718;
 		}
 	}
 }

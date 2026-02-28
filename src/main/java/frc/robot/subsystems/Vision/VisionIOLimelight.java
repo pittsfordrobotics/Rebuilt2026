@@ -101,4 +101,9 @@ public class VisionIOLimelight implements VisionIO {
         final NetworkTable limelight = LimelightHelpers.getLimelightNTTable(limelightName);
         limelight.getEntry("ledMode").setDouble(led.getNum());
     }
+
+    @Override
+    public void setIMUMode(int mode){
+        LimelightHelpers.SetIMUMode(cameraName, mode);
+    }
 }

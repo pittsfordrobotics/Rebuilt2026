@@ -27,6 +27,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -67,6 +68,9 @@ public class RobotContainer {
     private final Shooter shooter;
     private final Climber climber;
 
+    private final Hood hood;
+
+
     public RobotContainer() {
 	    DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
@@ -89,6 +93,7 @@ public class RobotContainer {
         shooter = new Shooter();
         indexer = new Indexer();
         climber = new Climber();
+        hood = new Hood();
 
         configureBindings();
         testingShuffleboardInit();
@@ -111,7 +116,12 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(Commands.parallel(shooter.shootAtHub(() -> drivetrain.getState().Pose), Commands.waitSeconds(.7).andThen(indexer.runIndex()), drivetrain.pointAtHub()));
+        operatorController.b().whileTrue(Commands.parallel(
+            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            shooter.shootAtHub(() -> drivetrain.getState().Pose), 
+            Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
+            drivetrain.pointAtHub()
+        ));
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
