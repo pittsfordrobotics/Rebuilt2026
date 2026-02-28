@@ -34,7 +34,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    m_robotContainer.vision.setIMU(1);
+  }
 
   @Override
   public void disabledExit() {}
@@ -59,6 +61,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    m_robotContainer.vision.setIMU(4);
   }
 
   @Override

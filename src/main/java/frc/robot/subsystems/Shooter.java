@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -17,12 +18,17 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.FieldConstants;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.lib.util.ShooterHelpers;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -31,6 +37,7 @@ public class Shooter extends SubsystemBase {
 
 	private GenericEntry shooterSpeed;
 	private GenericEntry uptakeSpeed;
+	
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
 	public boolean isAtSpeed() {
@@ -46,6 +53,8 @@ public class Shooter extends SubsystemBase {
 
 	@Logged(name="Uptake Motor")
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
+
+	
 
 	public Shooter() {
 
@@ -89,6 +98,7 @@ public class Shooter extends SubsystemBase {
 
 		shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
+		// Shuffleboard.getTab("testing").add("Shoot at Hub", this.)
 	}
 
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
@@ -117,4 +127,19 @@ public class Shooter extends SubsystemBase {
     public TalonFX getMiddleMotor() {
         return this.shooterMotors[0];
     }
+
+
+	public Command shootAtHub(Supplier<Pose2d> currentPose) {
+		return runShooter(() -> shootHubSpeed(currentPose), () -> .6);
+	}
+
+	public double shootHubSpeed(Supplier<Pose2d> currentPose) {
+		double hubDist = ShooterHelpers.getHubDistInches(currentPose);
+		// System.out.println("\n\n\n" + hubDist + "\n\n\n");
+		if(hubDist < 100) {
+			return 0.0022*hubDist + 0.2932;
+		} else {
+			return 0.0019*hubDist + 0.2718;
+		}
+	}
 }

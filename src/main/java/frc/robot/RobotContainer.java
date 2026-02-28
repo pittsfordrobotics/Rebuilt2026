@@ -9,7 +9,11 @@ import static edu.wpi.first.units.Units.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +27,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -31,7 +36,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
@@ -49,11 +54,13 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser;
 
+    private GenericEntry testingDistToHub;
+
 
     @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(driverController);
 
-    @Logged(name = "PDH")
+    // @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     private final Intake intake;
@@ -63,6 +70,9 @@ public class RobotContainer {
     private final Shooter shooter;
     private final Climber climber;
 
+    private final Hood hood;
+
+
     public RobotContainer() {
 	    DataLogManager.start();
         DriverStation.startDataLog(DataLogManager.getLog());
@@ -71,8 +81,9 @@ public class RobotContainer {
             () -> drivetrain.getState().RawHeading,
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
             drivetrain::addVisionMeasurement,
-            VisionConstants.LIMELIGHT_LEFT,
-            VisionConstants.LIMELIGHT_RIGHT);
+            // VisionConstants.LIMELIGHT_LEFT,
+            // VisionConstants.LIMELIGHT_RIGHT,
+            VisionConstants.LIMELIGHT_FRONT);
 
         autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -84,8 +95,10 @@ public class RobotContainer {
         shooter = new Shooter();
         indexer = new Indexer();
         climber = new Climber();
+        hood = new Hood();
 
         configureBindings();
+        testingShuffleboardInit();
     }
 
     private void configureBindings() {
@@ -105,11 +118,20 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
+      
+        operatorController.b().whileTrue(Commands.parallel(
+            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            shooter.shootAtHub(() -> drivetrain.getState().Pose), 
+            Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
+            drivetrain.pointAtHub()
+        ));
         operatorController.b().whileTrue(Commands.sequence(shooter.runShooter().until(() -> shooter.isAtSpeed()),
             Commands.parallel(shooter.runShooter()), indexer.runIndex(), drivetrain.pointAtHub()));
+      
         operatorController.y().whileTrue(climbUp());
+        operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
-        operatorController.a().onTrue(intake.pivotOut().andThen(intake.runIntake(() -> .1)));
+        operatorController.a().whileTrue(intake.runIntake());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -122,7 +144,15 @@ public class RobotContainer {
         driverController.leftBumper().onTrue(drivetrain.runOnce(
             () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
 
+        // driverController.leftBumper().onTrue(drivetrain.runOnce(
+        //     () -> drivetrain.resetPose(new Pose2d(0, 0, new Rotation2d(0)))
+        // ));
         drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    private void testingShuffleboardInit(){
+        testingDistToHub = Shuffleboard.getTab("testing").add("Testing Dist to Hub", 100).getEntry();
+        Shuffleboard.getTab("testing").add("Drive to testing point", drivetrain.driveToDistFromBlueHub(() -> testingDistToHub.getDouble(0)));
     }
     
 
@@ -141,7 +171,7 @@ public class RobotContainer {
 
     public Command climbUp(){
         return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
-            .alongWith(climber.runClimber(() -> 0.4))
+            .alongWith(climber.runClimber(() -> 0), intake.pivotIn())
             .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
             .andThen(climber.runClimber(() -> -0.4));
     }

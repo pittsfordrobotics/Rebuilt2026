@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class VisionIOLimelight implements VisionIO {
 
     private final String cameraName;
+    private final StructPublisher<Pose2d> mt1Publisher;
     private final StructPublisher<Pose2d> mt2Publisher;
 
     public VisionIOLimelight(String cameraName) {
@@ -23,6 +24,9 @@ public class VisionIOLimelight implements VisionIO {
 
         mt2Publisher = NetworkTableInstance.getDefault()
             .getStructTopic("LimelightPoses/" + cameraName + "/MT2", Pose2d.struct).publish();
+
+        mt1Publisher = NetworkTableInstance.getDefault()
+            .getStructTopic("LimelightPoses/" + cameraName + "/MT1", Pose2d.struct).publish();
     }
 
     // Uses limelight lib and network tables to get the values from the limelight
@@ -32,6 +36,9 @@ public class VisionIOLimelight implements VisionIO {
         // Gets the needed data from the networktables
         PoseEstimate botPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
         mt2Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimate.pose);
+
+        PoseEstimate botPoseEstimateMt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
+        mt1Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimateMt1.pose);
 
         if (botPoseEstimate == null) {
             // BotPoseEstimate is null if the limelight data can't be found in NetworkTables
@@ -93,5 +100,10 @@ public class VisionIOLimelight implements VisionIO {
     private void setLEDs(LED led, String limelightName) {
         final NetworkTable limelight = LimelightHelpers.getLimelightNTTable(limelightName);
         limelight.getEntry("ledMode").setDouble(led.getNum());
+    }
+
+    @Override
+    public void setIMUMode(int mode){
+        LimelightHelpers.SetIMUMode(cameraName, mode);
     }
 }
