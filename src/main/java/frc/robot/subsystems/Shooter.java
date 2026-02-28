@@ -115,7 +115,14 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public Command runShooter() {
-        return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), () -> uptakeSpeed.getDouble(ShooterConstants.UPTAKE_SPEED));
+		if (isAtSpeed()){
+			return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), 
+		() -> uptakeSpeed.getDouble(ShooterConstants.UPTAKE_SPEED));
+		} else {
+			return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), 
+		() -> uptakeSpeed.getDouble(0));
+		}
+        
     }
 
 	@Override
@@ -141,5 +148,10 @@ public class Shooter extends SubsystemBase {
 		} else {
 			return 0.0019*hubDist + 0.2718;
 		}
+	}
+
+	public Command startShooter(Object object) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'startShooter'");
 	}
 }

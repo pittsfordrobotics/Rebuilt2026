@@ -123,11 +123,10 @@ public class RobotContainer {
             Commands.sequence(Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 shooter.shootAtHub(() -> drivetrain.getState().Pose).until(() -> shooter.isAtSpeed()), 
-                Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
                 drivetrain.pointAtHub()),
             Commands.parallel(hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 shooter.shootAtHub(() -> drivetrain.getState().Pose), 
-                Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
+                indexer.runIndex(), 
                 drivetrain.pointAtHub())));
         
         operatorController.y().whileTrue(climbUp());
