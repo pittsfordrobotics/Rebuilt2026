@@ -19,7 +19,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -57,7 +56,7 @@ public class Intake extends SubsystemBase {
                 .withInverted(InvertedValue.Clockwise_Positive))
             .withSlot0(
                 new Slot0Configs()
-                .withKP(.5)
+                .withKP(.35)
                 .withKI(0)
                 .withKD(0)
                 .withKV(0) // 12 volts when requesting max RPS
@@ -72,7 +71,7 @@ public class Intake extends SubsystemBase {
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
 
-        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
+        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));
 
         // pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
@@ -87,18 +86,18 @@ public class Intake extends SubsystemBase {
     }
 
     public Command runIntake() {
-        return runIntake(() -> intakeSpeed.getDouble(1));
+        return runIntake(() -> intakeSpeed.getDouble(.9));
     }
 
     public Command pivotOut() {
-        return runOnce(() -> {
-            PositionVoltage control = new PositionVoltage(17).withSlot(0);
+        return run(() -> {
+            PositionVoltage control = new PositionVoltage(15).withSlot(0);
             pivotMotor.setControl(control);
         });
     }
 
     public Command pivotIn() {
-        return runOnce(() -> {
+        return run(() -> {
             PositionVoltage control = new PositionVoltage(0).withSlot(1);
             pivotMotor.setControl(control);
         });
@@ -107,15 +106,5 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-    }
-
-    @Logged(name = "Intake drive")
-    public TalonFX getIntakeMotor(){
-        return driveMotor;
-    }
-
-    @Logged(name = "Intake pivot")
-    public TalonFX getPivotMotor(){
-        return pivotMotor;
     }
 }

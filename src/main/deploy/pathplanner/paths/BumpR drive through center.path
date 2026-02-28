@@ -32,32 +32,16 @@
     },
     {
       "anchor": {
-        "x": 8.102037037037038,
-        "y": 5.947350188078704
+        "x": 7.829097222222222,
+        "y": 6.680416666666668
       },
       "prevControl": {
-        "x": 9.163143757109253,
-        "y": 5.939874531354961
+        "x": 8.361022541424795,
+        "y": 6.648178768533178
       },
       "nextControl": {
-        "x": 6.826174623842592,
-        "y": 5.9563388310185195
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.549888671874999,
-        "y": 2.898231915509259
-      },
-      "prevControl": {
-        "x": 7.6488635151474265,
-        "y": 3.390039787789265
-      },
-      "nextControl": {
-        "x": 5.726082826967591,
-        "y": 2.529566333912037
+        "x": 7.309461805555556,
+        "y": 6.711909722222224
       },
       "isLocked": false,
       "linkedName": null
@@ -68,20 +52,15 @@
         "y": 2.47609375
       },
       "prevControl": {
-        "x": 4.665226128472223,
-        "y": 2.7500833333333334
+        "x": 6.695347222222222,
+        "y": 2.822517361111112
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.949586513994911,
-      "rotationDegrees": 91.47902462044948
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -95,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "From BumpR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
