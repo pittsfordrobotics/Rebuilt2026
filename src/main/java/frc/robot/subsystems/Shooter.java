@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,42 +40,52 @@ public class Shooter extends SubsystemBase {
 	
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
+	public boolean isAtSpeed() {
+		if (((AngularVelocity) this.getMiddleMotor().getVelocity()).in(RotationsPerSecond) 
+		>= shooterSpeed.getDouble((shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
 
-    @Logged(name="Uptake Motor")
+	@Logged(name="Uptake Motor")
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
 
 	
 
 	public Shooter() {
+
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
 					.withNeutralMode(NeutralModeValue.Coast))
 				.withVoltage(
 					new VoltageConfigs()
 						.withPeakReverseVoltage(Volts.of(0))
-            	)
+				)
 				.withCurrentLimits(new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(Amps.of(120))
-                    .withStatorCurrentLimitEnable(true)
-                    .withSupplyCurrentLimit(Amps.of(70))
-                    .withSupplyCurrentLimitEnable(true))
+					.withStatorCurrentLimit(Amps.of(120))
+					.withStatorCurrentLimitEnable(true)
+					.withSupplyCurrentLimit(Amps.of(70))
+					.withSupplyCurrentLimitEnable(true))
 				.withSlot0(
-                	new Slot0Configs()
-                    .withKP(0.5)
-                    .withKI(2)
-                    .withKD(0)
-                    .withKV(12.0 / ShooterConstants.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
+					new Slot0Configs()
+					.withKP(0.5)
+					.withKI(2)
+					.withKD(0)
+					.withKV(12.0 / ShooterConstants.kFreeSpeed.in(RotationsPerSecond)) // 12 volts when requesting max RPS
 				);
 
-        TalonFXConfiguration uptakeConfig = new TalonFXConfiguration()
+		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
 					.withNeutralMode(NeutralModeValue.Coast))
 				.withCurrentLimits(new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(Amps.of(120))
-                    .withStatorCurrentLimitEnable(true))
-                .withMotorOutput(new MotorOutputConfigs()
-                    .withInverted(InvertedValue.Clockwise_Positive));
+					.withStatorCurrentLimit(Amps.of(120))
+					.withStatorCurrentLimitEnable(true))
+				.withMotorOutput(new MotorOutputConfigs()
+					.withInverted(InvertedValue.Clockwise_Positive));
 
 		// instantiate motor controllers
 		for (int i = 0; i < shooterMotors.length; i++) {
@@ -83,9 +94,9 @@ public class Shooter extends SubsystemBase {
 		}
 
 		uptakeMotor.getConfigurator().apply(uptakeConfig);
-		Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter());
+		Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter(null, null));
 
-        shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
+		shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
 		// Shuffleboard.getTab("testing").add("Shoot at Hub", this.)
 	}
@@ -95,17 +106,16 @@ public class Shooter extends SubsystemBase {
 			for (TalonFX motor : shooterMotors) {
 				motor.setControl(velocityRequest.withVelocity(RPM.of(shootSpeed.getAsDouble()*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60))));
 			}
-            uptakeMotor.set(uptakeSpeed.getAsDouble());
 		}).finallyDo(() -> {
 			for (TalonFX motor : shooterMotors) {
 				motor.set(0);
 			}
-            uptakeMotor.set(0);
+			uptakeMotor.set(0);
 		});
 	}
 
-    public Command runShooter() {
-        return runShooter(() -> shooterSpeed.getDouble(0.25), () -> uptakeSpeed.getDouble(0.25));
+	public Command runShooter() {
+        return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), () -> uptakeSpeed.getDouble(ShooterConstants.UPTAKE_SPEED));
     }
 
 	@Override
