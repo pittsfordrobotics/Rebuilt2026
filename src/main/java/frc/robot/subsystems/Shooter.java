@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -22,7 +21,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.ShooterConstants;
 
@@ -37,7 +35,7 @@ public class Shooter extends SubsystemBase {
 
 	public boolean isAtSpeed() {
 		if (((AngularVelocity) this.getMiddleMotor().getVelocity()).in(RotationsPerSecond) 
-		>= shooterSpeed.getDouble((ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60) * .8)) {
+		>= shooterSpeed.getDouble((shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE)) {
 			return true;
 		} else {
 			return false;
@@ -98,7 +96,6 @@ public class Shooter extends SubsystemBase {
 			for (TalonFX motor : shooterMotors) {
 				motor.setControl(velocityRequest.withVelocity(RPM.of(shootSpeed.getAsDouble()*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60))));
 			}
-			Commands.waitUntil(this::isAtSpeed).andThen(() -> uptakeMotor.set(uptakeSpeed.getAsDouble()));
 		}).finallyDo(() -> {
 			for (TalonFX motor : shooterMotors) {
 				motor.set(0);
@@ -108,7 +105,7 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public Command runShooter() {
-        return runShooter(() -> shooterSpeed.getDouble(0.25), () -> uptakeSpeed.getDouble(0.25));
+        return runShooter(() -> shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED), () -> uptakeSpeed.getDouble(ShooterConstants.UPTAKE_SPEED));
     }
 
 	@Override

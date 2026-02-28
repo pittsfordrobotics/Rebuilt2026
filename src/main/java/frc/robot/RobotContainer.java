@@ -105,7 +105,8 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(Commands.parallel(shooter.runShooter(), indexer.runIndex(), drivetrain.pointAtHub()));
+        operatorController.b().whileTrue(Commands.sequence(shooter.runShooter().until(() -> shooter.isAtSpeed()),
+            Commands.parallel(shooter.runShooter()), indexer.runIndex(), drivetrain.pointAtHub()));
         operatorController.y().whileTrue(climbUp());
         operatorController.x().whileTrue(climbDown());
         operatorController.a().onTrue(intake.pivotOut().andThen(intake.runIntake(() -> .1)));
