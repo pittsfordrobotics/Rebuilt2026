@@ -40,6 +40,7 @@ public class Shooter extends SubsystemBase {
 	
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
+	@Logged(name="Is at speed")
 	public boolean isAtSpeed() {
 		if (((AngularVelocity) this.getMiddleMotor().getVelocity()).in(RotationsPerSecond) 
 		>= shooterSpeed.getDouble((shooterSpeed.getDouble(ShooterConstants.SHOOTER_SPEED)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE)) {
