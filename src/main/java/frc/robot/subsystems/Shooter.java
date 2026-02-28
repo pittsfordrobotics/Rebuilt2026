@@ -139,9 +139,18 @@ public class Shooter extends SubsystemBase {
 
     @Logged(name="Middle Motor")
     public TalonFX getMiddleMotor() {
-        return this.shooterMotors[0];
+        return this.shooterMotors[1];
     }
 
+	@Logged(name="Left Motor")
+    public TalonFX getLeftMotor() {
+        return this.shooterMotors[0];
+    }
+	
+	@Logged(name="Right Motor")
+    public TalonFX getRightMotor() {
+        return this.shooterMotors[2];
+    }
 
 	public Command shootAtHub(Supplier<Pose2d> currentPose, Supplier<Boolean> runUptake) {
 		return runShooter(() -> shootHubSpeed(currentPose), () -> {return runUptake.get() ? .6 : 0;});
