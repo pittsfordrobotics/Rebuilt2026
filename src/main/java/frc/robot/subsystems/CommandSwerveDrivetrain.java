@@ -445,7 +445,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
     }
 
-    /* IF THE INPUTS ARE SUPPOSED TO BE CARTESIAN PLEASE DONT CONVERT TO POLAR JUST TELL ME PLEASE PLEASE PLEASE <3 <3 <3
+    /* IF THE INPUTS/OUTPUTS ARE SUPPOSED TO BE CARTESIAN PLEASE DONT CONVERT TO POLAR JUST TELL ME PLEASE PLEASE PLEASE <3 <3 <3
      * xy horizontal, z vertical
      * direction: 0 = positive x, 90 = positive y
      * hood angle: 0 = straight up, 90 = horizontal
