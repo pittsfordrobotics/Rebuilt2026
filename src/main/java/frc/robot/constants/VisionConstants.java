@@ -9,9 +9,11 @@ public final class VisionConstants {
     //Setting up names of limelights
     public final static String LIMELIGHT_LEFT_NAME = "limelight-left";
     public final static String LIMELIGHT_RIGHT_NAME = "limelight-right";
+    public final static String LIMELIGHT_FRONT_NAME = "limelight-front";
 
     public final static VisionIO LIMELIGHT_LEFT = new VisionIOLimelight(LIMELIGHT_LEFT_NAME);
     public final static VisionIO LIMELIGHT_RIGHT = new VisionIOLimelight(LIMELIGHT_RIGHT_NAME);
+    public final static VisionIO LIMELIGHT_FRONT = new VisionIOLimelight(LIMELIGHT_FRONT_NAME);
     
     public static final double FIELD_BORDER_MARGIN = 0.5;
     public static final double Z_MARGIN = 0.75;

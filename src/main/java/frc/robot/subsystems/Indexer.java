@@ -39,7 +39,7 @@ public class Indexer extends SubsystemBase {
         
         indexMotor.getConfigurator().apply(config);
 
-        indexSpeed = Shuffleboard.getTab("testing").add("Index Speed", .25).getEntry();
+        indexSpeed = Shuffleboard.getTab("testing").add("Index Speed", .6).getEntry();
 
         Shuffleboard.getTab("testing").add("Run Indexer", this.runIndex());
     }
