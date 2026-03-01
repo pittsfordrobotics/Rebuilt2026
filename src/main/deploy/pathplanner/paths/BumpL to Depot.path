@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6090277777777775,
-        "y": 5.609652777777779
+        "x": 3.5862054208273886,
+        "y": 5.684679029957205
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3178125,
-        "y": 5.782864583333334
+        "x": 2.3500694509289266,
+        "y": 5.842546391986149
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.4439756944444446,
-        "y": 5.9875694444444445
+        "x": 0.7914550641940081,
+        "y": 5.943452211126962
       },
       "prevControl": {
-        "x": 1.829670138888889,
-        "y": 5.8301041666666675
+        "x": 1.8030263024515905,
+        "y": 5.837159247449129
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 178.49256424122512
   },
   "useDefaultConstraints": true
 }

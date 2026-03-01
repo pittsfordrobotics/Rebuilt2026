@@ -1,0 +1,25 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BumpL to Depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to left bump"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "RIT AUTOS",
+  "choreoAuto": false
+}
