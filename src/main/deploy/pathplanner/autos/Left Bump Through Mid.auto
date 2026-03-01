@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "LBump Start to Mid Step 1"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "IntakeOut"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LBump Start to Mid Step 1"
           }
         },
         {
