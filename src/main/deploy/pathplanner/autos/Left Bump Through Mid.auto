@@ -11,15 +11,40 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LBump Start to Mid Step 2"
+            "name": "IntakeOut"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LBump Start to Mid Step 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeRun"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "LBump Start to Mid Step 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootatHub"
           }
         }
       ]

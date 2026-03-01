@@ -21,6 +21,12 @@
           "data": {
             "pathName": "Outpost to Right Bump"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootatHub"
+          }
         }
       ]
     }

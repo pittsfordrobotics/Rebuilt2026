@@ -84,12 +84,10 @@ public class RobotContainer {
             // VisionConstants.LIMELIGHT_RIGHT,
             VisionConstants.LIMELIGHT_FRONT);
 
-        autoChooser = AutoBuilder.buildAutoChooser();
 
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
@@ -100,6 +98,10 @@ public class RobotContainer {
        NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
        NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
        NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+
+       
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
         testingShuffleboardInit();
