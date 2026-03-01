@@ -8,6 +8,7 @@ import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.lib.VisionData;
 import frc.robot.subsystems.Vision.VisionIO.Pipelines;
+import frc.robot.subsystems.Vision.VisionIO.VisionIOInputs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +36,8 @@ public class Vision extends SubsystemBase {
     private Supplier<Double> robotRotationalVelocity;
     private double xyStdDev = 200;
 
+    private final VisionIO.VisionIOInputs[] inputs;
+
     private final VisionIO[] io;
     private final Map<Integer, Double> lastTagDetectionTimes = new HashMap<>();
     private Pipelines pipeline = Pipelines.Test;
@@ -49,6 +52,11 @@ public class Vision extends SubsystemBase {
         this.robotRotationalVelocity = robotRotationalVelocity;
         io = limelights;
         FieldConstants.aprilTags.getTags().forEach((AprilTag tag) -> lastTagDetectionTimes.put(tag.ID, 0.0));
+
+        inputs = new VisionIOInputs[limelights.length];
+        for(int i = 0; i < limelights.length; i++) {
+            inputs[i] = new VisionIOInputs();
+        }
 
         Shuffleboard.getTab("Vision").addBoolean("Is Vison Being Used?", this::usingVision);
         Shuffleboard.getTab("Vision").add("UseVisionToggle", Commands.runOnce(this::useVisionToggle).ignoringDisable(true));
@@ -67,11 +75,6 @@ public class Vision extends SubsystemBase {
         
         Shuffleboard.getTab("Vision").addDouble("XY_std", this::getXYstdDev);
     }
-
-    private final VisionIO.VisionIOInputs[] inputs = new VisionIO.VisionIOInputs[] { 
-        new VisionIO.VisionIOInputs(),
-        new VisionIO.VisionIOInputs(),
-        new VisionIO.VisionIOInputs() };
 
     public void setUseVision(boolean usevision) {
         this.useVision = usevision;
