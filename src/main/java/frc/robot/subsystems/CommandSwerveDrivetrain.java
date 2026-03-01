@@ -80,6 +80,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private final double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond);
 
+    public boolean slowModeEnabled;
+
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -417,20 +419,40 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
                 if(heading != null) {
-                    return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    if (slowModeEnabled){
+                        return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed * TunerConstants.kSlowModePercent)
                         .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withTargetDirection(AllianceFlipUtil.apply(heading));
+                    } else {
+                        return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                        .withTargetDirection(AllianceFlipUtil.apply(heading));
+                    }
                 }
-
-                return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                if (slowModeEnabled) {
+                    return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed * TunerConstants.kSlowModePercent)
                     .withVelocityY(leftDeadbanded[0] * MaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                     .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
+                } else {
+                    return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
+                }
+                
             }
         );
     }
 
+    public void enableSlowDrive() {
+        slowModeEnabled = true;
+    }
+    public void disableSlowDrive() {
+        slowModeEnabled = false;
+    }
     
     public Command pointAt(Supplier<Translation2d> targetPoint) {
         return this.applyRequest(() -> {

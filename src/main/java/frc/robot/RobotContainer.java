@@ -113,6 +113,8 @@ public class RobotContainer {
         driverController.b().whileTrue(drivetrain.pointAtHub());
         driverController.x().whileTrue(drivetrain.driveToPoint(FieldConstants.flippedHubPosition));
         driverController.x().and(driverController.b()).whileTrue(drivetrain.driveToAndPointAt(FieldConstants.flippedHubPosition));
+        driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
@@ -120,8 +122,9 @@ public class RobotContainer {
             hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             shooter.shootAtHub(() -> drivetrain.getState().Pose), 
             Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
-            drivetrain.pointAtHub()
-        ));
+            drivetrain.pointAtHub(),
+            Commands.runOnce(() -> drivetrain.enableSlowDrive()
+        ))).onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
