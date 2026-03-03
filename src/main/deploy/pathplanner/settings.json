@@ -3,7 +3,12 @@
   "robotLength": 0.902,
   "holonomicMode": true,
   "pathFolders": [
-    "Basic Paths"
+    "Basic Paths",
+    "From BumpL",
+    "From BumpR",
+    "From Depot",
+    "From Hub",
+    "From Outpost"
   ],
   "autoFolders": [
     "Basic Autos"
