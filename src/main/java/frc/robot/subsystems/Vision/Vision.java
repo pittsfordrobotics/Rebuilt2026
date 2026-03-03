@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.lib.VisionData;
+import frc.robot.lib.util.LimelightHelpers;
 import frc.robot.subsystems.Vision.VisionIO.Pipelines;
 import frc.robot.subsystems.Vision.VisionIO.VisionIOInputs;
 
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -45,8 +47,8 @@ public class Vision extends SubsystemBase {
     StructArrayPublisher<Pose2d> visionPoseArrayPublisher = NetworkTableInstance.getDefault()
             .getStructArrayTopic("Vision Poses", Pose2d.struct).publish();
 
-    public Vision(Supplier<Rotation2d> gyroangle, Supplier<Double> robotRotationalVelocity, 
-    Consumer<VisionData> visionDataConsumer, VisionIO... limelights) {
+    public Vision(Supplier<Rotation2d> gyroangle, Supplier<Double> robotRotationalVelocity,
+            Consumer<VisionData> visionDataConsumer, VisionIO... limelights) {
         this.visionDataConsumer = visionDataConsumer;
         this.gyroangle = gyroangle;
         this.robotRotationalVelocity = robotRotationalVelocity;
@@ -59,22 +61,35 @@ public class Vision extends SubsystemBase {
         }
 
         Shuffleboard.getTab("Vision").addBoolean("Is Vison Being Used?", this::usingVision);
-        Shuffleboard.getTab("Vision").add("UseVisionToggle", Commands.runOnce(this::useVisionToggle).ignoringDisable(true));
+        Shuffleboard.getTab("Vision").add("UseVisionToggle",
+                Commands.runOnce(this::useVisionToggle).ignoringDisable(true));
 
         for (int i = 0; i < io.length; i++) {
             int number = i; // capture a copy of the int to use in the lambda
             Shuffleboard.getTab("Vision").addDouble(i + "/AvgTagDist", () -> this.inputs[number].avgTagDist);
             Shuffleboard.getTab("Vision").addInteger(i + "/NumTags", () -> this.inputs[number].tagCount);
             Shuffleboard.getTab("Vision").addDoubleArray(i + "/TagDistances", () -> this.inputs[number].tagDistances);
-            Shuffleboard.getTab("Vision").addString(i + "/TagIDs", () -> Arrays.toString(this.inputs[number].tagIDs)); 
+            Shuffleboard.getTab("Vision").addString(i + "/TagIDs", () -> Arrays.toString(this.inputs[number].tagIDs));
             Shuffleboard.getTab("Vision").addDouble(i + "/Pose2d_X", () -> this.inputs[number].pose.getX());
             Shuffleboard.getTab("Vision").addDouble(i + "/Pose2d_Y", () -> this.inputs[number].pose.getY());
             Shuffleboard.getTab("Vision").addDouble(i + "/Pose2d_Theta",
                     () -> this.inputs[number].pose.getRotation().getDegrees());
         }
-        
+
         Shuffleboard.getTab("Vision").addDouble("XY_std", this::getXYstdDev);
     }
+
+
+    public void setIMU(int mode){
+        for (int i = 0; i < io.length; i++){
+            io[i].setIMUMode(mode);
+        }
+    }
+
+    private final VisionIO.VisionIOInputs[] inputs = new VisionIO.VisionIOInputs[] {
+            new VisionIO.VisionIOInputs(),
+            new VisionIO.VisionIOInputs(),
+            new VisionIO.VisionIOInputs() };
 
     public void setUseVision(boolean usevision) {
         this.useVision = usevision;
@@ -107,11 +122,10 @@ public class Vision extends SubsystemBase {
             io[i].updateInputs(inputs[i], gyroangle.get().getDegrees());
             // keeps the pipeline always the same
             // ** No idea why this needs to be set on every periodic.
-            //    The pipeline was already set in the VisionIOLimelight constructor.
+            // The pipeline was already set in the VisionIOLimelight constructor.
             io[i].setPipeline(pipeline);
         }
 
-      
         List<Pose2d> allRobotPoses = new ArrayList<>();
 
         // Pose estimation
@@ -134,9 +148,11 @@ public class Vision extends SubsystemBase {
             }
 
             // exit if the gyro does not match the vision
-            double gyroAngle = gyroangle.get().getDegrees();
-            if (Math.abs(gyroAngle - visionCalcPose.getRotation().getDegrees()) > 5) {
-                System.out.println("Gyro and Vision do not match");
+            double gyroAngle = MathUtil.inputModulus(gyroangle.get().getDegrees(), 0, 360);
+            double calcPose = MathUtil.inputModulus(visionCalcPose.getRotation().getDegrees(), 0, 360);
+            if (Math.abs(gyroAngle - calcPose) > 5) {
+                System.out.println(gyroAngle + " " + calcPose);
+                System.out.println("Gyro and Vision do not match\n\n");
                 // continue;
             }
 
@@ -169,8 +185,8 @@ public class Vision extends SubsystemBase {
 
             // Add vision data to swerve pose estimator
             VisionData visionData = new VisionData(visionCalcPose, inputs[i].captureTimestamp,
-                VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev));
-                visionDataConsumer.accept(visionData);
+                    VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev));
+            visionDataConsumer.accept(visionData);
 
             // Add robot pose from this camera to a list of all robot poses
             allRobotPoses.add(visionCalcPose);
