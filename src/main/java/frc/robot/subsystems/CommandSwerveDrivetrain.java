@@ -2,28 +2,51 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.constants.FieldConstants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.lib.VisionData;
+import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.lib.util.SwerveHelpers;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -33,7 +56,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
-
+     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -45,6 +68,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    private CommandXboxController controller;
+
+    public final FieldCentric drive = new FieldCentric()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    public final FieldCentricFacingAngle driveHeading = new FieldCentricFacingAngle()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
+            .withHeadingPID(10, 0, 0);
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private final double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -119,10 +153,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules               Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+        CommandXboxController controller,
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
+        this.controller = controller;
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -142,11 +179,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules                 Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+        CommandXboxController controller,
         SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
+        this.controller = controller;
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -172,6 +212,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param modules                   Constants for each specific module
      */
     public CommandSwerveDrivetrain(
+        CommandXboxController controller,
         SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         Matrix<N3, N1> odometryStandardDeviation,
@@ -179,10 +220,42 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+        this.controller = controller;
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
     }
+      private void configureAutoBuilder() {
+        try {
+            var config = RobotConfig.fromGUISettings();
+            AutoBuilder.configure(
+                () -> getState().Pose,   // Supplier of current robot pose
+                this::resetPose,         // Consumer for seeding pose against auto
+                () -> getState().Speeds, // Supplier of current robot speeds
+                // Consumer of ChassisSpeeds and feedforwards to drive the robot
+                (speeds, feedforwards) -> setControl(
+                    m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+                        .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+                        .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
+                ),
+                new PPHolonomicDriveController(
+                    // PID constants for translation
+                    new PIDConstants(10, 0, 0),
+                    // PID constants for rotation
+                    new PIDConstants(7, 0, 0)
+                ),
+                config,
+                // Assume the path needs to be flipped for Red vs Blue, this is normally the case
+                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                this // Subsystem for requirements
+            );
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
+        }
+    }
+
 
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
@@ -284,5 +357,126 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+	
+    public void addVisionMeasurement(VisionData visionData) {
+        // this.resetPose(visionData.visionPose());
+        super.addVisionMeasurement(visionData.visionPose(), Utils.fpgaToCurrentTime(visionData.time()), visionData.visionReliability());
+    }
+
+    // *******************
+    // Logging methods
+    // *******************
+    /*@Logged(name = "Rotation Degrees")
+    public double getRotationDegrees() {
+        return swerveDrive.getYaw().getDegrees();
+    }*/
+
+    @Logged(name = "FR Drive Motor")
+    public TalonFX getFrontRightDriveMotor() {
+        return this.getModule(1).getDriveMotor();
+    }
+
+    @Logged(name = "FR Steer Motor")
+    public TalonFX getFrontRightSteerMotor() {
+        return this.getModule(1).getSteerMotor();
+    }
+
+    @Logged(name = "FL Drive Motor")
+    public TalonFX getFrontLeftDriveMotor() {
+        return this.getModule(0).getDriveMotor();
+    }
+
+    @Logged(name = "FL Steer Motor")
+    public TalonFX getFrontLeftSteerMotor() {
+        return this.getModule(0).getSteerMotor();
+    }
+
+    @Logged(name = "BR Drive Motor")
+    public TalonFX getBackRightDriveMotor() {
+        return this.getModule(3).getSteerMotor();
+    }
+
+    @Logged(name = "BR Steer Motor")
+    public TalonFX getBackRightSteerMotor() {
+        return this.getModule(3).getSteerMotor();
+    }
+
+    @Logged(name = "BL Drive Motor")
+    public TalonFX getBackLeftDriveMotor() {
+        return this.getModule(2).getDriveMotor();
+    }
+
+    @Logged(name = "BL Steer Motor")
+    public TalonFX getBackLeftAngleMotor() {
+        return this.getModule(2).getSteerMotor();
+    }
+
+    public Command drive() {
+        return this.applyRequest(() -> {
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
+                Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
+                if(heading != null) {
+                    return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                        .withTargetDirection(AllianceFlipUtil.apply(heading));
+                }
+
+                return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
+            }
+        );
+    }
+
+    
+    public Command pointAt(Supplier<Translation2d> targetPoint) {
+        return this.applyRequest(() -> {
+                Translation2d currentPoint = this.getState().Pose.getTranslation();
+                Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
+                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withTargetDirection(targetHeading);
+        });
+    }
+
+    public Command pointAtHub() {
+        return this.pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
+    }
+
+    public Command brake() {
+        return this.applyRequest(() -> brake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
+
+    
+    public Command driveToPose(Supplier<Pose2d> targetPose) {
+        PathConstraints constraints = new PathConstraints(
+            TunerConstants.kSpeedAt12Volts, 
+            MetersPerSecondPerSecond.of(1),
+            DegreesPerSecond.of(180),
+            DegreesPerSecondPerSecond.of(10));
+        return Commands.defer(() -> AutoBuilder.pathfindToPose(targetPose.get(), constraints), Set.of(this));
+    }
+
+    public Command driveToPoint(Supplier<Translation2d> targetPoint) {
+        return driveToPose(() -> new Pose2d(targetPoint.get(), this.getState().Pose.getRotation()));
+    }
+
+    public Command driveToAndPointAt(Supplier<Translation2d> targetPoint) {
+        return driveToPose(() -> {
+            Translation2d currentPoint = this.getState().Pose.getTranslation();
+            Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
+            return new Pose2d(targetPoint.get(), targetHeading);
+        });
+    }
+
+    public Command driveToDistFromBlueHub(DoubleSupplier dist){
+        return this.driveToPoint(() ->
+            new Translation2d(Units.inchesToMeters(-0.7536*dist.getAsDouble()+182.11),
+            Units.inchesToMeters(-0.6574*dist.getAsDouble()+158.85))).andThen(this.pointAtHub());
     }
 }
