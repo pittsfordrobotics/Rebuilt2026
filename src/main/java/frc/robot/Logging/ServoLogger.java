@@ -14,6 +14,7 @@ public class ServoLogger extends ClassSpecificLogger <Servo>{
     public void update(EpilogueBackend backend, Servo servo){
         //Log motor IDs
         backend.log("Position", servo.getPosition());
+        backend.log("Value", servo.get());
     }
 }
 
