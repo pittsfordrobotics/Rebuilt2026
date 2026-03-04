@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.Logging;
 
 import edu.wpi.first.epilogue.logging.ClassSpecificLogger;
@@ -17,7 +13,7 @@ public class ServoLogger extends ClassSpecificLogger <Servo>{
     @Override
     public void update(EpilogueBackend backend, Servo servo){
         //Log motor IDs
-        backend.log("servoposition", servo.getPosition());
+        backend.log("Position", servo.getPosition());
     }
 }
 

@@ -61,15 +61,20 @@ public class RobotContainer {
     @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
+    @Logged(name = "Intake")
     private final Intake intake;
+
+    @Logged(name = "Indexer")
     private final Indexer indexer;
 
-    @Logged(name="Shooter")
+    @Logged(name = "Shooter")
     private final Shooter shooter;
+
+    @Logged(name = "Climber")
     private final Climber climber;
 
+    @Logged(name = "Hood")
     private final Hood hood;
-
 
     public RobotContainer() {
 	    DataLogManager.start();
