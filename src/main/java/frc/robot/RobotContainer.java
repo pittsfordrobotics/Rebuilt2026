@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -69,7 +71,7 @@ public class RobotContainer {
 
     @Logged(name="Shooter")
     private final Shooter shooter;
-    private final Climber climber;
+    // private final Climber climber;
 
     private final Hood hood;
 
@@ -95,7 +97,7 @@ public class RobotContainer {
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
-        climber = new Climber();
+        // climber = new Climber();
         hood = new Hood();
 
         configureBindings();
@@ -122,9 +124,9 @@ public class RobotContainer {
         //Run Shooter
         operatorController.b().whileTrue(autoDecideShooting());
         
-        operatorController.y().whileTrue(climbUp());
-        operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
-        operatorController.x().whileTrue(climbDown());
+        // operatorController.y().whileTrue(climbUp());
+        // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
+        // operatorController.x().whileTrue(climbDown());
         operatorController.a().whileTrue(intake.runIntake());
 
         // Run SysId routines when holding back/start and X/Y.
@@ -159,29 +161,31 @@ public class RobotContainer {
         }
     }
 
-    public Command climbDown() {
-       return climber.runClimber(() -> 0.4);
-    }
+    // public Command climbDown() {
+    //    return climber.runClimber(() -> 0.4);
+    // }
 
-    public Command climbUp(){
-        return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
-            .alongWith(climber.runClimber(() -> 0), intake.pivotIn())
-            .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
-            .andThen(climber.runClimber(() -> -0.4));
-    }
+    // public Command climbUp(){
+    //     return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
+    //         .alongWith(climber.runClimber(() -> 0), intake.pivotIn())
+    //         .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
+    //         .andThen(climber.runClimber(() -> -0.4));
+    // }
 
     public Command autoDecideShooting(){
         if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
-            return Commands.parallel(
+            return Commands.defer(() -> Commands.parallel(
                 hood.runHood(() -> 0.35),
                 shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
                 indexer.runIndex(),
-                drivetrain.pointAtAllianceZone());
+                drivetrain.pointAtAllianceZone()), 
+                Set.of(hood, shooter, indexer, drivetrain));
         }
-        return Commands.parallel(
+        return Commands.defer(() -> Commands.parallel(
             hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
             indexer.runIndex(), 
-            drivetrain.pointAtHub());
+            drivetrain.pointAtHub()),
+            Set.of(hood, shooter, indexer, drivetrain));
     }
 }
