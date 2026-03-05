@@ -102,6 +102,17 @@ public class Intake extends SubsystemBase {
             pivotMotor.setControl(control);
         });
     }
+
+    public Command agitate() {
+        //I'M AGITATED
+        return run(() -> {
+            PositionVoltage control = new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2);
+            pivotMotor.setControl(control);
+        }).andThen(() -> {
+            PositionVoltage control = new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2);
+            pivotMotor.setControl(control);
+        }).repeatedly();
+    }
     
     @Override
     public void periodic() {

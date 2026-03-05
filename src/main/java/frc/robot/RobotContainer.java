@@ -178,6 +178,7 @@ public class RobotContainer {
                 hood.runHood(() -> 0.35),
                 shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
                 indexer.runIndex(),
+                intake.agitate(),
                 drivetrain.pointAtAllianceZone()), 
                 Set.of(hood, shooter, indexer, drivetrain));
         }
@@ -185,6 +186,7 @@ public class RobotContainer {
             hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
             indexer.runIndex(), 
+            intake.agitate(),
             drivetrain.pointAtHub()),
             Set.of(hood, shooter, indexer, drivetrain));
     }
