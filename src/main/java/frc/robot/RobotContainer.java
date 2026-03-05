@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.lib.util.ShooterHelpers;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hood;
@@ -116,12 +117,7 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(Commands.parallel(
-            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-            shooter.shootAtHub(() -> drivetrain.getState().Pose), 
-            Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
-            drivetrain.pointAtHub()
-        ));
+        operatorController.b().whileTrue(autoDecideShooting());
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
@@ -168,5 +164,19 @@ public class RobotContainer {
             .alongWith(climber.runClimber(() -> 0), intake.pivotIn())
             .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
             .andThen(climber.runClimber(() -> -0.4));
+    }
+
+    public Command autoDecideShooting(){
+        if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
+            return Commands.parallel(
+                hood.runHood(() -> 0.35),
+                shooter.runShooter(() -> 0.95, () -> 0.7), 
+                Commands.waitSeconds(.7).andThen(indexer.runIndex()));
+        }
+        return Commands.parallel(
+            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            shooter.shootAtHub(() -> drivetrain.getState().Pose), 
+            Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
+            drivetrain.pointAtHub());
     }
 }
