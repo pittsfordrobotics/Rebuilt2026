@@ -41,6 +41,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.IndexerConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -117,7 +119,15 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(autoDecideShooting());
+        //Run Shooter
+        operatorController.b().whileTrue(
+                Commands.parallel(
+                hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                indexer.runIndex(), 
+                drivetrain.pointAtHub())
+            );
+        
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         operatorController.x().whileTrue(climbDown());
