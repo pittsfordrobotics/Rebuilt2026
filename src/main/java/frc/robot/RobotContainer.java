@@ -120,13 +120,7 @@ public class RobotContainer {
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
         //Run Shooter
-        operatorController.b().whileTrue(
-                Commands.parallel(
-                hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
-                indexer.runIndex(), 
-                drivetrain.pointAtHub())
-            );
+        operatorController.b().whileTrue(autoDecideShooting());
         
         operatorController.y().whileTrue(climbUp());
         operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -180,13 +174,14 @@ public class RobotContainer {
         if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
             return Commands.parallel(
                 hood.runHood(() -> 0.35),
-                shooter.runShooter(() -> 0.95, () -> 0.7), 
-                Commands.waitSeconds(.7).andThen(indexer.runIndex()));
+                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                indexer.runIndex(),
+                drivetrain.pointAtAllianceZone());
         }
         return Commands.parallel(
             hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-            shooter.shootAtHub(() -> drivetrain.getState().Pose), 
-            Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
+            shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+            indexer.runIndex(), 
             drivetrain.pointAtHub());
     }
 }
