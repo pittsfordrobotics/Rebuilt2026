@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "ShootatHub"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Hub Back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootatHub"
           }
         }
       ]
