@@ -99,7 +99,7 @@ public class RobotContainer {
         // climber = new Climber();
         hood = new Hood();
 
-       NamedCommands.registerCommand("ShootatHub", shooter.shootAtHub(()->drivetrain.getState().Pose));
+       NamedCommands.registerCommand("ShootatHub", autoDecideShooting());
        NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
        NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
        NamedCommands.registerCommand("IntakeRun", intake.runIntake());
