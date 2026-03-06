@@ -24,6 +24,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.ShooterConstants;
@@ -110,13 +111,10 @@ public class Intake extends SubsystemBase {
 
     public Command agitate() {
         //I'M AGITATED
-        return run(() -> {
-            PositionVoltage control = new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2);
-            pivotMotor.setControl(control);
-        }).andThen(() -> {
-            PositionVoltage control = new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2);
-            pivotMotor.setControl(control);
-        }).repeatedly();
+        return run(() -> pivotMotor.set(.3)).andThen(
+            Commands.waitSeconds(.5),
+            run(() -> pivotMotor.set(-.3)),
+            Commands.waitSeconds(.5)).repeatedly();
     }
     
     @Override
