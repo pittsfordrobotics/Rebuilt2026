@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
+import frc.robot.lib.util.ShooterHelpers;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hood;
@@ -41,6 +44,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.IndexerConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -67,7 +72,7 @@ public class RobotContainer {
 
     @Logged(name="Shooter")
     private final Shooter shooter;
-    private final Climber climber;
+    // private final Climber climber;
 
     private final Hood hood;
 
@@ -91,7 +96,7 @@ public class RobotContainer {
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
-        climber = new Climber();
+        // climber = new Climber();
         hood = new Hood();
 
        NamedCommands.registerCommand("ShootatHub", shooter.shootAtHub(()->drivetrain.getState().Pose));
@@ -127,16 +132,15 @@ public class RobotContainer {
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
-        operatorController.b().whileTrue(Commands.parallel(
-            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-            shooter.shootAtHub(() -> drivetrain.getState().Pose), 
-            Commands.waitSeconds(.7).andThen(indexer.runIndex()), 
-            drivetrain.pointAtHub()
-        ));
-        operatorController.y().whileTrue(climbUp());
-        operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
-        operatorController.x().whileTrue(climbDown());
-        operatorController.a().whileTrue(intake.runIntake());
+        //Run Shooter
+        operatorController.b().whileTrue(autoDecideShooting());
+        
+        // operatorController.y().whileTrue(climbUp());
+        // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
+        // operatorController.x().whileTrue(climbDown());
+        operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
+        operatorController.povUp().onTrue(intake.pivotIn());
+        operatorController.leftTrigger().whileTrue(intake.agitate());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -170,14 +174,33 @@ public class RobotContainer {
         }
     }
 
-    public Command climbDown() {
-       return climber.runClimber(() -> 0.4);
-    }
+    // public Command climbDown() {
+    //    return climber.runClimber(() -> 0.4);
+    // }
 
-    public Command climbUp(){
-        return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
-            .alongWith(climber.runClimber(() -> 0), intake.pivotIn())
-            .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
-            .andThen(climber.runClimber(() -> -0.4));
+    // public Command climbUp(){
+    //     return drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_UNEXTENDED_POS)
+    //         .alongWith(climber.runClimber(() -> 0), intake.pivotIn())
+    //         .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
+    //         .andThen(climber.runClimber(() -> -0.4));
+    // }
+
+    public Command autoDecideShooting(){
+        if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
+            return Commands.defer(() -> Commands.parallel(
+                hood.runHood(() -> 0.35),
+                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                indexer.runIndex(),
+                intake.agitate(),
+                drivetrain.pointAtAllianceZone()), 
+                Set.of(hood, shooter, indexer, drivetrain));
+        }
+        return Commands.defer(() -> Commands.parallel(
+            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+            indexer.runIndex(), 
+            intake.agitate(),
+            drivetrain.pointAtHub()),
+            Set.of(hood, shooter, indexer, drivetrain));
     }
 }

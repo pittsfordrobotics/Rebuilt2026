@@ -479,4 +479,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             new Translation2d(Units.inchesToMeters(-0.7536*dist.getAsDouble()+182.11),
             Units.inchesToMeters(-0.6574*dist.getAsDouble()+158.85))).andThen(this.pointAtHub());
     }
+
+    public Command pointAtAllianceZone(){
+        return this.pointAt(() -> AllianceFlipUtil.apply(
+            new Translation2d(0, this.getState().Pose.getY())
+        ));
+    }
 }

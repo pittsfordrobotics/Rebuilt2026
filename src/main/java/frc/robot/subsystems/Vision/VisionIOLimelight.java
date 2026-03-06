@@ -38,7 +38,7 @@ public class VisionIOLimelight implements VisionIO {
         mt2Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimate.pose);
 
         PoseEstimate botPoseEstimateMt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(cameraName);
-        mt1Publisher.set(botPoseEstimate == null ? new Pose2d() : botPoseEstimateMt1.pose);
+        mt1Publisher.set(botPoseEstimateMt1 == null ? new Pose2d() : botPoseEstimateMt1.pose);
 
         if (botPoseEstimate == null) {
             // BotPoseEstimate is null if the limelight data can't be found in NetworkTables
