@@ -68,8 +68,8 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             ).withSlot2(
                 new Slot2Configs()
-                .withKP(.5)
-                .withKI(0)
+                .withKP(0.5)
+                .withKI(0.1)
                 .withKD(0)
             );
 

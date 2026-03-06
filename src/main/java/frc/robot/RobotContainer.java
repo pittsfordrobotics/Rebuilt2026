@@ -128,6 +128,7 @@ public class RobotContainer {
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         // operatorController.x().whileTrue(climbDown());
         operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
+        operatorController.povUp().onTrue(intake.pivotIn());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
