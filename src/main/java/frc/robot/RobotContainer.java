@@ -199,6 +199,7 @@ public class RobotContainer {
     public Command autoDecideShooting(){
         return Commands.defer(() -> {
             if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
+                // In neutral zone, set the shooter to pass to the alliance area.
                 return Commands.parallel(
                     hood.runHood(() -> 0.4),
                     shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
@@ -206,9 +207,13 @@ public class RobotContainer {
                     intake.agitate(),
                     drivetrain.pointAtAllianceZone());
             }
+            // In the alliance area, set the shooter to shoot in the hub.
             return Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                    .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+                        .until(() -> shooter.isAtSpeed()))
+                        .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(), 
                 intake.agitate(),
                 drivetrain.pointAtHub());
