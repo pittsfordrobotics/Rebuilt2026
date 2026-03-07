@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.subsystems.Vision.VisionIO.IMUMode;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.IndexerConstants;
@@ -86,7 +87,7 @@ public class RobotContainer {
         DriverStation.startDataLog(DataLogManager.getLog());
 		
         vision = new Vision(
-            () -> drivetrain.getState().RawHeading,
+            () -> drivetrain.getState().Pose.getRotation(),
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
             drivetrain::addVisionMeasurement,
             // VisionConstants.LIMELIGHT_LEFT,
@@ -145,7 +146,11 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         driverController.leftBumper().onTrue(drivetrain.runOnce(
-            () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero))
+            () -> {
+                vision.setIMU(IMUMode.EXTERNAL_SEED.getNum());
+                drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero);
+                vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum());
+            })
             .ignoringDisable(true));
 
         // driverController.leftBumper().onTrue(drivetrain.runOnce(

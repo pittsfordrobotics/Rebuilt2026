@@ -19,9 +19,10 @@ import frc.robot.lib.util.ShooterHelpers;
 
 public class Hood extends SubsystemBase {
 
-  @Logged(name="Hood Actuator")
+  @Logged(name="Left Actuator")
 	final Servo hood_L = new Servo(ShooterConstants.HOOD_ACTUATOR_L);
-	final Servo hood_R = new Servo(ShooterConstants.HOOD_ACTUATOR_R);
+	@Logged(name="Right Actuator")
+  final Servo hood_R = new Servo(ShooterConstants.HOOD_ACTUATOR_R);
   private GenericEntry hoodPercent;
   /** Creates a new Hood. */
   public Hood() {

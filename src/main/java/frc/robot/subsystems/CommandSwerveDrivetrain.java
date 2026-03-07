@@ -372,6 +372,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.getState().RawHeading.getDegrees();
     }
 
+    @Logged(name = "Pose Heading")
+    public double getPoseHeading() {
+        return this.getState().Pose.getRotation().getDegrees();
+    }
+
     @Logged(name = "FR Drive Motor")
     public TalonFX getFrontRightDriveMotor() {
         return this.getModule(1).getDriveMotor();

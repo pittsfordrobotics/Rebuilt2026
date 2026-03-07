@@ -113,10 +113,11 @@ public class Intake extends SubsystemBase {
 
     public Command agitate() {
         //I'M AGITATED
-        return run(() -> pivotMotor.set(.2)).andThen(
+        return runOnce(() -> pivotMotor.set(-.05)).andThen(
             Commands.waitSeconds(.5),
-            run(() -> pivotMotor.set(-.2)),
-            Commands.waitSeconds(.5)).repeatedly();
+            runOnce(() -> pivotMotor.set(.05)),
+            Commands.waitSeconds(.5)).repeatedly()
+            .finallyDo(() -> pivotMotor.set(0));
     }
     
     @Override
