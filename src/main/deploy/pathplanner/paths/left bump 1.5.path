@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.575334174799134,
-        "y": 5.685710119709945
+        "x": 6.672189684030911,
+        "y": 5.6726381400919
       },
       "isLocked": false,
       "linkedName": "left bump end"
@@ -20,12 +20,12 @@
         "y": 5.728795180722891
       },
       "prevControl": {
-        "x": 6.268241139264127,
-        "y": 5.65198637604757
+        "x": 6.188176052896346,
+        "y": 5.634206830432029
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "middle fuel left"
+      "linkedName": "mid fuel start"
     }
   ],
   "rotationTargets": [
@@ -47,10 +47,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.55261314813479
+    "rotation": -55.78429786756253
   },
   "reversed": false,
-  "folder": "Through Mid",
+  "folder": "left mid",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -55.78429786756253

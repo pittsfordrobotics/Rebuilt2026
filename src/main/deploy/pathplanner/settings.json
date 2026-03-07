@@ -9,7 +9,8 @@
     "From Depot",
     "From Hub",
     "From Outpost",
-    "Through Mid"
+    "right mid",
+    "left mid"
   ],
   "autoFolders": [
     "RIT AUTOS"
