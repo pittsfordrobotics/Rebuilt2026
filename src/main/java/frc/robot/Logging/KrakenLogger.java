@@ -1,5 +1,7 @@
 package frc.robot.Logging;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.CustomLoggerFor;
@@ -18,10 +20,10 @@ public class KrakenLogger extends ClassSpecificLogger<TalonFX> {
         //Log motor IDs
         backend.log("Motor ID", talonFX.getDeviceID());
         backend.log("Temperature (C)", talonFX.getDeviceTemp().getValue().in(Units.Celsius));
-        backend.log("Voltage (Volts)", talonFX.getMotorVoltage().getValue());
-        backend.log("Current (Amps)", talonFX.getSupplyCurrent().getValue());
-        backend.log("Position", talonFX.getPosition().getValue());
-        backend.log("Velocity", talonFX.getVelocity().getValue());
+        backend.log("Voltage (Volts)", talonFX.getMotorVoltage().getValue().in(Units.Volts));
+        backend.log("Current (Amps)", talonFX.getSupplyCurrent().getValue().in(Units.Amps));
+        backend.log("Position Revolutions", talonFX.getPosition().getValue().in(Units.Revolutions));
+        backend.log("Velocity RPM", talonFX.getVelocity().getValue().in(Units.RPM));
     }
     
 }
