@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 5.759900142653351,
+        "x": 5.656390870185448,
         "y": 5.568231098430813
       },
       "prevControl": {
-        "x": 4.6994133191103264,
+        "x": 4.595904046642423,
         "y": 5.578184015456039
       },
       "nextControl": null,
@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -55.78429786756253
+    "rotation": -88.69804732742112
   },
   "reversed": false,
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -49.398705354995485
+    "rotation": -91.84761026599449
   },
   "useDefaultConstraints": true
 }

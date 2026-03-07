@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.759900142653351,
+        "x": 5.656390870185448,
         "y": 5.568231098430813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.720631185268025,
+        "x": 4.617121912800122,
         "y": 5.564098377466118
       },
       "isLocked": false,
@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -49.398705354995485
+    "rotation": -91.84761026599449
   },
   "reversed": false,
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -55.78429786756253
+    "rotation": -88.69804732742112
   },
   "useDefaultConstraints": true
 }
