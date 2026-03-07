@@ -46,7 +46,8 @@ public class Shooter extends SubsystemBase {
 		if (currentSetSpeed == 0) {
 			return false;
 		}
-		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) >= (currentSetSpeed*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
+		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) 
+		>= (currentSetSpeed*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
 			return true;
 		} else {
 			return false;

@@ -122,7 +122,9 @@ public class RobotContainer {
         operatorController.b().whileTrue(
                 Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+                 .until(() -> shooter.isAtSpeed()).until(() -> hood.hoodInPosition())
+                 .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
                 indexer.runIndex(), 
                 drivetrain.pointAtHub())
             );

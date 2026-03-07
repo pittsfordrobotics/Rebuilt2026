@@ -19,14 +19,26 @@ import frc.robot.lib.util.ShooterHelpers;
 
 public class Hood extends SubsystemBase {
 
-  @Logged(name="Hood Actuator")
+  @Logged(name = "Hood Actuator Left")
 	final Servo hood_L = new Servo(ShooterConstants.HOOD_ACTUATOR_L);
+  @Logged(name = "Hood Actuator Right")
 	final Servo hood_R = new Servo(ShooterConstants.HOOD_ACTUATOR_R);
   private GenericEntry hoodPercent;
   /** Creates a new Hood. */
   public Hood() {
     hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry(); // 0.2 to 0.4
 		Shuffleboard.getTab("testing").add("Set Hood Pos", this.runHood(() -> hoodPercent.getDouble(0.5)));
+  }
+
+  @Logged(name = "Hood in position")
+  public boolean hoodInPosition() {
+    if (hood_L.getPosition() == .2 && hood_R.getPosition() == .2 
+     || hood_L.getPosition() == .35 && hood_R.getPosition() == .35) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
   @Override
