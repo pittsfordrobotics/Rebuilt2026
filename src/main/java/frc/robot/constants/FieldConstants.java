@@ -15,6 +15,7 @@ public class FieldConstants {
     public static final AprilTagFieldLayout aprilTags;
     public static final double fieldLength = Units.inchesToMeters(651.22);
     public static final double fieldWidth = Units.inchesToMeters(317.69);
+    public static final double endOfAllianceZoneBump = 205.61; // inches
     public static final Translation2d blueHubPosition = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
     public static final Supplier<Translation2d> flippedHubPosition = () -> AllianceFlipUtil.apply(blueHubPosition);
 
