@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.8384698795180725,
-        "y": 5.728795180722891
+        "x": 5.759900142653351,
+        "y": 5.568231098430813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.012239432540078,
-        "y": 4.69368447309989
+        "x": 6.575334174799134,
+        "y": 5.685710119709945
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "left bump end"
     },
     {
       "anchor": {
-        "x": 8.244,
-        "y": 3.5756776034236806
+        "x": 6.8384698795180725,
+        "y": 5.728795180722891
       },
       "prevControl": {
-        "x": 8.011408427548034,
-        "y": 3.667335447737859
+        "x": 6.268241139264127,
+        "y": 5.65198637604757
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "middle fuel left"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6049792531120353,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -88.49256424122508
+    "rotation": -41.55261314813479
   },
   "reversed": false,
   "folder": "Through Mid",

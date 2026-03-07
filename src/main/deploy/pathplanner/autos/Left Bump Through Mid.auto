@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LBump Start to Mid Step 1"
+            "pathName": "Over left Bump"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "IntakeOut"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left bump 1.5"
           }
         },
         {
