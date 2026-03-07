@@ -118,11 +118,16 @@ public class Intake extends SubsystemBase {
         //     runOnce(() -> pivotMotor.set(.05)),
         //     Commands.waitSeconds(.5)).repeatedly()
         //     .finallyDo(() -> pivotMotor.set(0));
-        return runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2))).andThen(
-            Commands.waitSeconds(.2),
+        return runOnce(() -> {
+                pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2));
+                driveMotor.set(0.9);
+            }).andThen(Commands.waitSeconds(.2),
             runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2))),
-            Commands.waitSeconds(.2)
-        ).repeatedly().finallyDo(() -> pivotOut());
+            Commands.waitSeconds(.2)).repeatedly()
+            .finallyDo(() -> {
+                pivotOut();
+                driveMotor.set(0);}
+        );
     }
     
     @Override
