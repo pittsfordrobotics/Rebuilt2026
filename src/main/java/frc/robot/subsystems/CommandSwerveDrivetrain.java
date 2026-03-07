@@ -367,9 +367,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // *******************
     // Logging methods
     // *******************
-    @Logged(name = "Rotation Degrees")
+    @Logged(name = "Raw Rotation Degrees")
     public double getRotationDegrees() {
         return this.getState().RawHeading.getDegrees();
+    }
+
+    @Logged(name = "Pigeon Heading")
+    public double getPigeonHeading() {
+        return this.getPigeon2().getYaw().getValue().in(Degree);
     }
 
     @Logged(name = "Pose Heading")

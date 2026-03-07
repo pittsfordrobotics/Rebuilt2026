@@ -162,17 +162,11 @@ public class RobotContainer {
         driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        driverController.leftBumper().onTrue(drivetrain.runOnce(
-            () -> {
-                vision.setIMU(IMUMode.EXTERNAL_SEED.getNum());
-                drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero);
-                vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum());
-            })
-            .ignoringDisable(true));
+        driverController.leftBumper().onTrue(
+                Commands.runOnce(() -> { vision.setIMU(IMUMode.EXTERNAL_SEED.getNum()); }).ignoringDisable(true)
+                    .andThen(() -> { drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero); }).ignoringDisable(true))
+            .onFalse(Commands.runOnce(() ->{ vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum()); }).ignoringDisable(true));
 
-        // driverController.leftBumper().onTrue(drivetrain.runOnce(
-        //     () -> drivetrain.resetPose(new Pose2d(0, 0, new Rotation2d(0)))
-        // ));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
