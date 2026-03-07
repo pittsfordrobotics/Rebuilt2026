@@ -367,10 +367,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // *******************
     // Logging methods
     // *******************
-    /*@Logged(name = "Rotation Degrees")
+    @Logged(name = "Rotation Degrees")
     public double getRotationDegrees() {
-        return swerveDrive.getYaw().getDegrees();
-    }*/
+        return this.getState().RawHeading.getDegrees();
+    }
 
     @Logged(name = "FR Drive Motor")
     public TalonFX getFrontRightDriveMotor() {

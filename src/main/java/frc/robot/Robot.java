@@ -9,6 +9,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Vision.VisionIO.IMUMode;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -35,7 +36,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    m_robotContainer.vision.setIMU(1);
+    m_robotContainer.vision.setIMU(IMUMode.EXTERNAL_SEED.getNum());
   }
 
   @Override
@@ -61,7 +62,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.vision.setIMU(4);
+    m_robotContainer.vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum());
   }
 
   @Override
