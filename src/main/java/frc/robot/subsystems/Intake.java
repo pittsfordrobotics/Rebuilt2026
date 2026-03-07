@@ -19,6 +19,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,7 +29,9 @@ import frc.robot.constants.ShooterConstants;
 
 
 public class Intake extends SubsystemBase {
+    @Logged(name = "Intake Drive")
     private TalonFX driveMotor = new TalonFX(IntakeConstants.INTAKE_DRIVE);
+    @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
     private GenericEntry pivotInSpeed;

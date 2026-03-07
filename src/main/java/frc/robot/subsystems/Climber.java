@@ -12,6 +12,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +21,7 @@ import static edu.wpi.first.units.Units.*;
 import frc.robot.constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
+    @Logged(name = "Climber Motor")
     private TalonFX climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR);
     private GenericEntry climberSpeed;
 

@@ -15,6 +15,7 @@ import static edu.wpi.first.units.Units.Amps;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +24,7 @@ import frc.robot.constants.IndexerConstants;
 
 
 public class Indexer extends SubsystemBase {
+    @Logged(name = "Index Motor")
     private TalonFX indexMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR);
     private GenericEntry indexSpeed;
 
