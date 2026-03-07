@@ -8,10 +8,12 @@
     "From BumpR",
     "From Depot",
     "From Hub",
-    "From Outpost"
+    "From Outpost",
+    "Through Mid"
   ],
   "autoFolders": [
-    "Basic Autos"
+    "Basic Autos",
+    "RIT AUTOS"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -94,21 +95,31 @@ public class RobotContainer {
             // VisionConstants.LIMELIGHT_RIGHT,
             VisionConstants.LIMELIGHT_FRONT);
 
-        autoChooser = AutoBuilder.buildAutoChooser();
 
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
         // climber = new Climber();
         hood = new Hood();
 
+       NamedCommands.registerCommand("ShootatHub", autoDecideShooting());
+       NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
+       NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
+       NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+
+       
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         configureBindings();
         testingShuffleboardInit();
     }
+
+
+
 
     private void configureBindings() {
         drivetrain.setDefaultCommand(drivetrain.drive());
