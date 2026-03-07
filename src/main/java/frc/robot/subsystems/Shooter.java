@@ -98,7 +98,7 @@ public class Shooter extends SubsystemBase {
 		}
 
 		uptakeMotor.getConfigurator().apply(uptakeConfig);
-		Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter(null, null));
+		Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter());
 
 		shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
@@ -168,10 +168,5 @@ public class Shooter extends SubsystemBase {
 		} else {
 			return 0.0019*hubDist + 0.2718;
 		}
-	}
-
-	public Command startShooter(Object object) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'startShooter'");
 	}
 }
