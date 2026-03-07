@@ -85,12 +85,7 @@ public class Vision extends SubsystemBase {
             io[i].setIMUMode(mode);
         }
     }
-
-    private final VisionIO.VisionIOInputs[] inputs = new VisionIO.VisionIOInputs[] {
-            new VisionIO.VisionIOInputs(),
-            new VisionIO.VisionIOInputs(),
-            new VisionIO.VisionIOInputs() };
-
+    
     public void setUseVision(boolean usevision) {
         this.useVision = usevision;
     }
