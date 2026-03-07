@@ -145,7 +145,8 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         driverController.leftBumper().onTrue(drivetrain.runOnce(
-            () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
+            () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero))
+            .ignoringDisable(true));
 
         // driverController.leftBumper().onTrue(drivetrain.runOnce(
         //     () -> drivetrain.resetPose(new Pose2d(0, 0, new Rotation2d(0)))
