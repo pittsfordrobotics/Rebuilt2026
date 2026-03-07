@@ -186,21 +186,21 @@ public class RobotContainer {
     // }
 
     public Command autoDecideShooting(){
-        if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
-            return Commands.defer(() -> Commands.parallel(
-                hood.runHood(() -> 0.35),
+        return Commands.defer(() -> {
+            if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
+                return Commands.parallel(
+                    hood.runHood(() -> 0.35),
+                    shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                    indexer.runIndex(),
+                    intake.agitate(),
+                    drivetrain.pointAtAllianceZone());
+            }
+            return Commands.parallel(
+                hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
-                indexer.runIndex(),
+                indexer.runIndex(), 
                 intake.agitate(),
-                drivetrain.pointAtAllianceZone()), 
-                Set.of(hood, shooter, indexer, drivetrain));
-        }
-        return Commands.defer(() -> Commands.parallel(
-            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-            shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
-            indexer.runIndex(), 
-            intake.agitate(),
-            drivetrain.pointAtHub()),
-            Set.of(hood, shooter, indexer, drivetrain));
+                drivetrain.pointAtHub());
+        }, Set.of(hood, shooter, indexer, drivetrain));
     }
 }
