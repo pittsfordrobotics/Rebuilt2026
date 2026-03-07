@@ -153,7 +153,7 @@ public class Shooter extends SubsystemBase {
     }
 
 	public Command shootAtHub(Supplier<Pose2d> currentPose, Supplier<Boolean> runUptake) {
-		return runShooter(() -> shootHubSpeed(currentPose), () -> {return runUptake.get() ? .6 : 0;});
+		return runShooter(() -> shootHubSpeed(currentPose), () -> {return runUptake.get() ? .7 : 0;});
 	}
 
 	public Command shootAtHub(Supplier<Pose2d> currentPose) {

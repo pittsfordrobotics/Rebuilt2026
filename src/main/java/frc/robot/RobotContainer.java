@@ -147,6 +147,12 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
         operatorController.povUp().onTrue(intake.pivotIn());
         operatorController.leftTrigger().whileTrue(intake.agitate());
+        operatorController.y().whileTrue(Commands.parallel(
+                    hood.runHood(() -> 0.4),
+                    shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
+                    indexer.runIndex(),
+                    intake.agitate(),
+                    drivetrain.pointAtAllianceZone()));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -200,8 +206,8 @@ public class RobotContainer {
         return Commands.defer(() -> {
             if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
                 return Commands.parallel(
-                    hood.runHood(() -> 0.35),
-                    shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
+                    hood.runHood(() -> 0.4),
+                    shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
                     intake.agitate(),
                     drivetrain.pointAtAllianceZone());

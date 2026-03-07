@@ -71,7 +71,7 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             ).withSlot2(
                 new Slot2Configs()
-                .withKP(0.5)
+                .withKP(1)
                 .withKI(0.1)
                 .withKD(0)
             );
@@ -119,9 +119,9 @@ public class Intake extends SubsystemBase {
         //     Commands.waitSeconds(.5)).repeatedly()
         //     .finallyDo(() -> pivotMotor.set(0));
         return runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2))).andThen(
-            Commands.waitSeconds(.5),
+            Commands.waitSeconds(.2),
             runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2))),
-            Commands.waitSeconds(.5)
+            Commands.waitSeconds(.2)
         ).repeatedly().finallyDo(() -> pivotOut());
     }
     
