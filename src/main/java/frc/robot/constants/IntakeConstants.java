@@ -9,5 +9,5 @@ public class IntakeConstants {
 
     public static final int PIVOT_EXTENDED = 17;
     public static final int PIVOT_AGITATE1 = 17;
-    public static final int PIVOT_AGITATE2 = 15;
+    public static final int PIVOT_AGITATE2 = 13;
 }
