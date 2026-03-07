@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.838,
-        "y": 5.729
+        "x": 6.8384698795180725,
+        "y": 5.728795180722891
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.011769553022004,
-        "y": 4.6938892923769995
+        "x": 8.012239432540078,
+        "y": 4.69368447309989
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "middle fuel left"
     },
     {
       "anchor": {
@@ -53,7 +53,7 @@
   "folder": "Through Mid",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -39.41519272147367
+    "rotation": -41.55261314813479
   },
   "useDefaultConstraints": true
 }
