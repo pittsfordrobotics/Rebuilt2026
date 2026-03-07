@@ -31,7 +31,9 @@ import frc.robot.constants.ShooterConstants;
 
 
 public class Intake extends SubsystemBase {
+    @Logged(name = "Intake Drive")
     private TalonFX driveMotor = new TalonFX(IntakeConstants.INTAKE_DRIVE);
+    @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
     private GenericEntry pivotInSpeed;
