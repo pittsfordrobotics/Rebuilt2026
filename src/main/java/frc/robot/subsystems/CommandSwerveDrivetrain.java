@@ -8,8 +8,10 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -47,6 +49,7 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.VisionData;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.lib.util.SwerveHelpers;
+import frc.robot.lib.util.TalonConfigurator;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -163,6 +166,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        ConfigureMotorStatusFrames();
     }
 
     /**
@@ -190,6 +194,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        ConfigureMotorStatusFrames();
     }
 
     /**
@@ -225,8 +230,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        ConfigureMotorStatusFrames();
     }
-      private void configureAutoBuilder() {
+
+    private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
@@ -494,5 +501,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.pointAt(() -> AllianceFlipUtil.apply(
             new Translation2d(0, this.getState().Pose.getY())
         ));
+    }
+
+    private void ConfigureMotorStatusFrames()
+    {
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.getModules())
+        {
+            TalonConfigurator.ReduceCommonStatusFrameFrequencies(module.getDriveMotor());
+            TalonConfigurator.ReduceCommonStatusFrameFrequencies(module.getSteerMotor());
+        }
     }
 }
