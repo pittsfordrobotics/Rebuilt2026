@@ -28,6 +28,9 @@ public class Hood extends SubsystemBase {
 
   @Logged(name="Is at setpoint")
   public boolean isAtSetpoint() {
+    // Unfortunately the actuators only report what the setpoint is, not what position currently at.
+    // Attempt to calculate if the actuators are at their setpoint by approximating
+    // how long it takes to change positions.
     double distanceToTravel = Math.abs(previousSetPoint - currentSetPoint);
     double timeNeeded = distanceToTravel / HoodConstants.POSITION_CHANGE_RATE;
     double currentTime = Timer.getFPGATimestamp();
