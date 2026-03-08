@@ -46,11 +46,43 @@ public class Shooter extends SubsystemBase {
 		if (currentSetSpeed == 0) {
 			return false;
 		}
-		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) >= (currentSetSpeed*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
+		if ((this.getLeftMotor().getVelocity().getValue().in(RPM)
+				+ this.getMiddleMotor().getVelocity().getValue().in(RPM)
+				+ this.getRightMotor().getVelocity().getValue().in(RPM)) 
+				/ numberMotorsRunning()
+			>= (currentSetSpeed 
+				* (ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) 
+				* ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean leftMotorRunning() {
+		return this.getLeftMotor().getVelocity().getValue().in(RPM) > 0;
+	}
+
+	public boolean middleMotorRunning() {
+		return this.getMiddleMotor().getVelocity().getValue().in(RPM) > 0;
+	}
+
+	public boolean rightMotorRunning() {
+		return this.getRightMotor().getVelocity().getValue().in(RPM) > 0;
+	}
+
+	public int numberMotorsRunning() {
+		int counter = 0;
+		if (leftMotorRunning()) {
+			counter++;
+		}
+		if (middleMotorRunning()) {
+			counter++;
+		}
+		if (rightMotorRunning()) {
+			counter++;
+		}
+		return counter;
 	}
 
 	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
