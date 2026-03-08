@@ -9,10 +9,10 @@
     "From Depot",
     "From Hub",
     "From Outpost",
-    "Through Mid"
+    "right mid",
+    "left mid"
   ],
   "autoFolders": [
-    "Basic Autos",
     "RIT AUTOS"
   ],
   "defaultMaxVel": 3.0,
