@@ -369,10 +369,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // *******************
     // Logging methods
     // *******************
-    /*@Logged(name = "Rotation Degrees")
+    @Logged(name = "Rotation Degrees")
     public double getRotationDegrees() {
-        return swerveDrive.getYaw().getDegrees();
-    }*/
+        return this.getState().RawHeading.getDegrees();
+    }
 
     @Logged(name = "FR Drive Motor")
     public TalonFX getFrontRightDriveMotor() {
@@ -500,5 +500,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.driveToPoint(() ->
             new Translation2d(Units.inchesToMeters(-0.7536*dist.getAsDouble()+182.11),
             Units.inchesToMeters(-0.6574*dist.getAsDouble()+158.85))).andThen(this.pointAtHub());
+    }
+
+    public Command pointAtAllianceZone(){
+        return this.pointAt(() -> AllianceFlipUtil.apply(
+            new Translation2d(0, this.getState().Pose.getY())
+        ));
     }
 }

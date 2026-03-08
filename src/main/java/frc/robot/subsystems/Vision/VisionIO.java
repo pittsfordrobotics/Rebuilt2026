@@ -64,6 +64,26 @@ public interface VisionIO {
         }
     }
 
+
+    enum IMUMode {
+        EXTERNAL_ONLY(0),
+        EXTERNAL_SEED(1),
+        INTERNAL_ONLY(2),
+        INTERNAL_MT1_ASSIST(3),
+        INTERNAL_EXTERNAL_ASSIST(4);
+
+        private final int num;
+
+        IMUMode(int num) {
+            this.num = num;
+        }
+
+        public int getNum() {
+            return num;
+        }
+    }
+
+
     /** Updates the set of loggable inputs. */
     default void updateInputs(VisionIOInputs inputs, double gyroAngle) {}
 
