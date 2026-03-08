@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.units.Units.*;
 import frc.robot.constants.ClimberConstants;
+import frc.robot.lib.util.TalonConfigurator;
 
 public class Climber extends SubsystemBase {
     @Logged(name = "Climber Motor")
@@ -35,6 +36,7 @@ public class Climber extends SubsystemBase {
                     .withStatorCurrentLimitEnable(true));
         
         climberMotor.getConfigurator().apply(config);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(climberMotor);
 
         climberSpeed = Shuffleboard.getTab("testing").add("Climber Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Climber", this.runClimber(() -> climberSpeed.getDouble(0.25)));

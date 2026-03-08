@@ -12,10 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.lib.util.ShooterHelpers;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Indexer;
@@ -43,10 +39,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO.IMUMode;
-import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.FieldConstants;
-import frc.robot.constants.IndexerConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -153,6 +146,8 @@ public class RobotContainer {
                     indexer.runIndex(),
                     intake.agitate(),
                     drivetrain.pointAtAllianceZone()));
+
+        operatorController.povDown().onTrue(intake.resetEncoder());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

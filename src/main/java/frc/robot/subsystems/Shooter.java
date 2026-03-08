@@ -19,16 +19,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.FieldConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.lib.util.ShooterHelpers;
+import frc.robot.lib.util.TalonConfigurator;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -46,11 +43,47 @@ public class Shooter extends SubsystemBase {
 		if (currentSetSpeed == 0) {
 			return false;
 		}
-		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) >= (currentSetSpeed*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
+		int numberMotors = numberMotorsRunning();
+		if (numberMotors == 0) {
+			return false;
+		}
+		if ((this.getLeftMotor().getVelocity().getValue().in(RPM)
+				+ this.getMiddleMotor().getVelocity().getValue().in(RPM)
+				+ this.getRightMotor().getVelocity().getValue().in(RPM)) 
+				/ numberMotors
+			>= (currentSetSpeed 
+				* (ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) 
+				* ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean leftMotorRunning() {
+		return this.getLeftMotor().getVelocity().getValue().in(RPM) > 0;
+	}
+
+	public boolean middleMotorRunning() {
+		return this.getMiddleMotor().getVelocity().getValue().in(RPM) > 0;
+	}
+
+	public boolean rightMotorRunning() {
+		return this.getRightMotor().getVelocity().getValue().in(RPM) > 0;
+	}
+
+	public int numberMotorsRunning() {
+		int counter = 0;
+		if (leftMotorRunning()) {
+			counter++;
+		}
+		if (middleMotorRunning()) {
+			counter++;
+		}
+		if (rightMotorRunning()) {
+			counter++;
+		}
+		return counter;
 	}
 
 	public final TalonFX[] shooterMotors = new TalonFX[ShooterConstants.SHOOTER_MOTORS.length];
@@ -58,10 +91,7 @@ public class Shooter extends SubsystemBase {
 	@Logged(name="Uptake Motor")
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
 
-	
-
 	public Shooter() {
-
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
 					.withNeutralMode(NeutralModeValue.Coast))
@@ -95,6 +125,7 @@ public class Shooter extends SubsystemBase {
 		for (int i = 0; i < shooterMotors.length; i++) {
 			shooterMotors[i] = new TalonFX(ShooterConstants.SHOOTER_MOTORS[i]);
 			shooterMotors[i].getConfigurator().apply(shooterConfig);
+			TalonConfigurator.reduceCommonStatusFrameFrequencies(shooterMotors[i]);
 		}
 
 		uptakeMotor.getConfigurator().apply(uptakeConfig);
