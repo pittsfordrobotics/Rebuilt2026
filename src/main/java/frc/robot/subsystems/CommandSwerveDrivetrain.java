@@ -435,30 +435,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.applyRequest(() -> {
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
+                double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
                 if(heading != null) {
-                    if (slowModeEnabled){
-                        return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed * TunerConstants.kSlowModePercent)
-                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                    return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+                        .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                         .withTargetDirection(AllianceFlipUtil.apply(heading));
-                    } else {
-                        return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                        .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                        .withTargetDirection(AllianceFlipUtil.apply(heading));
-                    }
+                    
                 }
-                if (slowModeEnabled) {
-                    return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed * TunerConstants.kSlowModePercent)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                return drive.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                     .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
-                } else {
-                    return drive.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
-                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
-                }
+                
                 
             }
         );

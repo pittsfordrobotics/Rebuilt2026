@@ -126,7 +126,6 @@ public class RobotContainer {
         
         driverController.a().toggleOnTrue(drivetrain.brake());
         driverController.b().whileTrue(drivetrain.pointAtHub());
-        driverController.x().whileTrue(drivetrain.driveToPoint(FieldConstants.flippedHubPosition));
         driverController.x().and(driverController.b()).whileTrue(drivetrain.driveToAndPointAt(FieldConstants.flippedHubPosition));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
