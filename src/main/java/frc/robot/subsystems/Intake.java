@@ -16,8 +16,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.epilogue.Logged;
@@ -27,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
-import frc.robot.constants.ShooterConstants;
+import frc.robot.lib.util.TalonConfigurator;
 
 
 public class Intake extends SubsystemBase {
@@ -36,10 +34,6 @@ public class Intake extends SubsystemBase {
     @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
-    private GenericEntry pivotInSpeed;
-    private GenericEntry pivotOutSpeed;
-
-
 
     /** Creates a new intake. */
     public Intake() {
@@ -71,13 +65,16 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             ).withSlot2(
                 new Slot2Configs()
-                .withKP(0.5)
-                .withKI(0.1)
+                .withKP(1.5)
+                .withKI(0)
                 .withKD(0)
             );
 
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
+
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(pivotMotor);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));
@@ -113,10 +110,21 @@ public class Intake extends SubsystemBase {
 
     public Command agitate() {
         //I'M AGITATED
-        return run(() -> pivotMotor.set(.2)).andThen(
-            Commands.waitSeconds(.5),
-            run(() -> pivotMotor.set(-.2)),
-            Commands.waitSeconds(.5)).repeatedly();
+        // return runOnce(() -> pivotMotor.set(-.05)).andThen(
+        //     Commands.waitSeconds(.5),
+        //     runOnce(() -> pivotMotor.set(.05)),
+        //     Commands.waitSeconds(.5)).repeatedly()
+        //     .finallyDo(() -> pivotMotor.set(0));
+        return runOnce(() -> {
+                pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2));
+                driveMotor.set(0.9);
+            }).andThen(Commands.waitSeconds(.2),
+            runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2))),
+            Commands.waitSeconds(.2)).repeatedly()
+            .finallyDo(() -> {
+                pivotOut();
+                driveMotor.set(0);}
+        );
     }
     
     @Override
@@ -132,5 +140,9 @@ public class Intake extends SubsystemBase {
     @Logged(name = "Intake pivot")
     public TalonFX getPivotMotor(){
         return pivotMotor;
+    }
+
+    public Command resetEncoder() {
+        return run(() -> this.pivotMotor.setPosition(0));
     }
 }

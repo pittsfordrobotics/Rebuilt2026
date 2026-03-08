@@ -9,12 +9,10 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.lib.util.ShooterHelpers;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Indexer;
@@ -41,10 +38,8 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.constants.ClimberConstants;
+import frc.robot.subsystems.Vision.VisionIO.IMUMode;
 import frc.robot.constants.FieldConstants;
-import frc.robot.constants.IndexerConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -86,28 +81,38 @@ public class RobotContainer {
         DriverStation.startDataLog(DataLogManager.getLog());
 		
         vision = new Vision(
-            () -> drivetrain.getState().RawHeading,
+            () -> drivetrain.getState().Pose.getRotation(),
             () -> drivetrain.getState().Speeds.omegaRadiansPerSecond,
             drivetrain::addVisionMeasurement,
             // VisionConstants.LIMELIGHT_LEFT,
             // VisionConstants.LIMELIGHT_RIGHT,
             VisionConstants.LIMELIGHT_FRONT);
 
-        autoChooser = AutoBuilder.buildAutoChooser();
 
         // Another option that allows you to specify the default auto by its name
         // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
         intake= new Intake();
         shooter = new Shooter();
         indexer = new Indexer();
         // climber = new Climber();
         hood = new Hood();
 
+       NamedCommands.registerCommand("ShootatHub", autoDecideShooting());
+       NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
+       NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
+       NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+
+       
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         configureBindings();
         testingShuffleboardInit();
     }
+
+
+
 
     private void configureBindings() {
         drivetrain.setDefaultCommand(drivetrain.drive());
@@ -139,6 +144,14 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
         operatorController.povUp().onTrue(intake.pivotIn());
         operatorController.leftTrigger().whileTrue(intake.agitate());
+        operatorController.y().whileTrue(Commands.parallel(
+                    hood.runHood(() -> 0.4),
+                    shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
+                    indexer.runIndex(),
+                    intake.agitate(),
+                    drivetrain.pointAtAllianceZone()));
+
+        operatorController.povDown().onTrue(intake.resetEncoder());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -148,12 +161,11 @@ public class RobotContainer {
         driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        driverController.leftBumper().onTrue(drivetrain.runOnce(
-            () -> drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero)));
+        driverController.leftBumper().onTrue(
+                Commands.runOnce(() -> { vision.setIMU(IMUMode.EXTERNAL_SEED.getNum()); }).ignoringDisable(true)
+                    .andThen(() -> { drivetrain.resetRotation(AllianceFlipUtil.isRed() ? Rotation2d.k180deg : Rotation2d.kZero); }).ignoringDisable(true))
+            .onFalse(Commands.runOnce(() ->{ vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum()); }).ignoringDisable(true));
 
-        // driverController.leftBumper().onTrue(drivetrain.runOnce(
-        //     () -> drivetrain.resetPose(new Pose2d(0, 0, new Rotation2d(0)))
-        // ));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
@@ -184,21 +196,26 @@ public class RobotContainer {
     // }
 
     public Command autoDecideShooting(){
-        if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
-            return Commands.defer(() -> Commands.parallel(
-                hood.runHood(() -> 0.35),
-                shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
-                indexer.runIndex(),
+        return Commands.defer(() -> {
+            if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
+                // In neutral zone, set the shooter to pass to the alliance area.
+                return Commands.parallel(
+                    hood.runHood(() -> 0.4),
+                    shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
+                    indexer.runIndex(),
+                    intake.agitate(),
+                    drivetrain.pointAtAllianceZone());
+            }
+            // In the alliance area, set the shooter to shoot in the hub.
+            return Commands.parallel(
+                hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                    .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+                        .until(() -> shooter.isAtSpeed()))
+                        .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
+                indexer.runIndex(), 
                 intake.agitate(),
-                drivetrain.pointAtAllianceZone()), 
-                Set.of(hood, shooter, indexer, drivetrain));
-        }
-        return Commands.defer(() -> Commands.parallel(
-            hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-            shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false).until(() -> shooter.isAtSpeed()).andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)), 
-            indexer.runIndex(), 
-            intake.agitate(),
-            drivetrain.pointAtHub()),
-            Set.of(hood, shooter, indexer, drivetrain));
+                drivetrain.pointAtHub());
+        }, Set.of(hood, shooter, indexer, drivetrain));
     }
 }
