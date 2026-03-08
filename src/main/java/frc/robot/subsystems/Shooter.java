@@ -125,7 +125,7 @@ public class Shooter extends SubsystemBase {
 		for (int i = 0; i < shooterMotors.length; i++) {
 			shooterMotors[i] = new TalonFX(ShooterConstants.SHOOTER_MOTORS[i]);
 			shooterMotors[i].getConfigurator().apply(shooterConfig);
-			TalonConfigurator.ReduceCommonStatusFrameFrequencies(shooterMotors[i]);
+			TalonConfigurator.reduceCommonStatusFrameFrequencies(shooterMotors[i]);
 		}
 
 		uptakeMotor.getConfigurator().apply(uptakeConfig);

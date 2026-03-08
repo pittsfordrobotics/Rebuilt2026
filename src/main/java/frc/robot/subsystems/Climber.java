@@ -36,7 +36,7 @@ public class Climber extends SubsystemBase {
                     .withStatorCurrentLimitEnable(true));
         
         climberMotor.getConfigurator().apply(config);
-        TalonConfigurator.ReduceCommonStatusFrameFrequencies(climberMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(climberMotor);
 
         climberSpeed = Shuffleboard.getTab("testing").add("Climber Speed", .25).getEntry();
         Shuffleboard.getTab("testing").add("Run Climber", this.runClimber(() -> climberSpeed.getDouble(0.25)));

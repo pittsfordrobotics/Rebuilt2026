@@ -10,7 +10,7 @@ public class TalonConfigurator {
     private static final Frequency fourPerSecond = Frequency.ofRelativeUnits(4, Units.Hertz);
     private static final Frequency fiftyPerSecond = Frequency.ofRelativeUnits(50, Units.Hertz);
 
-    public static void ReduceCommonStatusFrameFrequencies(TalonFX talonFx)
+    public static void reduceCommonStatusFrameFrequencies(TalonFX talonFx)
     {
         // Version status frames default to 4 Hz.
         talonFx.getVersion().setUpdateFrequency(onePerSecond);

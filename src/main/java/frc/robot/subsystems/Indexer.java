@@ -41,7 +41,7 @@ public class Indexer extends SubsystemBase {
                 .withInverted(InvertedValue.Clockwise_Positive));
         
         indexMotor.getConfigurator().apply(config);
-        TalonConfigurator.ReduceCommonStatusFrameFrequencies(indexMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(indexMotor);
 
         indexSpeed = Shuffleboard.getTab("testing").add("Index Speed", .9).getEntry();
 

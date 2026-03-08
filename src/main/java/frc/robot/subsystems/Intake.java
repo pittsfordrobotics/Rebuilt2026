@@ -80,8 +80,8 @@ public class Intake extends SubsystemBase {
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
 
-        TalonConfigurator.ReduceCommonStatusFrameFrequencies(driveMotor);
-        TalonConfigurator.ReduceCommonStatusFrameFrequencies(pivotMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(pivotMotor);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));

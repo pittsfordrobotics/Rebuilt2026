@@ -166,7 +166,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        ConfigureMotorStatusFrames();
+        configureMotorStatusFrames();
     }
 
     /**
@@ -194,7 +194,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        ConfigureMotorStatusFrames();
+        configureMotorStatusFrames();
     }
 
     /**
@@ -230,7 +230,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        ConfigureMotorStatusFrames();
+        configureMotorStatusFrames();
     }
 
     private void configureAutoBuilder() {
@@ -503,12 +503,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         ));
     }
 
-    private void ConfigureMotorStatusFrames()
+    private void configureMotorStatusFrames()
     {
         for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.getModules())
         {
-            TalonConfigurator.ReduceCommonStatusFrameFrequencies(module.getDriveMotor());
-            TalonConfigurator.ReduceCommonStatusFrameFrequencies(module.getSteerMotor());
+            TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getDriveMotor());
+            TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getSteerMotor());
         }
     }
 }
