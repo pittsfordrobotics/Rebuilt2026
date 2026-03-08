@@ -133,9 +133,10 @@ public class RobotContainer {
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
         //Run Shooter
-        operatorController.b().whileTrue(autoDecideShooting())
-          .onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
-          .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
+        operatorController.b().whileTrue(
+            Commands.runOnce(() -> drivetrain.enableSlowDrive())
+            .andThen(autoDecideShooting()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
