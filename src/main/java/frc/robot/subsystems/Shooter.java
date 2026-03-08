@@ -46,10 +46,14 @@ public class Shooter extends SubsystemBase {
 		if (currentSetSpeed == 0) {
 			return false;
 		}
+		int numberMotors = numberMotorsRunning();
+		if (numberMotors == 0) {
+			return false;
+		}
 		if ((this.getLeftMotor().getVelocity().getValue().in(RPM)
 				+ this.getMiddleMotor().getVelocity().getValue().in(RPM)
 				+ this.getRightMotor().getVelocity().getValue().in(RPM)) 
-				/ numberMotorsRunning()
+				/ numberMotors
 			>= (currentSetSpeed 
 				* (ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) 
 				* ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
