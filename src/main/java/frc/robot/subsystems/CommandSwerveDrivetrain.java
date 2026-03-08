@@ -8,8 +8,10 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -47,6 +49,7 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.VisionData;
 import frc.robot.lib.util.AllianceFlipUtil;
 import frc.robot.lib.util.SwerveHelpers;
+import frc.robot.lib.util.TalonConfigurator;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -163,6 +166,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureMotorStatusFrames();
     }
 
     /**
@@ -190,6 +194,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureMotorStatusFrames();
     }
 
     /**
@@ -225,8 +230,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        configureMotorStatusFrames();
     }
-      private void configureAutoBuilder() {
+
+    private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
@@ -367,9 +374,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // *******************
     // Logging methods
     // *******************
-    @Logged(name = "Rotation Degrees")
+    @Logged(name = "Raw Rotation Degrees")
     public double getRotationDegrees() {
         return this.getState().RawHeading.getDegrees();
+    }
+
+    @Logged(name = "Pigeon Heading")
+    public double getPigeonHeading() {
+        return this.getPigeon2().getYaw().getValue().in(Degree);
+    }
+
+    @Logged(name = "Pose Heading")
+    public double getPoseHeading() {
+        return this.getState().Pose.getRotation().getDegrees();
     }
 
     @Logged(name = "FR Drive Motor")
@@ -484,5 +501,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.pointAt(() -> AllianceFlipUtil.apply(
             new Translation2d(0, this.getState().Pose.getY())
         ));
+    }
+
+    private void configureMotorStatusFrames()
+    {
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.getModules())
+        {
+            TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getDriveMotor());
+            TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getSteerMotor());
+        }
     }
 }
