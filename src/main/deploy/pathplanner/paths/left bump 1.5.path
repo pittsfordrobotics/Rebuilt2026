@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5775347222222225,
-        "y": 2.523333333333334
+        "x": 5.656390870185448,
+        "y": 5.568231098430813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8059548611111107,
-        "y": 1.7989930555555556
+        "x": 6.568680411563008,
+        "y": 5.6726381400919
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "left bump end"
     },
     {
       "anchor": {
-        "x": 0.4938659058487873,
-        "y": 0.6903566333808839
+        "x": 7.157275320970041,
+        "y": 7.10793152639087
       },
       "prevControl": {
-        "x": 1.7064507906069712,
-        "y": 0.690356633380884
+        "x": 6.506981494348315,
+        "y": 7.013343176100008
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "outpost"
+      "linkedName": "mid fuel start"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -55.78429786756253
   },
   "reversed": false,
-  "folder": "From BumpR",
+  "folder": "left mid",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -88.69804732742112
   },
   "useDefaultConstraints": true
 }
