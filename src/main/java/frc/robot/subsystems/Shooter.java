@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.lib.util.ShooterHelpers;
+import frc.robot.lib.util.TalonConfigurator;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -94,10 +95,7 @@ public class Shooter extends SubsystemBase {
 	@Logged(name="Uptake Motor")
 	final TalonFX uptakeMotor = new TalonFX(ShooterConstants.UPTAKE_MOTOR);
 
-	
-
 	public Shooter() {
-
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
 				.withMotorOutput(new MotorOutputConfigs()
 					.withNeutralMode(NeutralModeValue.Coast))
@@ -131,6 +129,7 @@ public class Shooter extends SubsystemBase {
 		for (int i = 0; i < shooterMotors.length; i++) {
 			shooterMotors[i] = new TalonFX(ShooterConstants.SHOOTER_MOTORS[i]);
 			shooterMotors[i].getConfigurator().apply(shooterConfig);
+			TalonConfigurator.reduceCommonStatusFrameFrequencies(shooterMotors[i]);
 		}
 
 		uptakeMotor.getConfigurator().apply(uptakeConfig);
