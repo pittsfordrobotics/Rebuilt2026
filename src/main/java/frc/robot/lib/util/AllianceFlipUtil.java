@@ -28,6 +28,14 @@ public class AllianceFlipUtil {
     }
   }
 
+  public static double flipX(double x) {
+    if(shouldFlip()) {
+      return FieldConstants.fieldLength - x;
+    } else {
+      return x;
+    }
+  }
+
   /** Flips a pose to the correct side of the field based on the current alliance color. */
   public static Pose2d apply(Pose2d pose) {
     if (shouldFlip()) {
