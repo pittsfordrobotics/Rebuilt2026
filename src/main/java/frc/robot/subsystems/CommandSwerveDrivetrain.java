@@ -462,7 +462,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command pointAtHub() {
-        return this.pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
+        return this.pointAt(FieldConstants.flippedHubPosition);
     }
 
     public Command brake() {
