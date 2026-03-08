@@ -143,6 +143,6 @@ public class Intake extends SubsystemBase {
     }
 
     public Command resetEncoder() {
-        return run(() -> this.pivotMotor.setPosition(0));
+        return run(() -> this.pivotMotor.getConfigurator().setPosition(0));
     }
 }

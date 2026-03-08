@@ -462,7 +462,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command pointAtHub() {
-        return this.pointAt(() -> AllianceFlipUtil.apply(FieldConstants.blueHubPosition));
+        return this.pointAt(FieldConstants.flippedHubPosition);
     }
 
     public Command brake() {
@@ -498,9 +498,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command pointAtAllianceZone(){
-        return this.pointAt(() -> AllianceFlipUtil.apply(
-            new Translation2d(0, this.getState().Pose.getY())
-        ));
+        // return this.pointAt(() -> AllianceFlipUtil.apply(
+        //     new Translation2d(0, this.getState().Pose.getY())
+        // ));
+
+        return this.pointAt(() -> new Translation2d(AllianceFlipUtil.flipX(0), this.getState().Pose.getY()));
     }
 
     private void configureMotorStatusFrames()
