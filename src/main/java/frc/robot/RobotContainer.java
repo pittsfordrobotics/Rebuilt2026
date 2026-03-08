@@ -145,7 +145,7 @@ public class RobotContainer {
                     intake.agitate(),
                     drivetrain.pointAtAllianceZone()));
 
-        operatorController.povDown().onTrue(intake.resetEncoder());
+        operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true));
 
         operatorController.x().whileTrue(shooter.trenchShoot());
 

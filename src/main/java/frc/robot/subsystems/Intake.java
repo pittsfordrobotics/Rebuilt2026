@@ -20,6 +20,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -143,6 +144,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command resetEncoder() {
-        return run(() -> this.pivotMotor.setPosition(0));
+        return run(() -> {
+            if(DriverStation.isDisabled()) {
+                this.pivotMotor.setPosition(0);
+            }
+        });
     }
 }
