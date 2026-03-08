@@ -1,7 +1,5 @@
 package frc.robot.Logging;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.CustomLoggerFor;

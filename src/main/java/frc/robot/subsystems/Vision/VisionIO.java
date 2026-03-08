@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.robot.lib.util.LimelightHelpers;
 
 /** Vision subsystem hardware interface. */
 public interface VisionIO {

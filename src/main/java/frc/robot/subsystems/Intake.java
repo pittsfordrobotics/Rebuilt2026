@@ -16,8 +16,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.epilogue.Logged;
@@ -27,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.lib.util.TalonConfigurator;
 
 
@@ -37,10 +34,6 @@ public class Intake extends SubsystemBase {
     @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
-    private GenericEntry pivotInSpeed;
-    private GenericEntry pivotOutSpeed;
-
-
 
     /** Creates a new intake. */
     public Intake() {
@@ -147,5 +140,9 @@ public class Intake extends SubsystemBase {
     @Logged(name = "Intake pivot")
     public TalonFX getPivotMotor(){
         return pivotMotor;
+    }
+
+    public Command resetEncoder() {
+        return run(() -> this.pivotMotor.setPosition(0));
     }
 }
