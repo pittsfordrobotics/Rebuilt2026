@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IndexerConstants;
+import frc.robot.lib.util.TalonConfigurator;
 
 
 public class Indexer extends SubsystemBase {
@@ -40,6 +41,7 @@ public class Indexer extends SubsystemBase {
                 .withInverted(InvertedValue.Clockwise_Positive));
         
         indexMotor.getConfigurator().apply(config);
+        TalonConfigurator.ReduceCommonStatusFrameFrequencies(indexMotor);
 
         indexSpeed = Shuffleboard.getTab("testing").add("Index Speed", .9).getEntry();
 

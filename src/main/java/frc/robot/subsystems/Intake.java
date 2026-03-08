@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.lib.util.TalonConfigurator;
 
 
 public class Intake extends SubsystemBase {
@@ -78,6 +79,9 @@ public class Intake extends SubsystemBase {
 
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
+
+        TalonConfigurator.ReduceCommonStatusFrameFrequencies(driveMotor);
+        TalonConfigurator.ReduceCommonStatusFrameFrequencies(pivotMotor);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));
