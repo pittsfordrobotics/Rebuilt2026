@@ -11,18 +11,34 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.HoodConstants;
 import frc.robot.lib.util.ShooterHelpers;
 
 public class Hood extends SubsystemBase {
 
   @Logged(name="Left Actuator")
-	final Servo hood_L = new Servo(ShooterConstants.HOOD_ACTUATOR_L);
+	final Servo hood_L = new Servo(HoodConstants.HOOD_ACTUATOR_L);
+
 	@Logged(name="Right Actuator")
-  final Servo hood_R = new Servo(ShooterConstants.HOOD_ACTUATOR_R);
+  final Servo hood_R = new Servo(HoodConstants.HOOD_ACTUATOR_R);
+
+  @Logged(name="Is at setpoint")
+  public boolean isAtSetpoint() {
+    double distanceToTravel = Math.abs(previousSetPoint - currentSetPoint);
+    double timeNeeded = distanceToTravel / HoodConstants.POSITION_CHANGE_RATE;
+    double currentTime = Timer.getFPGATimestamp();
+    
+    return currentTime > (lastSetTimeSeconds + timeNeeded);
+  }
+
+  private double previousSetPoint = 0;
+  private double currentSetPoint = 0.2; // When starting, assume we're fully lowered.
+  private double lastSetTimeSeconds = 0;
+
   private GenericEntry hoodPercent;
   /** Creates a new Hood. */
   public Hood() {
@@ -36,14 +52,29 @@ public class Hood extends SubsystemBase {
   }
 
   public Command runHood(DoubleSupplier position) {
-		return run(() -> {hood_L.set(position.getAsDouble()); hood_R.set(position.getAsDouble());});
+		return run(() -> {setHoodPosition(position.getAsDouble());});
 	}
 
-  public Command runHoodForShoot(Supplier<Pose2d> currentPose){
-    double hubDist = ShooterHelpers.getHubDistInches(currentPose);
-    if (hubDist < 100){
-      return runHood(() -> 0.2);
+  public Command runHoodForShoot(Supplier<Pose2d> currentPose) {
+    return runHood(() -> calculateHoodPositionFromPose(currentPose));
+  }
+
+  private void setHoodPosition(double position) {
+    hood_L.set(position);
+    hood_R.set(position);
+    if (position != currentSetPoint) {
+      previousSetPoint = currentSetPoint;
+      currentSetPoint = position;
+      lastSetTimeSeconds = Timer.getFPGATimestamp();
     }
-    return runHood(() -> 0.35);
+  }
+
+  private double calculateHoodPositionFromPose(Supplier<Pose2d> currentPose) {
+    double hubDistInches = ShooterHelpers.getHubDistInches(currentPose);
+    if (hubDistInches < HoodConstants.HUB_DISTANCE_FOR_NEAR_SHOOTING_INCHES) {
+      return HoodConstants.CLOSE_SHOOTING_SETPOINT;
+    }
+
+    return HoodConstants.FAR_SHOOTING_SETPOINT;
   }
 }
