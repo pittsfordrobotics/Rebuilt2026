@@ -46,10 +46,43 @@ public class Shooter extends SubsystemBase {
 		if (currentSetSpeed == 0) {
 			return false;
 		}
-		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) >= (currentSetSpeed*(ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) * ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
+		if ((this.getLeftMotor().getVelocity().getValue().in(RPM)
+				+ this.getMiddleMotor().getVelocity().getValue().in(RPM)
+				+ this.getRightMotor().getVelocity().getValue().in(RPM)) 
+				/ (leftMotorRunning() + middleMotorRunning() + rightMotorRunning())
+			>= (currentSetSpeed 
+				* (ShooterConstants.kFreeSpeed.in(RotationsPerSecond)*60)) 
+				* ShooterConstants.IS_AT_SPEED_PERCENTAGE) {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	@Logged(name = "Left motor running")
+	public int leftMotorRunning() {
+		if (this.getLeftMotor().getVelocity().getValue().in(RPM) > 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	@Logged(name = "Middle motor running")
+	public int middleMotorRunning() {
+		if (this.getMiddleMotor().getVelocity().getValue().in(RPM) > 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	@Logged(name = "Right motor running")
+	public int rightMotorRunning() {
+		if (this.getRightMotor().getVelocity().getValue().in(RPM) > 0) {
+			return 1;
+		} else {
+			return 0;
 		}
 	}
 
