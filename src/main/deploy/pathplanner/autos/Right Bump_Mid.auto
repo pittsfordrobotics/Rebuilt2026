@@ -1,0 +1,74 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Over Right Bump"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOut"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Prep for right mid"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Mid Pickup"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Mid Back to Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Over Right Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BumpR Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootatHub"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "RIT AUTOS",
+  "choreoAuto": false
+}

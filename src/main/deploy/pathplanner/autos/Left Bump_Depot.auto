@@ -5,31 +5,25 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "LBump Start to Mid Step 1"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "IntakeOut"
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LBump Start to Mid Step 2"
+                  "pathName": "BumpL to Depot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "IntakeRun"
+                  "name": "RunIntake"
                 }
               }
             ]
@@ -38,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LBump Start to Mid Step 3"
+            "pathName": "Depot shot prep"
           }
         },
         {

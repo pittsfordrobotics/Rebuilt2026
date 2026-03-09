@@ -144,9 +144,9 @@ public class Intake extends SubsystemBase {
     }
 
     public Command resetEncoder() {
-        return run(() -> {
+        return runOnce(() -> {
             if(DriverStation.isDisabled()) {
-                this.pivotMotor.setPosition(0);
+                this.pivotMotor.getConfigurator().setPosition(0);
             }
         });
     }

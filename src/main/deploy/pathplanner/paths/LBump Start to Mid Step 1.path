@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "middle fuel left"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": -41.55261314813479
   },
   "reversed": false,
-  "folder": "Through Mid",
+  "folder": "left mid",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 1.3019526725787007

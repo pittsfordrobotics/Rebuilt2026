@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BumpR to Outpost"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOut"
+            "pathName": "trenchR to outpost"
           }
         },
         {

@@ -5,25 +5,37 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Over left Bump"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "IntakeOut"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
+          "data": {
+            "pathName": "left bump 1.5"
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BumpL to Depot"
+                  "pathName": "LBump Start to Mid Step 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake"
+                  "name": "IntakeRun"
                 }
               }
             ]
@@ -32,7 +44,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot to left bump"
+            "pathName": "LBump Start to Mid Step 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Over left Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bump L to Shoot"
           }
         },
         {

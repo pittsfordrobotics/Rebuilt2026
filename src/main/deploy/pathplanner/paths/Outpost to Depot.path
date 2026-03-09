@@ -3,32 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5775347222222225,
-        "y": 2.523333333333334
+        "x": 0.4938659058487873,
+        "y": 0.6903566333808839
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8059548611111107,
-        "y": 1.7989930555555556
+        "x": 1.5927551718804813,
+        "y": 2.712722967447797
+      },
+      "isLocked": false,
+      "linkedName": "outpost"
+    },
+    {
+      "anchor": {
+        "x": 2.162952924393723,
+        "y": 3.8085734664764628
+      },
+      "prevControl": {
+        "x": 1.766899159932287,
+        "y": 2.638423952037019
+      },
+      "nextControl": {
+        "x": 2.264611856824709,
+        "y": 4.108927007072925
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.4938659058487873,
-        "y": 0.6903566333808839
+        "x": 1.6842225392296717,
+        "y": 5.969329529243937
       },
       "prevControl": {
-        "x": 1.7064507906069712,
-        "y": 0.690356633380884
+        "x": 1.8474809795442604,
+        "y": 5.307233068846618
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "outpost"
+      "linkedName": "Depot-Far"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -45,7 +66,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "From BumpR",
+  "folder": "From Outpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
