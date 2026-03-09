@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -88.89829388479356
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "From BumpR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -89.37724431279368
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

@@ -48,7 +48,7 @@
   "folder": "From BumpR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -89.37724431279368
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
