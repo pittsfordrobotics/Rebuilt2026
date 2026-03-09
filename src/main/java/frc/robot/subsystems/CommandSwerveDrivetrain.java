@@ -437,20 +437,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
                 double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
-                Rotation2d adjustedHeading = SwerveHelpers.getHeadingFromStick(
-                    slowModeEnabled ? () -> controller.getRightY() * TunerConstants.kSlowModePercent : () -> controller.getRightY(),
-                    slowModeEnabled ? () -> controller.getRightX() * TunerConstants.kSlowModePercent : () -> controller.getRightX());
+                double adjustedMaxAngularRate = slowModeEnabled ? RotationsPerSecond.of(2.5).in(RadiansPerSecond) * TunerConstants.kSlowModePercent :
+                RotationsPerSecond.of(2.5).in(RadiansPerSecond);
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
                         .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                        .withTargetDirection(AllianceFlipUtil.apply(adjustedHeading));
-                    
+                        .withTargetDirection(AllianceFlipUtil.apply(heading));
+
                 }
                 return drive.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
                     .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * MaxAngularRate);
+                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * adjustedMaxAngularRate);
                 
                 
             }
