@@ -112,8 +112,6 @@ public class RobotContainer {
     }
 
 
-
-
     private void configureBindings() {
         drivetrain.setDefaultCommand(drivetrain.drive());
         
@@ -126,13 +124,17 @@ public class RobotContainer {
         
         driverController.a().toggleOnTrue(drivetrain.brake());
         driverController.b().whileTrue(drivetrain.pointAtHub());
-        driverController.x().whileTrue(drivetrain.driveToPoint(FieldConstants.flippedHubPosition));
         driverController.x().and(driverController.b()).whileTrue(drivetrain.driveToAndPointAt(FieldConstants.flippedHubPosition));
+        driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
 
         operatorController.rightBumper().whileTrue(shooter.runShooter());
         operatorController.leftBumper().whileTrue(indexer.runIndex());
         //Run Shooter
-        operatorController.b().whileTrue(autoDecideShooting());
+        operatorController.b().whileTrue(
+            Commands.runOnce(() -> drivetrain.enableSlowDrive())
+            .andThen(autoDecideShooting()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
