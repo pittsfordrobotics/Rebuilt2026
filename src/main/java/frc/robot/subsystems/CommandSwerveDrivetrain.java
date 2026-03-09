@@ -83,7 +83,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private final double MaxAngularRate = RotationsPerSecond.of(2.5).in(RadiansPerSecond);
 
-    public boolean slowModeEnabled;
+    @Logged(name = "slowModeEnabled")
+    private boolean slowModeEnabled;
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -436,11 +437,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
                 double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
+                Rotation2d adjustedHeading = SwerveHelpers.getHeadingFromStick(
+                    slowModeEnabled ? () -> controller.getRightY() * TunerConstants.kSlowModePercent : () -> controller.getRightY(),
+                    slowModeEnabled ? () -> controller.getRightX() * TunerConstants.kSlowModePercent : () -> controller.getRightX());
                 if(heading != null) {
                     return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
                         .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                         .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-                        .withTargetDirection(AllianceFlipUtil.apply(heading));
+                        .withTargetDirection(AllianceFlipUtil.apply(adjustedHeading));
                     
                 }
                 return drive.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
@@ -465,8 +469,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 Translation2d currentPoint = this.getState().Pose.getTranslation();
                 Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
-                return driveHeading.withVelocityX(leftDeadbanded[1] * MaxSpeed)
-                    .withVelocityY(leftDeadbanded[0] * MaxSpeed)
+                double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
+                return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                     .withTargetDirection(targetHeading);
         });
