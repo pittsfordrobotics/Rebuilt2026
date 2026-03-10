@@ -149,7 +149,9 @@ public class RobotContainer {
                     intake.agitate(),
                     drivetrain.pointAtAllianceZone()));
 
-        operatorController.povDown().onTrue(intake.resetEncoder());
+        operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true));
+
+        operatorController.x().whileTrue(shooter.trenchShoot());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -193,7 +195,7 @@ public class RobotContainer {
     //         .andThen(climber.runClimber(() -> -0.4));
     // }
 
-    public Command autoDecideShooting(){
+    public Command autoDecideShooting() {
         return Commands.defer(() -> {
             if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
                 // In neutral zone, set the shooter to pass to the alliance area.
@@ -211,9 +213,20 @@ public class RobotContainer {
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
-                indexer.runIndex(), 
+                indexer.runIndex(),
                 intake.agitate(),
                 drivetrain.pointAtHub());
         }, Set.of(hood, shooter, indexer, drivetrain));
+    }
+
+    public Command trenchShoot() {
+        //This method is for in case vision/odometry is catastrophically broken and we need to shoot regardless. This has constants
+        //for a fixed position and will shoot reliably from there
+        return Commands.defer(() -> Commands.parallel(
+                hood.runHood(() -> 0.35),
+                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                    .andThen(shooter.trenchShoot()),
+                indexer.runIndex(),
+                intake.agitate()), Set.of(hood, shooter, indexer));
     }
 }
