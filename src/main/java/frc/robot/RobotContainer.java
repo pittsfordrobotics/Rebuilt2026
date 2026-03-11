@@ -150,7 +150,7 @@ public class RobotContainer {
 
         operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true));
 
-        operatorController.x().whileTrue(shooter.trenchShoot());
+        operatorController.x().whileTrue(trenchShoot());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -223,9 +223,9 @@ public class RobotContainer {
         //for a fixed position and will shoot reliably from there
         return Commands.parallel(
                 hood.runHood(() -> 0.35),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
-                    .andThen(shooter.trenchShoot()),
                 indexer.runIndex(),
-                intake.agitate());
+                intake.agitate(),
+                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                    .andThen(shooter.trenchShoot()));
     }
 }
