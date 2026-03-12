@@ -200,7 +200,7 @@ public class RobotContainer {
                 // In neutral zone, set the shooter to pass to the alliance area.
                 return Commands.parallel(
                     hood.runHood(() -> 0.4),
-                    shooter.runShooter(() -> 0.9, () -> 0.7), 
+                    shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
                     intake.agitate(),
                     drivetrain.pointAtAllianceZone());
