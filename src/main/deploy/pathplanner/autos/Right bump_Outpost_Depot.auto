@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeOut"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
@@ -20,12 +26,6 @@
           "type": "path",
           "data": {
             "pathName": "Outpost to Depot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOut"
           }
         },
         {
