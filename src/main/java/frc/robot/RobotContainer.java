@@ -124,7 +124,6 @@ public class RobotContainer {
         
         driverController.a().toggleOnTrue(drivetrain.brake());
         driverController.b().whileTrue(drivetrain.pointAtHub());
-        driverController.x().and(driverController.b()).whileTrue(drivetrain.driveToAndPointAt(FieldConstants.flippedHubPosition));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
 
@@ -142,23 +141,23 @@ public class RobotContainer {
         operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
         operatorController.povUp().onTrue(intake.pivotIn());
         operatorController.leftTrigger().whileTrue(intake.agitate());
-        operatorController.y().whileTrue(Commands.parallel(
-                    hood.runHood(() -> 0.4),
-                    shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
-                    indexer.runIndex(),
-                    intake.agitate(),
-                    drivetrain.pointAtAllianceZone()));
+        // operatorController.y().whileTrue(Commands.parallel(
+        //             hood.runHood(() -> 0.4),
+        //             shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
+        //             indexer.runIndex(),
+        //             intake.agitate(),
+        //             drivetrain.pointAtAllianceZone()));
 
         operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true));
 
-        operatorController.x().whileTrue(shooter.trenchShoot());
+        operatorController.x().whileTrue(trenchShoot());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
         driverController.leftBumper().onTrue(
@@ -222,11 +221,11 @@ public class RobotContainer {
     public Command trenchShoot() {
         //This method is for in case vision/odometry is catastrophically broken and we need to shoot regardless. This has constants
         //for a fixed position and will shoot reliably from there
-        return Commands.defer(() -> Commands.parallel(
+        return Commands.parallel(
                 hood.runHood(() -> 0.35),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
-                    .andThen(shooter.trenchShoot()),
                 indexer.runIndex(),
-                intake.agitate()), Set.of(hood, shooter, indexer));
+                intake.agitate(),
+                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                    .andThen(shooter.trenchShoot()));
     }
 }

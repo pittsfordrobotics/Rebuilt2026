@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BumpR to Outpost"
+            "pathName": "Over Right Bump"
           }
         },
         {
@@ -17,15 +17,9 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Outpost to Depot"
+            "pathName": "Prep for right mid"
           }
         },
         {
@@ -33,15 +27,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "Depot Far Intake"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "RunIntake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Mid Pickup"
                 }
               }
             ]
@@ -50,7 +44,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot turn around"
+            "pathName": "Right Mid Back to Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Over Right Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BumpR Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right shoot to outpost"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost to Right Bump"
           }
         },
         {

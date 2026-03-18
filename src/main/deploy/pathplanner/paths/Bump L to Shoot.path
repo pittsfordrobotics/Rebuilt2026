@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2368616262482157,
-        "y": 5.218887303851641
+        "x": 3.1519285714285714,
+        "y": 5.525071428571429
       },
       "isLocked": false,
       "linkedName": "left bump start"
     },
     {
       "anchor": {
-        "x": 2.8875178316690437,
-        "y": 4.49432239657632
+        "x": 2.3906964285714283,
+        "y": 5.568231098430813
       },
       "prevControl": {
-        "x": 3.0793464080245965,
-        "y": 4.721238669352381
+        "x": 2.7632142857142856,
+        "y": 5.557464285714286
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "left shoot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -19.689400445603546
+    "rotation": -40.06985110645358
   },
   "reversed": false,
   "folder": "From BumpL",

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2944790437215716,
-        "y": 3.0630299113803408
+        "x": 3.1519285714285714,
+        "y": 2.6906964285714285
       },
       "isLocked": false,
       "linkedName": "right bump start"
     },
     {
       "anchor": {
-        "x": 2.6028673323823104,
-        "y": 3.316904422253923
+        "x": 2.2287321428571425,
+        "y": 2.6311554921540665
       },
       "prevControl": {
-        "x": 2.7748946269426797,
-        "y": 3.0922599097279653
+        "x": 2.5536542184634192,
+        "y": 2.6259107142857148
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "right side shoot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 21.227651188635317
+    "rotation": 28.523118606312053
   },
   "reversed": false,
   "folder": "From BumpR",
