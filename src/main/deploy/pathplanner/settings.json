@@ -9,8 +9,9 @@
     "From Depot",
     "From Hub",
     "From Outpost",
-    "right mid",
-    "left mid"
+    "TechValleyPaths",
+    "left mid",
+    "right mid"
   ],
   "autoFolders": [
     "TechValleyAutos",
