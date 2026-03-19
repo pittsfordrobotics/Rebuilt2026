@@ -29,6 +29,9 @@ public class Indexer extends SubsystemBase {
     private TalonFX indexMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR);
     private GenericEntry indexSpeed;
 
+    @Logged(name = "Scheduled Index Command")
+    public String scheduledIndexCommand = this.getCurrentCommand().toString();
+
     /** Creates a new intake. */
     public Indexer() {
         TalonFXConfiguration config = new TalonFXConfiguration()

@@ -36,6 +36,9 @@ public class Intake extends SubsystemBase {
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
 
+    @Logged(name = "Scheduled Intake Command")
+    public String scheduledIntakeCommand = this.getCurrentCommand().toString();
+
     /** Creates a new intake. */
     public Intake() {
         TalonFXConfiguration driveConfig = new TalonFXConfiguration()
