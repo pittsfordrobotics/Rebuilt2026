@@ -38,6 +38,14 @@ public class Shooter extends SubsystemBase {
 	
 	private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
 
+	@Logged(name = "Current Command")
+    public String ShooterCurrentCommand() {
+        if (this.getCurrentCommand() == null) {
+            return "none";
+        }
+        return this.getCurrentCommand().getName();
+    }
+
 	@Logged(name = "Is at speed")
 	public boolean isAtSpeed() {
 		if (currentSetSpeed == 0) {
