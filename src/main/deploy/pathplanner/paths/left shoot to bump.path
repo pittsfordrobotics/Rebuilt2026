@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3906964285714283,
-        "y": 5.568231098430813
+        "x": 3.1943380301339284,
+        "y": 5.453079717726935
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3906964285714283,
-        "y": 5.568231098430813
+        "x": 3.839266735454421,
+        "y": 5.746919480528557
       },
       "isLocked": false,
       "linkedName": "left shoot"
@@ -20,8 +20,8 @@
         "y": 5.568231098430813
       },
       "prevControl": {
-        "x": 2.560328102710413,
-        "y": 5.568231098430813
+        "x": 3.0596774819972747,
+        "y": 5.285619119629112
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": -91.84761026599449
   },
   "reversed": false,
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -40.06985110645358
+    "rotation": -59.09940016579614
   },
   "useDefaultConstraints": true
 }
