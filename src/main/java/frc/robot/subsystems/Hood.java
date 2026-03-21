@@ -20,7 +20,6 @@ import frc.robot.lib.util.ShooterHelpers;
 
 public class Hood extends SubsystemBase {
 
-  public String scheduledHoodCommand = this.getCurrentCommand().toString();
 
   @Logged(name="Left Actuator")
 	final Servo hood_L = new Servo(HoodConstants.HOOD_ACTUATOR_L);
