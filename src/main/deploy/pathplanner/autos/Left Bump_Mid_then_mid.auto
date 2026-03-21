@@ -98,9 +98,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "left second time 1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left second time 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOut"
+                }
+              }
+            ]
           }
         },
         {

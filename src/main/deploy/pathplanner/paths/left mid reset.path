@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.653720269097223,
-        "y": 4.807104745370371
+        "x": 8.27104976851852,
+        "y": 5.568231098430813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.653720269097223,
-        "y": 4.807104745370371
+        "x": 9.27104976851852,
+        "y": 5.568231098430813
       },
       "isLocked": false,
       "linkedName": "left mid fuel end "
@@ -48,7 +48,7 @@
   "folder": "left mid",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -134.07035025735306
+    "rotation": 1.4538704735239547
   },
   "useDefaultConstraints": true
 }

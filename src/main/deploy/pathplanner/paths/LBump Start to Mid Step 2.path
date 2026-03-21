@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.867610604745371,
-        "y": 6.727000144675926
+        "x": 6.602705150462963,
+        "y": 5.568231098430813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.956921574022404,
-        "y": 5.661195396463707
+        "x": 6.852675840703161,
+        "y": 5.5644030413728105
       },
       "isLocked": false,
       "linkedName": "mid fuel start"
     },
     {
       "anchor": {
-        "x": 7.653720269097223,
-        "y": 4.807104745370371
+        "x": 8.27104976851852,
+        "y": 5.568231098430813
       },
       "prevControl": {
-        "x": 7.909273292824075,
-        "y": 5.161598451967593
+        "x": 8.021057177887423,
+        "y": 5.570155839855659
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
       "minWaypointRelativePos": 0.15887129934210528,
       "maxWaypointRelativePos": 0.9020931802835922,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 2.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": -134.07035025735306
+    "rotation": 1.4538704735239547
   },
   "reversed": false,
   "folder": "left mid",
   "idealStartingState": {
-    "velocity": 0.5,
-    "rotation": -99.33489262971811
+    "velocity": 2.0,
+    "rotation": -1.2106729835750283
   },
   "useDefaultConstraints": true
 }

@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": -91.84761026599449
+    "velocity": 2.0,
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 2.0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

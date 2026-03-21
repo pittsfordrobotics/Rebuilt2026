@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.253647325860696,
-        "y": 5.5504362197383115
+        "x": 3.253131493684814,
+        "y": 5.568231098430813
       },
       "isLocked": false,
       "linkedName": "left bump start"
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": -90.0
+    "velocity": 2.0,
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -91.84761026599449
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
