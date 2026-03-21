@@ -199,7 +199,7 @@ public class RobotContainer {
             if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
                 // In neutral zone, set the shooter to pass to the alliance area.
                 return Commands.parallel(
-                    hood.runHood(() -> 0.4),
+                    hood.runHood(() -> 0.35),
                     shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
                     intake.agitate(),
@@ -208,13 +208,21 @@ public class RobotContainer {
             // In the alliance area, set the shooter to shoot in the hub.
             return Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
-                drivetrain.pointAtHub());
+                drivetrain.pointAtHubWithBrake());
+            // return Commands.parallel(
+            //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+            //             .until(() -> shooter.isAtSpeed()))
+            //             .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true),
+            //     indexer.runIndex(),
+            //     intake.agitate(),
+            //     drivetrain.pointAtHub());
         }, Set.of(hood, shooter, indexer, drivetrain));
     }
 

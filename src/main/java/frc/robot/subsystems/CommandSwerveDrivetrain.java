@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -478,6 +479,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command pointAtHub() {
         return this.pointAt(FieldConstants.flippedHubPosition);
+    }
+
+    public Command pointAtHubWithBrake() {
+        return this.pointAt(FieldConstants.flippedHubPosition).until(() -> isPointedAtHub()).andThen(this.brake());
+    }
+
+    public boolean isPointedAtHub(){
+        Supplier<Translation2d> targetPoint = FieldConstants.flippedHubPosition;
+        Translation2d currentPoint = this.getState().Pose.getTranslation();
+        Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
+        Rotation2d currentHeading = this.getState().Pose.getRotation();
+        return Math.abs(targetHeading.minus(currentHeading).getDegrees()) <= 1;
     }
 
     public Command brake() {
