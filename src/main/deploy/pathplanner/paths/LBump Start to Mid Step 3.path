@@ -47,8 +47,8 @@
   "reversed": false,
   "folder": "left mid",
   "idealStartingState": {
-    "velocity": 0.5,
-    "rotation": -86.56636963754963
+    "velocity": 1.0,
+    "rotation": -134.07035025735306
   },
   "useDefaultConstraints": true
 }

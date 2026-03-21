@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1943380301339284,
-        "y": 5.453079717726935
+        "x": 2.9117190393518526,
+        "y": 5.805631438078703
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.839266735454421,
-        "y": 5.746919480528557
+        "x": 3.40071433738426,
+        "y": 5.766658781828703
       },
       "isLocked": false,
       "linkedName": "left shoot"
@@ -20,8 +20,8 @@
         "y": 5.568231098430813
       },
       "prevControl": {
-        "x": 3.0596774819972747,
-        "y": 5.285619119629112
+        "x": 3.311961689066633,
+        "y": 5.539698230125529
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "From BumpL",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.09940016579614
+    "rotation": -71.63161021218157
   },
   "useDefaultConstraints": true
 }
