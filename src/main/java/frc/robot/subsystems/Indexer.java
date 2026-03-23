@@ -29,6 +29,14 @@ public class Indexer extends SubsystemBase {
     private TalonFX indexMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR);
     private GenericEntry indexSpeed;
 
+    @Logged(name = "Current Command")
+    public String IndexerCurrentCommand() {
+        if (this.getCurrentCommand() == null) {
+            return "none";
+        }
+        return this.getCurrentCommand().getName();
+    }
+
     /** Creates a new intake. */
     public Indexer() {
         TalonFXConfiguration config = new TalonFXConfiguration()
