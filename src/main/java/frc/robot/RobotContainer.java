@@ -123,7 +123,7 @@ public class RobotContainer {
         );
         
         driverController.a().toggleOnTrue(drivetrain.brake().withName("Brake"));
-        driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
+        // driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
 
@@ -233,7 +233,7 @@ public class RobotContainer {
                 hood.runHood(() -> 0.35),
                 indexer.runIndex(),
                 intake.agitate(),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.trenchShoot()));
     }
 }
