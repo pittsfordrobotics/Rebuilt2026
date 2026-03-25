@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1519285714285714,
-        "y": 5.525071428571429
+        "x": 3.3123551769583814,
+        "y": 5.536459600292109
       },
       "isLocked": false,
       "linkedName": "left bump start"
     },
     {
       "anchor": {
-        "x": 2.3906964285714283,
-        "y": 5.568231098430813
+        "x": 2.9117190393518526,
+        "y": 5.805631438078703
       },
       "prevControl": {
-        "x": 2.7632142857142856,
-        "y": 5.557464285714286
+        "x": 3.2241063209606047,
+        "y": 5.803670934486598
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,12 +42,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.06985110645358
+    "rotation": -71.63161021218157
   },
   "reversed": false,
   "folder": "From BumpL",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": -91.84761026599449
   },
   "useDefaultConstraints": true

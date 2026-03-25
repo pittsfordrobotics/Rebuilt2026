@@ -210,14 +210,22 @@ public class RobotContainer {
             // In the alliance area, set the shooter to shoot in the hub.
             return Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
-                drivetrain.pointAtHub());
-        }, Set.of(hood, shooter, indexer, intake, drivetrain));
+                drivetrain.pointAtHubWithBrake());
+            // return Commands.parallel(
+            //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+            //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+            //             .until(() -> shooter.isAtSpeed()))
+            //             .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true),
+            //     indexer.runIndex(),
+            //     intake.agitate(),
+            //     drivetrain.pointAtHub());
+        }, Set.of(hood, shooter, indexer, drivetrain));
     }
 
     public Command trenchShoot() {

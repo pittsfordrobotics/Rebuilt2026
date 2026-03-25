@@ -20,8 +20,8 @@
         "y": 5.568231098430813
       },
       "prevControl": {
-        "x": 5.906366728807713,
-        "y": 5.571705304248161
+        "x": 5.906390870185448,
+        "y": 5.568231098430813
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -88.69804732742112
+    "velocity": 1.0,
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "From BumpL",
