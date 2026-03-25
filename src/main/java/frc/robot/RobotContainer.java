@@ -113,34 +113,34 @@ public class RobotContainer {
 
 
     private void configureBindings() {
-        drivetrain.setDefaultCommand(drivetrain.drive());
+        drivetrain.setDefaultCommand(drivetrain.drive().withName("DefaultDrive"));
         
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
-            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+            drivetrain.applyRequest(() -> idle).ignoringDisable(true).withName("Idle")
         );
         
-        driverController.a().toggleOnTrue(drivetrain.brake());
-        driverController.b().whileTrue(drivetrain.pointAtHub());
+        driverController.a().toggleOnTrue(drivetrain.brake().withName("Brake"));
+        driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
 
-        operatorController.rightBumper().whileTrue(shooter.runShooter());
-        operatorController.leftBumper().whileTrue(indexer.runIndex());
+        operatorController.rightBumper().whileTrue(shooter.runShooter().withName("ManualRunShooter"));
+        operatorController.leftBumper().whileTrue(indexer.runIndex().withName("ManualRunIndex"));
         //Run Shooter
         operatorController.b().whileTrue(
             Commands.runOnce(() -> drivetrain.enableSlowDrive())
-            .andThen(autoDecideShooting()))
+            .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         // operatorController.x().whileTrue(climbDown());
-        operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()));
-        operatorController.povUp().onTrue(intake.pivotIn());
-        operatorController.leftTrigger().whileTrue(intake.agitate());
+        operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()).withName("RunIntake"));
+        operatorController.povUp().onTrue(intake.pivotIn().withName("PivotIn"));
+        operatorController.leftTrigger().whileTrue(intake.agitate().withName("ManualAgitate"));
         // operatorController.y().whileTrue(Commands.parallel(
         //             hood.runHood(() -> 0.4),
         //             shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
@@ -148,9 +148,9 @@ public class RobotContainer {
         //             intake.agitate(),
         //             drivetrain.pointAtAllianceZone()));
 
-        operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true));
+        operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
 
-        operatorController.x().whileTrue(trenchShoot());
+        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

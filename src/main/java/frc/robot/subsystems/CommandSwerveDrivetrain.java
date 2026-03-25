@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.jar.Attributes.Name;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -86,6 +87,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Logged(name = "slowModeEnabled")
     private boolean slowModeEnabled;
+
+    @Logged(name = "Current Command")
+    public String SwerveCurrentCommand() {
+        if (this.getCurrentCommand() == null) {
+            return "none";
+        }
+        return this.getCurrentCommand().getName();
+    }
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
