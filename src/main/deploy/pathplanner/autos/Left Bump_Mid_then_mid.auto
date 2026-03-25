@@ -11,15 +11,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "IntakeOut"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "left bump 1.5"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left bump 1.5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOut"
+                }
+              }
+            ]
           }
         },
         {
@@ -60,9 +67,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "ShootatHub"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootatHub"
+                }
+              }
+            ]
           }
         },
         {
@@ -80,7 +100,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left bump 1.5"
+            "pathName": "left second time 1"
           }
         },
         {
@@ -90,16 +110,40 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LBump Start to Mid Step 2"
+                  "pathName": "left second time 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake"
+                  "name": "IntakeRun"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left second time 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Over left Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bump L to Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootatHub"
           }
         }
       ]
