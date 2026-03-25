@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -152,6 +153,7 @@ public class RobotContainer {
 
         operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"));
 
+
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         // driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -211,7 +213,7 @@ public class RobotContainer {
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
                         .until(() -> shooter.isAtSpeed()))
-                        .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
+                        .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true, () -> -operatorController.getLeftY()*0.3)),
                 indexer.runIndex(),
                 intake.agitate(),
                 drivetrain.pointAtHubWithBrake());
