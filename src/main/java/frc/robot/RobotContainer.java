@@ -232,7 +232,7 @@ public class RobotContainer {
         return Commands.parallel(
                 hood.runHood(() -> 0.35),
                 indexer.runIndex(),
-                intake.agitate(),
+                intake.lemonSqueeze(),
                 Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
                     .andThen(shooter.trenchShoot()));
     }
