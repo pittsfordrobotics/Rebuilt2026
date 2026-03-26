@@ -69,7 +69,7 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             ).withSlot1(
                 new Slot1Configs()
-                .withKP(.5)
+                .withKP(.01)
                 .withKI(0)
                 .withKD(0)
             ).withSlot2(
@@ -112,7 +112,7 @@ public class Intake extends SubsystemBase {
 
     public Command pivotIn() {
         return runOnce(() -> {
-            PositionVoltage control = new PositionVoltage(0).withSlot(1);
+            PositionVoltage control = new PositionVoltage(0).withSlot(0);
             pivotMotor.setControl(control);
         });
     }
@@ -134,6 +134,12 @@ public class Intake extends SubsystemBase {
                 pivotOut();
                 driveMotor.set(0);}
         );
+    }
+
+    public Command lemonSqueeze() {
+        return runOnce(() -> {
+            pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1));
+        });
     }
     
     @Override
