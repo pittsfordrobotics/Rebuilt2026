@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Over Right Bump"
+            "pathName": "Over left Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "1114 mid right"
+            "pathName": "1114 mid left"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "1114 shoot right"
+            "pathName": "1114 shoot left"
           }
         },
         {
