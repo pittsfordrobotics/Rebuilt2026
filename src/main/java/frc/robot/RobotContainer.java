@@ -17,7 +17,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -124,7 +123,7 @@ public class RobotContainer {
         );
         
         driverController.a().toggleOnTrue(drivetrain.brake().withName("Brake"));
-        // driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
+        driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
 
@@ -134,7 +133,7 @@ public class RobotContainer {
         operatorController.b().whileTrue(
             Commands.runOnce(() -> drivetrain.enableSlowDrive())
             .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
-            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(() -> intake.pivotOut()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -151,8 +150,8 @@ public class RobotContainer {
 
         operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
 
-        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"));
-
+        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
+            .onFalse(intake.pivotOut());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -234,8 +233,7 @@ public class RobotContainer {
         return Commands.parallel(
                 hood.runHood(() -> 0.35),
                 indexer.runIndex(),
-                intake.agitate(),
-                Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
-                    .andThen(shooter.trenchShoot()));
+                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                    .andThen(shooter.trenchShoot().alongWith(intake.lemonSqueeze())));
     }
 }
