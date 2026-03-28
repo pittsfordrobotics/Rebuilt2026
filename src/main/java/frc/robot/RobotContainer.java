@@ -133,7 +133,7 @@ public class RobotContainer {
         operatorController.b().whileTrue(
             Commands.runOnce(() -> drivetrain.enableSlowDrive())
             .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
-            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(() -> intake.pivotOut()));
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
