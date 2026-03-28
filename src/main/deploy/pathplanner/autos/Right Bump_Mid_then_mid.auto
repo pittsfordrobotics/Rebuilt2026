@@ -100,7 +100,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left second time 1"
+            "pathName": "right second time 1"
           }
         },
         {
@@ -110,7 +110,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "left second time 2"
+                  "pathName": "Right second time 2"
                 }
               },
               {
@@ -125,7 +125,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left second time 3"
+            "pathName": "right second time 3"
           }
         },
         {
@@ -137,7 +137,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BumpR to Shoot"
+            "pathName": "BumpR Shoot"
           }
         },
         {
