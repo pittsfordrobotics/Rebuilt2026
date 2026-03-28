@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -102,6 +103,10 @@ public class RobotContainer {
        NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
        NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
        NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+
+
+      new EventTrigger("IntakeOut").onTrue(intake.pivotOut());
+      new EventTrigger("IntakeRun").onTrue(intake.runIntake());
 
        
         autoChooser = AutoBuilder.buildAutoChooser();
