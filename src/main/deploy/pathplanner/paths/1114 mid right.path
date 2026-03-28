@@ -111,7 +111,7 @@
       "command": null
     },
     {
-      "name": "RunIntake",
+      "name": "IntakeRun",
       "waypointRelativePos": 1.1343686698176962,
       "endWaypointRelativePos": 3.0,
       "command": null
