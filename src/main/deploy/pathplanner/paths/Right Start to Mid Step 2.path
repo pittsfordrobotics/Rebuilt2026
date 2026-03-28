@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.011226818830243,
-        "y": 1.7642653352353794
+        "x": 7.027888730385163,
+        "y": 2.4370756062767476
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.477018544935806,
-        "y": 2.7993580599144083
+        "x": 8.127674750356633,
+        "y": 3.3039657631954356
       },
       "isLocked": false,
       "linkedName": "rightmidintake1"
     },
     {
       "anchor": {
-        "x": 7.480741797432238,
-        "y": 4.571954350927247
+        "x": 7.545435092724677,
+        "y": 4.339058487874465
       },
       "prevControl": {
-        "x": 7.4851987381048515,
-        "y": 4.821914619129697
+        "x": 7.549892033397292,
+        "y": 4.589018756076915
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
   "folder": "left mid",
   "idealStartingState": {
     "velocity": 0.5,
-    "rotation": 78.99645914825051
+    "rotation": 52.253194612725466
   },
   "useDefaultConstraints": true
 }

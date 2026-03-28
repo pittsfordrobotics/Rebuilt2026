@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.011226818830243,
-        "y": 1.7642653352353794
+        "x": 7.027888730385163,
+        "y": 2.4370756062767476
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.100537788107276,
-        "y": 0.6984605870231617
+        "x": 7.117199699662196,
+        "y": 1.3712708580645299
       },
       "isLocked": false,
       "linkedName": "rightmidintake1"
@@ -62,7 +62,7 @@
   "folder": "left mid",
   "idealStartingState": {
     "velocity": 0.5,
-    "rotation": 78.99645914825051
+    "rotation": 52.253194612725466
   },
   "useDefaultConstraints": true
 }
