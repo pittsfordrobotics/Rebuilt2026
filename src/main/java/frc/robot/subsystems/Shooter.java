@@ -232,6 +232,6 @@ public class Shooter extends SubsystemBase {
 
 	@Logged(name="set speed")
 	public double getSetSpeed() {
-		return currentSetSpeed;
+		return currentSetSpeed * ShooterConstants.kFreeSpeed.in(RPM);
 	}
 }

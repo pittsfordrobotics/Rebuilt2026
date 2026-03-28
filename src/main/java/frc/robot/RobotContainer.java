@@ -224,7 +224,7 @@ public class RobotContainer {
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
-                intake.agitate(),
+                intake.lemonSqueeze(),
                 drivetrain.pointAtHubWithBrake());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
