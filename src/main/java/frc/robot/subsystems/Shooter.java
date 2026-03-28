@@ -195,6 +195,10 @@ public class Shooter extends SubsystemBase {
 		return runShooter(() -> shootHubSpeed(currentPose), () -> runUptake.get() ? .7 : 0);
 	}
 
+	public Command shootAtHub(Supplier<Pose2d> currentPose, Supplier<Boolean> runUptake, Supplier<Double> offset) {
+		return runShooter(() -> shootHubSpeed(currentPose, offset), () -> runUptake.get() ? .7 : 0);
+	}
+
 	public Command shootAtHub(Supplier<Pose2d> currentPose) {
 		return runShooter(() -> shootHubSpeed(currentPose), () -> .6);
 	}
@@ -208,6 +212,17 @@ public class Shooter extends SubsystemBase {
 			return 0.0019*hubDist + 0.2718;
 		}
 	}
+
+	public double shootHubSpeed(Supplier<Pose2d> currentPose, Supplier<Double> offset) {
+		double hubDist = ShooterHelpers.getHubDistInches(currentPose);
+		// System.out.println("\n\n\n" + hubDist + "\n\n\n");
+		if(hubDist < 100) {
+			return 0.0022*hubDist + 0.2932 + offset.get();
+		} else {
+			return 0.0019*hubDist + 0.2718 + offset.get();
+		}
+	}
+
 
 	public Command trenchShoot() {
 		return runShooter(() -> 3100/ShooterConstants.kFreeSpeed.in(RPM), () -> 0)

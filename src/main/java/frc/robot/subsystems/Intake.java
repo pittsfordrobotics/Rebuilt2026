@@ -69,12 +69,12 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             ).withSlot1(
                 new Slot1Configs()
-                .withKP(.5)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0)
             ).withSlot2(
                 new Slot2Configs()
-                .withKP(1.5)
+                .withKP(1.7)
                 .withKI(0)
                 .withKD(0)
             );
@@ -112,28 +112,30 @@ public class Intake extends SubsystemBase {
 
     public Command pivotIn() {
         return runOnce(() -> {
-            PositionVoltage control = new PositionVoltage(0).withSlot(1);
+            PositionVoltage control = new PositionVoltage(0).withSlot(0);
             pivotMotor.setControl(control);
         });
     }
 
     public Command agitate() {
         //I'M AGITATED
-        // return runOnce(() -> pivotMotor.set(-.05)).andThen(
-        //     Commands.waitSeconds(.5),
-        //     runOnce(() -> pivotMotor.set(.05)),
-        //     Commands.waitSeconds(.5)).repeatedly()
-        //     .finallyDo(() -> pivotMotor.set(0));
         return runOnce(() -> {
                 pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2));
                 driveMotor.set(0.9);
-            }).andThen(Commands.waitSeconds(.2),
+            }).andThen(Commands.waitSeconds(.3),
             runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2))),
-            Commands.waitSeconds(.2)).repeatedly()
+            Commands.waitSeconds(.3)).repeatedly()
             .finallyDo(() -> {
                 pivotOut();
                 driveMotor.set(0);}
         );
+    }
+
+    public Command lemonSqueeze() {
+        //get squeezed, lemons
+        return runOnce(() -> {
+            pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1));
+        });
     }
     
     @Override
