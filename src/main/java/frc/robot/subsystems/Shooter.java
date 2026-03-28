@@ -229,4 +229,9 @@ public class Shooter extends SubsystemBase {
 			.until(() -> isAtSpeed())
 			.andThen(runShooter(() -> 3100/ShooterConstants.kFreeSpeed.in(RPM), () -> .6));
 	}
+
+	@Logged(name="set speed")
+	public double getSetSpeed() {
+		return currentSetSpeed;
+	}
 }
