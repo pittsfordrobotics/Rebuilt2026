@@ -6,10 +6,14 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,6 +58,7 @@ public class RobotContainer {
 
     private GenericEntry testingDistToHub;
 
+    private final boolean shouldMirrorAutos = true;
 
     @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(driverController);
@@ -98,13 +103,12 @@ public class RobotContainer {
         // climber = new Climber();
         hood = new Hood();
 
-       NamedCommands.registerCommand("ShootatHub", autoDecideShooting());
-       NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
-       NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
-       NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+        NamedCommands.registerCommand("ShootatHub", autoDecideShooting());
+        NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
+        NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
+        NamedCommands.registerCommand("IntakeRun", intake.runIntake());
 
-       
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = shouldMirrorAutos ? AutoBuilder.buildAutoChooserWithOptionsModifier(this::mirrorAutos) : AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
@@ -235,5 +239,21 @@ public class RobotContainer {
                 intake.agitate(),
                 Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
                     .andThen(shooter.trenchShoot()));
+    }
+
+    private Stream<PathPlannerAuto> mirrorAutos(Stream<PathPlannerAuto> autos)
+    {
+        List<PathPlannerAuto> newList = new ArrayList<>();
+        List<PathPlannerAuto> existingList = autos.toList();
+        for (PathPlannerAuto auto : existingList)
+        {
+            newList.add(auto);
+            String autoName = auto.getName();
+            PathPlannerAuto mirroredAuto = new PathPlannerAuto(autoName, true);
+            mirroredAuto.setName(autoName + " (Mirrored)");
+            newList.add(mirroredAuto);
+        }
+        
+        return newList.stream();
     }
 }
