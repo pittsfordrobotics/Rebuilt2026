@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.867610604745371,
-        "y": 6.727000144675926
+        "x": 7.5066191155492135,
+        "y": 0.9232524964336677
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.956921574022404,
-        "y": 5.661195396463707
+        "x": 8.515834522111268,
+        "y": 1.45373751783167
       },
       "isLocked": false,
-      "linkedName": "mid fuel start"
+      "linkedName": "rightmidintake1"
     },
     {
       "anchor": {
-        "x": 7.312539229671896,
-        "y": 3.666248216833096
+        "x": 7.623067047075606,
+        "y": 3.7180028530670475
       },
       "prevControl": {
-        "x": 7.568092253398748,
-        "y": 4.020741923430318
+        "x": 7.878620070802459,
+        "y": 4.07249655966427
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "left mid fuel end "
+      "linkedName": "rightintakemid2"
     }
   ],
   "rotationTargets": [],
@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0.5,
-    "rotation": -95.96448710125314
+    "rotation": 101.3099324740204
   },
   "reversed": false,
   "folder": "left mid",
   "idealStartingState": {
     "velocity": 0.5,
-    "rotation": -99.33489262971813
+    "rotation": 82.4761795613612
   },
   "useDefaultConstraints": true
 }
