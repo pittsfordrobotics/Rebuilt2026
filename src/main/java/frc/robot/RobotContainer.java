@@ -138,7 +138,7 @@ public class RobotContainer {
         operatorController.b().whileTrue(
             Commands.runOnce(() -> drivetrain.enableSlowDrive())
             .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
-            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -155,7 +155,8 @@ public class RobotContainer {
 
         operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
 
-        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"));
+        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
+            .onFalse(intake.pivotOut());
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -238,7 +239,7 @@ public class RobotContainer {
                 hood.runHood(() -> 0.35),
                 indexer.runIndex(),
                 intake.agitate(),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                Commands.waitSeconds(0.3) // Wait in case the hood needs to change position.
                     .andThen(shooter.trenchShoot()));
     }
 }
