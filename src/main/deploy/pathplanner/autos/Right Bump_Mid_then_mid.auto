@@ -88,13 +88,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left shoot to bump"
+            "pathName": "rightshoottobump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Over left Bump"
+            "pathName": "Over Right Bump"
           }
         },
         {
@@ -131,13 +131,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Reverse Over left Bump"
+            "pathName": "Reverse Over Right Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bump L to Shoot"
+            "pathName": "BumpR to Shoot"
           }
         },
         {
