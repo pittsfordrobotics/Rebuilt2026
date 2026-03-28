@@ -105,8 +105,8 @@ public class RobotContainer {
        NamedCommands.registerCommand("IntakeRun", intake.runIntake());
 
 
-      new EventTrigger("IntakeOut").onTrue(intake.pivotOut());
-      new EventTrigger("IntakeRun").onTrue(intake.runIntake());
+      new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
+      new EventTrigger("IntakeRunEvent").onTrue(intake.runIntake());
 
        
         autoChooser = AutoBuilder.buildAutoChooser();
