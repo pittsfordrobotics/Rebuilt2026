@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 6.251569186875892,
-        "y": 0.9491298145506413
+        "y": 0.949129814550641
       },
       "isLocked": false,
       "linkedName": "right bump end"
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 84.16521100315872
+    "velocity": 1.0,
+    "rotation": 84.16521100315873
   },
   "reversed": false,
   "folder": "left mid",
