@@ -1,11 +1,16 @@
 package frc.robot.subsystems.Vision;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import frc.robot.constants.FieldConstants;
 import frc.robot.lib.util.LimelightHelpers;
 import frc.robot.lib.util.LimelightHelpers.PoseEstimate;
 import frc.robot.lib.util.LimelightHelpers.RawFiducial;
@@ -16,17 +21,19 @@ public class VisionIOLimelight implements VisionIO {
     private final String cameraName;
     private final StructPublisher<Pose2d> mt1Publisher;
     private final StructPublisher<Pose2d> mt2Publisher;
+    private final StructArrayPublisher<Pose3d> aprilTagTargetPublisher;
 
     public VisionIOLimelight(String cameraName) {
         this.cameraName = cameraName;
         setLEDs(LED.OFF, cameraName);
         setPipeline(Pipelines.Test);
 
-        mt2Publisher = NetworkTableInstance.getDefault()
-            .getStructTopic("LimelightPoses/" + cameraName + "/MT2", Pose2d.struct).publish();
+        NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
+        String limelightTableName = "LimelightData/" + cameraName;
 
-        mt1Publisher = NetworkTableInstance.getDefault()
-            .getStructTopic("LimelightPoses/" + cameraName + "/MT1", Pose2d.struct).publish();
+        mt2Publisher = ntInstance.getStructTopic(limelightTableName + "/MT2", Pose2d.struct).publish();
+        mt1Publisher = ntInstance.getStructTopic(limelightTableName + "/MT1", Pose2d.struct).publish();
+        aprilTagTargetPublisher = ntInstance.getStructArrayTopic(limelightTableName + "/VisionTargets", Pose3d.struct).publish();
     }
 
     // Uses limelight lib and network tables to get the values from the limelight
@@ -46,6 +53,7 @@ public class VisionIOLimelight implements VisionIO {
             inputs.hasTarget = false;
             inputs.tagCount = 0;
             inputs.tagIDs = new int[0];
+            aprilTagTargetPublisher.set(new Pose3d[0]);
          
             return;
         }
@@ -68,8 +76,11 @@ public class VisionIOLimelight implements VisionIO {
         RawFiducial[] fiducials = botPoseEstimate.rawFiducials;
         int[] tagIDDs = new int[fiducials.length];
         double[] tagDistances = new double[fiducials.length];
+        Pose3d[] detectedTagPoses = new Pose3d[fiducials.length];
         for (int i = 0; i < fiducials.length; i++) {
-            tagIDDs[i] = fiducials[i].id;
+            int tagId = fiducials[i].id;
+            tagIDDs[i] = tagId;
+            detectedTagPoses[i] = FieldConstants.aprilTags.getTagPose(tagId).orElse(new Pose3d());
             tagDistances[i] = fiducials[i].distToRobot;
         }
         
@@ -83,6 +94,7 @@ public class VisionIOLimelight implements VisionIO {
         inputs.connected = heartbeatEntry.getDouble(0.0) > 0.0;
         // has target if true
         inputs.hasTarget = LimelightHelpers.getTV(cameraName);
+        aprilTagTargetPublisher.set(detectedTagPoses);
     }
 
     @Override
