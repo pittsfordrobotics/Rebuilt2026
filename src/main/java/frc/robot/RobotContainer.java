@@ -147,9 +147,9 @@ public class RobotContainer {
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
 
         operatorController.y().whileTrue(
-            Commands.runOnce(() -> drivetrain.enableSlowDrive())
+            Commands.runOnce(() -> drivetrain.enableCircleDrive())
             .andThen(autoDecideShootingNoBrake()))
-            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
+            .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive()).andThen(intake.pivotOut()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
