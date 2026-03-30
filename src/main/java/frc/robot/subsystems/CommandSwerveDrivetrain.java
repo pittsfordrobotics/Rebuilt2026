@@ -487,11 +487,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command pointAtHub() {
-        return this.pointAt(FieldConstants.flippedHubPosition);
+        return this.pointAt(() -> getPlaceToShootAt());
+    }
+
+    public Translation2d getPlaceToShootAt() {
+            double velocityX = this.getState().Speeds.vxMetersPerSecond;
+            double velocityY = this.getState().Speeds.vyMetersPerSecond;
+
+            double flightTime = 1.15; //seconds
+
+            double distX = velocityX * flightTime;
+            double distY = velocityY * flightTime;
+
+            double speed = Math.sqrt(velocityX*velocityX + velocityY*velocityY);
+            if(speed < .1) return FieldConstants.flippedHubPosition.get();
+
+            Translation2d hubPos = FieldConstants.flippedHubPosition.get();
+            return hubPos.minus(new Translation2d(distX, distY));
     }
 
     public Command pointAtHubWithBrake() {
-        return this.pointAt(FieldConstants.flippedHubPosition).until(() -> isPointedAtHub()).andThen(this.brake());
+        return pointAtHub().until(() -> isPointedAtHub()).andThen(this.brake());
     }
 
     public boolean isPointedAtHub(){
