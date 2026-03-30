@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO.IMUMode;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.HoodConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -144,6 +145,11 @@ public class RobotContainer {
             Commands.runOnce(() -> drivetrain.enableSlowDrive())
             .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
+
+        operatorController.y().whileTrue(
+            Commands.runOnce(() -> drivetrain.enableSlowDrive())
+            .andThen(autoDecideShootingNoBrake()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -205,12 +211,12 @@ public class RobotContainer {
     //         .andThen(climber.runClimber(() -> -0.4));
     // }
 
-    public Command autoDecideShooting() {
+    private Command autoDecideShooting(boolean brake) {
         return Commands.defer(() -> {
             if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
                 // In neutral zone, set the shooter to pass to the alliance area.
                 return Commands.parallel(
-                    hood.runHood(() -> 0.35),
+                    hood.runHood(() -> HoodConstants.PASSING_SETPOINT),
                     shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
                     intake.agitate(),
@@ -224,8 +230,8 @@ public class RobotContainer {
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
-                intake.lemonSqueeze(),
-                drivetrain.pointAtHubWithBrake());
+                intake.agitate(),
+                brake ? drivetrain.pointAtHubWithBrake() : drivetrain.pointAtHub());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
@@ -235,6 +241,14 @@ public class RobotContainer {
             //     intake.agitate(),
             //     drivetrain.pointAtHub());
         }, Set.of(hood, shooter, indexer, drivetrain));
+    }
+
+    public Command autoDecideShooting() {
+        return autoDecideShooting(true);
+    }
+
+    public Command autoDecideShootingNoBrake() {
+        return autoDecideShooting(false);
     }
 
     public Command trenchShoot() {

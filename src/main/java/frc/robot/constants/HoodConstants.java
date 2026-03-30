@@ -12,6 +12,7 @@ public class HoodConstants {
     public static final double HUB_DISTANCE_FOR_NEAR_SHOOTING_INCHES = 100; // Should be moved closer - 60?
     public static final double CLOSE_SHOOTING_SETPOINT = 0.35; // Should be changed back to 0.2
     public static final double FAR_SHOOTING_SETPOINT = 0.35; // Works well in general except very close to hub.
+    public static final double PASSING_SETPOINT = 0.35;
 
     // This rate is the approximate speed the actuator can
     // change position. It is in units per second.
