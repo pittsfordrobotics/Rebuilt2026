@@ -219,7 +219,7 @@ public class RobotContainer {
                     hood.runHood(() -> HoodConstants.PASSING_SETPOINT),
                     shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
-                    intake.lemonSqueeze(),
+                    intake.agitate(),
                     drivetrain.pointAtAllianceZone());
             }
             // In the alliance area, set the shooter to shoot in the hub.
@@ -230,7 +230,7 @@ public class RobotContainer {
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
-                intake.lemonSqueeze(),
+                intake.agitate(),
                 brake ? drivetrain.pointAtHubWithBrake() : drivetrain.pointAtHub());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
