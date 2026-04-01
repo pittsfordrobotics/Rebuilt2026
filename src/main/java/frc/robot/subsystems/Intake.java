@@ -142,12 +142,17 @@ public class Intake extends SubsystemBase {
 
     public Command lemonSqueeze() {
         //get squeezed, lemons
-        return runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
-            .andThen(Commands.waitSeconds(1.5),
+        return runOnce(() -> {
+            pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1));
+            driveMotor.set(.5);
+        }).andThen(Commands.waitSeconds(1.5),
                 pivotOut(),
                 Commands.waitSeconds(.5),
                 runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
-        );
+        ).finallyDo(() -> {
+            pivotOut();
+            driveMotor.set(0);
+        });
     }
     
     @Override
