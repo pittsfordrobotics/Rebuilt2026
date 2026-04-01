@@ -57,7 +57,7 @@ public class Intake extends SubsystemBase {
                 .withStatorCurrentLimit(Amps.of(120))
                 .withStatorCurrentLimitEnable(true))
             .withMotorOutput(new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive));
+                .withInverted(InvertedValue.CounterClockwise_Positive));
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake))
@@ -88,7 +88,7 @@ public class Intake extends SubsystemBase {
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
         driveMotorF.getConfigurator().apply(driveConfig);
-        driveMotorF.setControl(new Follower(IntakeConstants.INTAKE_DRIVE, MotorAlignmentValue.Aligned));
+        driveMotorF.setControl(new Follower(IntakeConstants.INTAKE_DRIVE, MotorAlignmentValue.Opposed));
 
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotor);
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotorF);
