@@ -11,8 +11,10 @@ import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Amps;
@@ -32,6 +34,8 @@ import frc.robot.lib.util.TalonConfigurator;
 public class Intake extends SubsystemBase {
     @Logged(name = "Intake Drive")
     private TalonFX driveMotor = new TalonFX(IntakeConstants.INTAKE_DRIVE);
+    @Logged(name = "Intake Drive Follower")
+    private TalonFX driveMotorF = new TalonFX(IntakeConstants.INTAKE_DRIVE_F);
     @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
@@ -79,10 +83,15 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             );
 
+
+        
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
+        driveMotorF.getConfigurator().apply(driveConfig);
+        driveMotorF.setControl(new Follower(IntakeConstants.INTAKE_DRIVE, MotorAlignmentValue.Aligned));
 
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotorF);
         TalonConfigurator.reduceCommonStatusFrameFrequencies(pivotMotor);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
@@ -133,9 +142,12 @@ public class Intake extends SubsystemBase {
 
     public Command lemonSqueeze() {
         //get squeezed, lemons
-        return runOnce(() -> {
-            pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1));
-        });
+        return runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
+            .andThen(Commands.waitSeconds(1.5),
+                pivotOut(),
+                Commands.waitSeconds(.5),
+                runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
+        );
     }
     
     @Override

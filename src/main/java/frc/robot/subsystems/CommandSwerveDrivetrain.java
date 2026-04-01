@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import java.util.jar.Attributes.Name;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -27,10 +26,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -87,6 +88,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Logged(name = "slowModeEnabled")
     private boolean slowModeEnabled;
+
+    @Logged(name = "circleModeEnabled")
+    private boolean circleModeEnabled;
 
     @Logged(name = "Current Command")
     public String SwerveCurrentCommand() {
@@ -442,8 +446,56 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.getModule(2).getSteerMotor();
     }
 
+    public FieldCentric circleDrive() {
+        return drive.withVelocityX(circleDriveMath().getX())
+            .withVelocityY(circleDriveMath().getY())
+            .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance);
+    }
+
+    public Translation2d circleDriveMath() {
+        Translation2d position = this.getState().Pose.getTranslation();
+        Translation2d hubPosition = FieldConstants.flippedHubPosition.get();
+        Translation3d position3d = new Translation3d(position);
+        Translation3d hubPosition3d = new Translation3d(hubPosition);
+        double deadbandedDirection = MathUtil.applyDeadband(controller.getLeftX(), .1);
+        Translation2d perpDirection = new Translation3d(
+            position3d.minus(hubPosition3d).cross(
+                position3d.minus(hubPosition3d).plus(new Translation3d(0, 0, 1)))
+            ).toTranslation2d();
+
+        perpDirection = perpDirection.div(perpDirection.getNorm()).times(deadbandedDirection);
+
+        return perpDirection;
+    }
+
     public Command drive() {
-        return this.applyRequest(() -> {
+        // return this.applyRequest(() -> {
+        //     if(!circleModeEnabled) {
+        //         double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
+        //         Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
+        //         double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
+        //         double adjustedMaxAngularRate = slowModeEnabled ? RotationsPerSecond.of(2.5).in(RadiansPerSecond) * TunerConstants.kSlowModePercent :
+        //         RotationsPerSecond.of(2.5).in(RadiansPerSecond);
+        //         if(heading != null) {
+        //             return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+        //                 .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
+        //                 .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+        //                 .withTargetDirection(AllianceFlipUtil.apply(heading));
+
+        //         }
+        //         return drive.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+        //             .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
+        //             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+        //             .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * adjustedMaxAngularRate);
+        //     }
+
+        //     return circleDrive();
+        // });
+        return this.applyRequest(() -> driveReq());
+    }
+
+    private SwerveRequest driveReq(){
+        if(!circleModeEnabled) {
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
                 double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
@@ -460,10 +512,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
                     .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                     .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * adjustedMaxAngularRate);
-                
-                
             }
-        );
+
+            return circleDrive();
     }
 
     public void enableSlowDrive() {
@@ -471,6 +522,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     public void disableSlowDrive() {
         slowModeEnabled = false;
+    }
+
+    public void enableCircleDrive() {
+        circleModeEnabled = true;
+    }
+    public void disableCircleDrive() {
+        circleModeEnabled = false;
     }
     
     public Command pointAt(Supplier<Translation2d> targetPoint) {
@@ -487,11 +545,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command pointAtHub() {
-        return this.pointAt(FieldConstants.flippedHubPosition);
+        return this.pointAt(() -> getPlaceToShootAt());
+    }
+
+    public Translation2d getPlaceToShootAt() {
+            double velocityX = this.getState().Speeds.vxMetersPerSecond;
+            double velocityY = this.getState().Speeds.vyMetersPerSecond;
+
+            double flightTime = 1.15; //seconds
+
+            double distX = velocityX * flightTime;
+            double distY = velocityY * flightTime;
+
+            double speed = Math.sqrt(velocityX*velocityX + velocityY*velocityY);
+            if(speed < .1) return FieldConstants.flippedHubPosition.get();
+
+            Translation2d hubPos = FieldConstants.flippedHubPosition.get();
+            return hubPos.minus(new Translation2d(distX, distY));
     }
 
     public Command pointAtHubWithBrake() {
-        return this.pointAt(FieldConstants.flippedHubPosition).until(() -> isPointedAtHub()).andThen(this.brake());
+        return pointAtHub().until(() -> isPointedAtHub()).andThen(this.brake());
     }
 
     public boolean isPointedAtHub(){
@@ -549,5 +623,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getDriveMotor());
             TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getSteerMotor());
         }
+    }
+
+    public BooleanSupplier isInCircleMode() {
+        return () -> circleModeEnabled;
     }
 }
