@@ -469,29 +469,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command drive() {
-        // return this.applyRequest(() -> {
-        //     if(!circleModeEnabled) {
-        //         double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
-        //         Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
-        //         double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
-        //         double adjustedMaxAngularRate = slowModeEnabled ? RotationsPerSecond.of(2.5).in(RadiansPerSecond) * TunerConstants.kSlowModePercent :
-        //         RotationsPerSecond.of(2.5).in(RadiansPerSecond);
-        //         if(heading != null) {
-        //             return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
-        //                 .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
-        //                 .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-        //                 .withTargetDirection(AllianceFlipUtil.apply(heading));
+        return this.applyRequest(() -> {
+            // if(!circleModeEnabled) {
+                double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
+                Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
+                double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
+                double adjustedMaxAngularRate = slowModeEnabled ? RotationsPerSecond.of(2.5).in(RadiansPerSecond) * TunerConstants.kSlowModePercent :
+                RotationsPerSecond.of(2.5).in(RadiansPerSecond);
+                if(heading != null) {
+                    return driveHeading.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+                        .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
+                        .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                        .withTargetDirection(AllianceFlipUtil.apply(heading));
 
-        //         }
-        //         return drive.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
-        //             .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
-        //             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
-        //             .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * adjustedMaxAngularRate);
-        //     }
+                }
+                return drive.withVelocityX(leftDeadbanded[1] * adjustedMaxSpeed)
+                    .withVelocityY(leftDeadbanded[0] * adjustedMaxSpeed)
+                    .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
+                    .withRotationalRate((controller.getLeftTriggerAxis() - controller.getRightTriggerAxis()) * adjustedMaxAngularRate);
+            // }
 
-        //     return circleDrive();
-        // });
-        return this.applyRequest(() -> driveReq());
+            // return circleDrive();
+        });
+        // return this.applyRequest(() -> driveReq());
     }
 
     private SwerveRequest driveReq(){
