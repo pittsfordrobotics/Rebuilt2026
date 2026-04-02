@@ -137,6 +137,8 @@ public class RobotContainer {
         driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
+        driverController.x().onTrue(Commands.runOnce(() -> drivetrain.enableCircleDrive()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive()));
 
         operatorController.rightBumper().whileTrue(shooter.runShooter().withName("ManualRunShooter"));
         operatorController.leftBumper().whileTrue(indexer.runIndex().withName("ManualRunIndex"));
@@ -146,10 +148,12 @@ public class RobotContainer {
             .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
 
-        operatorController.y().whileTrue(
-            Commands.runOnce(() -> drivetrain.enableCircleDrive())
-            .andThen(autoDecideShootingNoBrake()))
-            .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive()).andThen(intake.pivotOut()));
+        // operatorController.y().whileTrue(
+        //     Commands.runOnce(() -> drivetrain.enableCircleDrive())
+        //     .andThen(shootWhileMove()))
+        //     .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive())
+        //     .andThen(intake.pivotOut()));
+        operatorController.y().whileTrue(shootWhileMove());
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -210,6 +214,17 @@ public class RobotContainer {
     //         .andThen(drivetrain.driveToPose(ClimberConstants.FLIPPED_CLIMB_EXTENDED_POS))
     //         .andThen(climber.runClimber(() -> -0.4));
     // }
+
+    private Command shootWhileMove(){
+        return Commands.parallel(
+                hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+                Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
+                    .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+                        .until(() -> shooter.isAtSpeed()))
+                        .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
+                indexer.runIndex(),
+                intake.agitate());
+    }
 
     private Command autoDecideShooting(boolean brake) {
         return Commands.defer(() -> {
