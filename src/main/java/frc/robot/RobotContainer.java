@@ -242,7 +242,7 @@ public class RobotContainer {
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
-                        .until(() -> shooter.isAtSpeed()))
+                        .until(() -> {return (shooter.isAtSpeed() && hood.isAtPosition());}))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
