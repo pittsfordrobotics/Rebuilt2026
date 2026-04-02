@@ -57,7 +57,7 @@ public class Intake extends SubsystemBase {
                 .withStatorCurrentLimit(Amps.of(120))
                 .withStatorCurrentLimitEnable(true))
             .withMotorOutput(new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive));
+                .withInverted(InvertedValue.CounterClockwise_Positive));
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake))
@@ -88,14 +88,14 @@ public class Intake extends SubsystemBase {
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
         driveMotorF.getConfigurator().apply(driveConfig);
-        driveMotorF.setControl(new Follower(IntakeConstants.INTAKE_DRIVE, MotorAlignmentValue.Aligned));
+        driveMotorF.setControl(new Follower(IntakeConstants.INTAKE_DRIVE, MotorAlignmentValue.Opposed));
 
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotor);
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotorF);
         TalonConfigurator.reduceCommonStatusFrameFrequencies(pivotMotor);
 
-        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
-        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));
+        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 0.95).getEntry();
+        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.95)));
 
         // pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
         // pivotInSpeed = Shuffleboard.getTab("testing").add("Intake Pivot In Speed", .2).getEntry();
@@ -109,7 +109,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command runIntake() {
-        return runIntake(() -> intakeSpeed.getDouble(1));
+        return runIntake(() -> intakeSpeed.getDouble(0.95));
     }
 
     public Command pivotOut() {
@@ -130,7 +130,7 @@ public class Intake extends SubsystemBase {
         //I'M AGITATED
         return runOnce(() -> {
                 pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2));
-                driveMotor.set(0.9);
+                driveMotor.set(0.7);
             }).andThen(Commands.waitSeconds(.3),
             runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2))),
             Commands.waitSeconds(.3)).repeatedly()
