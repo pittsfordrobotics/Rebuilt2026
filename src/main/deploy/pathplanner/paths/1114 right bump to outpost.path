@@ -1,0 +1,96 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.057489300998572,
+        "y": 2.6311554921540665
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.12507462672275,
+        "y": 2.4779083072591264
+      },
+      "isLocked": false,
+      "linkedName": "1114rightmidend"
+    },
+    {
+      "anchor": {
+        "x": 3.39292025862069,
+        "y": 2.383243534482759
+      },
+      "prevControl": {
+        "x": 3.597274190535193,
+        "y": 2.527255584364297
+      },
+      "nextControl": {
+        "x": 1.4582080503957304,
+        "y": 1.0198155425325834
+      },
+      "isLocked": false,
+      "linkedName": "right bump start"
+    },
+    {
+      "anchor": {
+        "x": 0.6,
+        "y": 0.6903566333808839
+      },
+      "prevControl": {
+        "x": 1.771505058051758,
+        "y": 1.1803484413594474
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "outpost"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.12926391382405744,
+      "maxWaypointRelativePos": 1.0017953321364452,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 40.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeOutEvent",
+      "waypointRelativePos": 1.2315978456014371,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "1114autos",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}
