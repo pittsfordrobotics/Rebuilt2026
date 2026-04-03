@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0982596291012836,
-        "y": 2.501768901569187
+        "x": 2.4771148726851857,
+        "y": 2.5389486400462964
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0982596291012836,
-        "y": 2.501768901569187
+        "x": 3.4771148726851857,
+        "y": 2.5389486400462964
       },
       "isLocked": false,
       "linkedName": "1114rightshoot"
@@ -149,7 +149,7 @@
   "folder": "1114autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 31.09222219014529
+    "rotation": 49.31167471376678
   },
   "useDefaultConstraints": true
 }

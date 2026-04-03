@@ -72,6 +72,10 @@
     {
       "waypointRelativePos": 2.162046908315566,
       "rotationDegrees": -97.0172494505769
+    },
+    {
+      "waypointRelativePos": 2.617876233552632,
+      "rotationDegrees": -111.22205656064362
     }
   ],
   "constraintZones": [
@@ -127,7 +131,7 @@
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "1114autos",

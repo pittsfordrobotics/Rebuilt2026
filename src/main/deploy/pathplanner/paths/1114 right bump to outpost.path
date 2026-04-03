@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.857900863918623,
-        "y": 2.3857014551513562
+        "x": 4.839356481481482,
+        "y": 2.4907905092592593
       },
       "isLocked": false,
       "linkedName": "1114rightmidend"
     },
     {
       "anchor": {
-        "x": 3.39292025862069,
-        "y": 2.383243534482759
+        "x": 3.4785284288194447,
+        "y": 2.5389486400462964
       },
       "prevControl": {
-        "x": 3.597274190535193,
-        "y": 2.527255584364297
+        "x": 3.721111983294237,
+        "y": 2.5993905054904993
       },
       "nextControl": {
-        "x": 1.4582080503957304,
-        "y": 1.0198155425325834
+        "x": 2.230353660300927,
+        "y": 2.227954716435186
       },
       "isLocked": false,
       "linkedName": "right bump start"
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0,
-      "rotationDegrees": -90.0
+      "rotationDegrees": 91.0252039360444
     }
   ],
   "constraintZones": [
@@ -90,7 +90,7 @@
   "folder": "1114autos",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
