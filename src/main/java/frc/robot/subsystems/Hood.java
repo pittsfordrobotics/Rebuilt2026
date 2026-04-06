@@ -83,10 +83,10 @@ public class Hood extends SubsystemBase {
     }
   }
 
-  @Logged(name = "Is hood at position")
-	public boolean isAtPosition() {
-    return (((hood_L.getPosition() + hood_R.getPosition())/2) == currentSetPoint);
-	}
+  // @Logged(name = "Is hood at position")
+	// public boolean isAtPosition() {
+  //   return (((hood_L.getPosition() + hood_R.getPosition())/2) == currentSetPoint);
+	// }
 
   private double calculateHoodPositionFromPose(Supplier<Pose2d> currentPose) {
     double hubDistInches = ShooterHelpers.getHubDistInches(currentPose);
