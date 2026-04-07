@@ -112,6 +112,10 @@ public class Intake extends SubsystemBase {
         return runIntake(() -> intakeSpeed.getDouble(1));
     }
 
+    public Command extake(){
+        return runIntake(() -> -0.5);
+    }
+
     public Command pivotOut() {
         return runOnce(() -> {
             PositionVoltage control = new PositionVoltage(IntakeConstants.PIVOT_EXTENDED).withSlot(0);
