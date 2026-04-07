@@ -113,7 +113,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command extake(){
-        return runIntake(() -> -0.5);
+        return runIntake(() -> -0.6);
     }
 
     public Command pivotOut() {

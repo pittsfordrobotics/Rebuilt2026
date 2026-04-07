@@ -172,7 +172,7 @@ public class RobotContainer {
 
         operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
             .onFalse(intake.pivotOut());
-        operatorController.rightTrigger().whileTrue(intake.extake());
+        operatorController.rightTrigger().whileTrue(Commands.parallel(intake.extake(), indexer.runIndex(() -> -0.6)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
