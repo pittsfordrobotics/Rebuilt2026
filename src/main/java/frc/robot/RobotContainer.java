@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO.IMUMode;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.HoodConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -108,6 +110,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
         NamedCommands.registerCommand("IntakeRun", intake.runIntake());
 
+
+      new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
+      new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
+
+
         autoChooser = shouldMirrorAutos ? AutoBuilder.buildAutoChooserWithOptionsModifier(this::mirrorAutos) : AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -130,6 +137,8 @@ public class RobotContainer {
         driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
+        driverController.x().onTrue(Commands.runOnce(() -> drivetrain.enableCircleDrive()))
+            .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive()));
 
         operatorController.rightBumper().whileTrue(shooter.runShooter().withName("ManualRunShooter"));
         operatorController.leftBumper().whileTrue(indexer.runIndex().withName("ManualRunIndex"));
@@ -137,7 +146,14 @@ public class RobotContainer {
         operatorController.b().whileTrue(
             Commands.runOnce(() -> drivetrain.enableSlowDrive())
             .andThen(autoDecideShooting()).withName("AutoDecideShooting"))
-            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
+            .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()).andThen(intake.pivotOut()));
+
+        // operatorController.y().whileTrue(
+        //     Commands.runOnce(() -> drivetrain.enableCircleDrive())
+        //     .andThen(shootWhileMove()))
+        //     .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive())
+        //     .andThen(intake.pivotOut()));
+        operatorController.y().whileTrue(shootWhileMove().withName("shootWhileMove"));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -154,7 +170,9 @@ public class RobotContainer {
 
         operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
 
-        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"));
+        operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
+            .onFalse(intake.pivotOut());
+        operatorController.rightTrigger().whileTrue(Commands.parallel(intake.extake(), indexer.runIndex(() -> -0.6)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -198,12 +216,23 @@ public class RobotContainer {
     //         .andThen(climber.runClimber(() -> -0.4));
     // }
 
-    public Command autoDecideShooting() {
+    private Command shootWhileMove(){
+        return Commands.parallel(
+                hood.runHoodForShoot(() -> drivetrain.getState().Pose),
+                Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
+                    .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
+                        .until(() -> shooter.isAtSpeed()))
+                        .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
+                indexer.runIndex(),
+                intake.agitate());
+    }
+
+    private Command autoDecideShooting(boolean brake) {
         return Commands.defer(() -> {
             if (ShooterHelpers.isPassing(() -> drivetrain.getState().Pose)){
                 // In neutral zone, set the shooter to pass to the alliance area.
                 return Commands.parallel(
-                    hood.runHood(() -> 0.35),
+                    hood.runHood(() -> HoodConstants.PASSING_SETPOINT),
                     shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
                     intake.agitate(),
@@ -214,11 +243,11 @@ public class RobotContainer {
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
-                        .until(() -> shooter.isAtSpeed()))
+                        .until(() -> {return (shooter.isAtSpeed() && hood.isAtSetpoint());}))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
-                drivetrain.pointAtHubWithBrake());
+                brake ? drivetrain.pointAtHubWithBrake() : drivetrain.pointAtHub());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
@@ -230,6 +259,10 @@ public class RobotContainer {
         }, Set.of(hood, shooter, indexer, drivetrain));
     }
 
+    public Command autoDecideShooting() {
+        return autoDecideShooting(true);
+    }
+
     public Command trenchShoot() {
         //This method is for in case vision/odometry is catastrophically broken and we need to shoot regardless. This has constants
         //for a fixed position and will shoot reliably from there
@@ -237,7 +270,7 @@ public class RobotContainer {
                 hood.runHood(() -> 0.35),
                 indexer.runIndex(),
                 intake.agitate(),
-                Commands.waitSeconds(0.7) // Wait in case the hood needs to change position.
+                Commands.waitSeconds(0.3) // Wait in case the hood needs to change position.
                     .andThen(shooter.trenchShoot()));
     }
 

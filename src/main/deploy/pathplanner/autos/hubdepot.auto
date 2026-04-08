@@ -7,25 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BumpR to Outpost"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOut"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
+            "pathName": "BumpL to Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost to Right Bump"
+            "pathName": "Depot shot prep"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
@@ -38,6 +32,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "RIT AUTOS",
+  "folder": null,
   "choreoAuto": false
 }

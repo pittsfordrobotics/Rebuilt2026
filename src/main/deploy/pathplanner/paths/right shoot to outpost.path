@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2287321428571425,
-        "y": 2.6311554921540665
+        "x": 2.706376604850214,
+        "y": 2.230057061340942
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.021713597921336,
-        "y": 1.8936519258202575
+        "x": 2.4993580599144076,
+        "y": 1.492553495007133
       },
       "isLocked": false,
       "linkedName": "right side shoot"
@@ -48,7 +48,7 @@
   "folder": "From BumpR",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 28.523118606312053
+    "rotation": 47.321530589832726
   },
   "useDefaultConstraints": true
 }

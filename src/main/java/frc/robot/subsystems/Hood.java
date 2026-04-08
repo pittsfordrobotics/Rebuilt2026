@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.HoodConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.lib.util.ShooterHelpers;
 
 public class Hood extends SubsystemBase {
@@ -81,6 +82,11 @@ public class Hood extends SubsystemBase {
       lastSetTimeSeconds = Timer.getFPGATimestamp();
     }
   }
+
+  // @Logged(name = "Is hood at position")
+	// public boolean isAtPosition() {
+  //   return (((hood_L.getPosition() + hood_R.getPosition())/2) == currentSetPoint);
+	// }
 
   private double calculateHoodPositionFromPose(Supplier<Pose2d> currentPose) {
     double hubDistInches = ShooterHelpers.getHubDistInches(currentPose);

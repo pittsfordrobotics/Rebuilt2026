@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Over left Bump"
+            "pathName": "Over Right Bump"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "left bump 1.5"
+                  "pathName": "right bump 1.5"
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LBump Start to Mid Step 2"
+                  "pathName": "Right Start to Mid Step 2"
                 }
               },
               {
@@ -51,19 +51,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LBump Start to Mid Step 3"
+            "pathName": "rbump Start to Mid Step 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Reverse Over left Bump"
+            "pathName": "Reverse Over Right Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bump L to Shoot"
+            "pathName": "BumpR Shoot"
           }
         },
         {
@@ -73,7 +73,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 2.5
                 }
               },
               {
@@ -88,19 +88,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left shoot to bump"
+            "pathName": "rightshoottobump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Over left Bump"
+            "pathName": "Over Right Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "left second time 1"
+            "pathName": "right second time 1"
           }
         },
         {
@@ -110,7 +110,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "left second time 2"
+                  "pathName": "Right second time 2"
                 }
               },
               {
@@ -125,19 +125,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left second time 3"
+            "pathName": "right second time 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Reverse Over left Bump"
+            "pathName": "Reverse Over Right Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bump L to Shoot"
+            "pathName": "BumpR Shoot"
           }
         },
         {

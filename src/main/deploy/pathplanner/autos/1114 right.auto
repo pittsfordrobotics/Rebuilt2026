@@ -7,41 +7,41 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BumpR to Outpost"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOut"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
+            "pathName": "Over Right Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost to Depot"
+            "pathName": "1114 mid right"
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
+          "data": {
+            "pathName": "1114 shoot right"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "Depot Far Intake"
+                  "waitTime": 6.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake"
+                  "name": "ShootatHub"
                 }
               }
             ]
@@ -50,19 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot turn around"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootatHub"
+            "pathName": "1114 right end"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "RIT AUTOS",
+  "folder": null,
   "choreoAuto": false
 }

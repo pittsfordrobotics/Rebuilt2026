@@ -7,26 +7,44 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftMidPath1"
+            "pathName": "Over left Bump"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
+          "data": {
+            "pathName": "1114 mid left"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 shoot left"
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "LeftMidPath2"
+                  "waitTime": 4.5
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake"
+                  "name": "ShootatHub"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 left end"
           }
         }
       ]

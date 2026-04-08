@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "trenchR to outpost"
+            "pathName": "Over Right Bump"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "IntakeOut"
+            "pathName": "1114 mid right short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 right bump to outpost"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 3.0
           }
         },
         {

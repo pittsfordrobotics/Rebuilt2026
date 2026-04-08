@@ -11,8 +11,10 @@ import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.Slot2Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import static edu.wpi.first.units.Units.Amps;
@@ -32,6 +34,8 @@ import frc.robot.lib.util.TalonConfigurator;
 public class Intake extends SubsystemBase {
     @Logged(name = "Intake Drive")
     private TalonFX driveMotor = new TalonFX(IntakeConstants.INTAKE_DRIVE);
+    @Logged(name = "Intake Drive Follower")
+    private TalonFX driveMotorF = new TalonFX(IntakeConstants.INTAKE_DRIVE_FOLLOWER);
     @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;
@@ -53,7 +57,7 @@ public class Intake extends SubsystemBase {
                 .withStatorCurrentLimit(Amps.of(120))
                 .withStatorCurrentLimitEnable(true))
             .withMotorOutput(new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive));
+                .withInverted(InvertedValue.CounterClockwise_Positive));
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration()
             .withMotorOutput(new MotorOutputConfigs()
                 .withNeutralMode(NeutralModeValue.Brake))
@@ -69,24 +73,29 @@ public class Intake extends SubsystemBase {
                 .withKD(0)
             ).withSlot1(
                 new Slot1Configs()
-                .withKP(.5)
+                .withKP(.1)
                 .withKI(0)
                 .withKD(0)
             ).withSlot2(
                 new Slot2Configs()
-                .withKP(1.5)
+                .withKP(1.7)
                 .withKI(0)
                 .withKD(0)
             );
 
+
+        
         driveMotor.getConfigurator().apply(driveConfig);
         pivotMotor.getConfigurator().apply(pivotConfig);
+        driveMotorF.getConfigurator().apply(driveConfig);
+        driveMotorF.setControl(new Follower(IntakeConstants.INTAKE_DRIVE, MotorAlignmentValue.Opposed));
 
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotor);
+        TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotorF);
         TalonConfigurator.reduceCommonStatusFrameFrequencies(pivotMotor);
 
         intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
-        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(0.9)));
+        Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(1)));
 
         // pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
         // pivotInSpeed = Shuffleboard.getTab("testing").add("Intake Pivot In Speed", .2).getEntry();
@@ -103,6 +112,10 @@ public class Intake extends SubsystemBase {
         return runIntake(() -> intakeSpeed.getDouble(1));
     }
 
+    public Command extake(){
+        return runIntake(() -> -0.6);
+    }
+
     public Command pivotOut() {
         return runOnce(() -> {
             PositionVoltage control = new PositionVoltage(IntakeConstants.PIVOT_EXTENDED).withSlot(0);
@@ -112,27 +125,32 @@ public class Intake extends SubsystemBase {
 
     public Command pivotIn() {
         return runOnce(() -> {
-            PositionVoltage control = new PositionVoltage(0).withSlot(1);
+            PositionVoltage control = new PositionVoltage(0).withSlot(0);
             pivotMotor.setControl(control);
         });
     }
 
     public Command agitate() {
         //I'M AGITATED
-        // return runOnce(() -> pivotMotor.set(-.05)).andThen(
-        //     Commands.waitSeconds(.5),
-        //     runOnce(() -> pivotMotor.set(.05)),
-        //     Commands.waitSeconds(.5)).repeatedly()
-        //     .finallyDo(() -> pivotMotor.set(0));
         return runOnce(() -> {
                 pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE2).withSlot(2));
                 driveMotor.set(0.9);
-            }).andThen(Commands.waitSeconds(.2),
+            }).andThen(Commands.waitSeconds(.3),
             runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_AGITATE1).withSlot(2))),
-            Commands.waitSeconds(.2)).repeatedly()
+            Commands.waitSeconds(.3)).repeatedly()
             .finallyDo(() -> {
                 pivotOut();
                 driveMotor.set(0);}
+        );
+    }
+
+    public Command lemonSqueeze() {
+        //get squeezed, lemons
+        return runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
+            .andThen(Commands.waitSeconds(1.5),
+                pivotOut(),
+                Commands.waitSeconds(.5),
+                runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
         );
     }
     

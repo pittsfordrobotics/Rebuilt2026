@@ -20,6 +20,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "RIT AUTOS",
+  "folder": null,
   "choreoAuto": false
 }

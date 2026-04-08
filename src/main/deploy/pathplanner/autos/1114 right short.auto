@@ -5,25 +5,37 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "IntakeOut"
+            "pathName": "Over Right Bump"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
+          "data": {
+            "pathName": "1114 mid right short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 shoot right"
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "BumpL to Depot"
+                  "waitTime": 5.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake"
+                  "name": "ShootatHub"
                 }
               }
             ]
@@ -32,19 +44,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Depot shot prep"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootatHub"
+            "pathName": "1114 right end"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "RIT AUTOS",
+  "folder": null,
   "choreoAuto": false
 }
