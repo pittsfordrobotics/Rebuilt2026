@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase {
     @Logged(name = "Intake Drive")
     private TalonFX driveMotor = new TalonFX(IntakeConstants.INTAKE_DRIVE);
     @Logged(name = "Intake Drive Follower")
-    private TalonFX driveMotorF = new TalonFX(IntakeConstants.INTAKE_DRIVE_F);
+    private TalonFX driveMotorF = new TalonFX(IntakeConstants.INTAKE_DRIVE_FOLLOWER);
     @Logged(name = "Pivot Motor")
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.INTAKE_PIVOT);
     private GenericEntry intakeSpeed;

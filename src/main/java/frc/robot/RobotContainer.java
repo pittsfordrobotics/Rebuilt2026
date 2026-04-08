@@ -153,7 +153,7 @@ public class RobotContainer {
         //     .andThen(shootWhileMove()))
         //     .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive())
         //     .andThen(intake.pivotOut()));
-        operatorController.y().whileTrue(shootWhileMove());
+        operatorController.y().whileTrue(shootWhileMove().withName("shootWhileMove"));
         
         // operatorController.y().whileTrue(climbUp());
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
@@ -261,10 +261,6 @@ public class RobotContainer {
 
     public Command autoDecideShooting() {
         return autoDecideShooting(true);
-    }
-
-    public Command autoDecideShootingNoBrake() {
-        return autoDecideShooting(false);
     }
 
     public Command trenchShoot() {

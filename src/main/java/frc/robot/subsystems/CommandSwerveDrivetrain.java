@@ -451,10 +451,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Supplier<Translation2d> targetPoint = () -> getPlaceToShootAt();
         Translation2d currentPoint = this.getState().Pose.getTranslation();
         Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
-        double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
-        double adjustedMaxSpeed = slowModeEnabled ? MaxSpeed * TunerConstants.kSlowModePercent : MaxSpeed;
-        return driveHeading.withVelocityX(circleDriveMath().getX())
-            .withVelocityY(circleDriveMath().getY())
+        Translation2d resMath = circleDriveMath();
+        return driveHeading.withVelocityX(resMath.getX())
+            .withVelocityY(resMath.getY())
             .withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
             .withTargetDirection(targetHeading);
     }

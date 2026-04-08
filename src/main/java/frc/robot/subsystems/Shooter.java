@@ -23,6 +23,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.HoodConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.lib.util.ShooterHelpers;
 import frc.robot.lib.util.TalonConfigurator;
@@ -206,7 +207,7 @@ public class Shooter extends SubsystemBase {
 	public double shootHubSpeed(Supplier<Pose2d> currentPose) {
 		double hubDist = ShooterHelpers.getHubDistInches(currentPose);
 		// System.out.println("\n\n\n" + hubDist + "\n\n\n");
-		if(hubDist < 100) {
+		if(hubDist < HoodConstants.HUB_DISTANCE_FOR_NEAR_SHOOTING_INCHES) {
 			return 0.0022*hubDist + 0.2932;
 		} else {
 			return 0.0019*hubDist + 0.2718;
@@ -216,7 +217,7 @@ public class Shooter extends SubsystemBase {
 	public double shootHubSpeed(Supplier<Pose2d> currentPose, Supplier<Double> offset) {
 		double hubDist = ShooterHelpers.getHubDistInches(currentPose);
 		// System.out.println("\n\n\n" + hubDist + "\n\n\n");
-		if(hubDist < 100) {
+		if(hubDist < HoodConstants.HUB_DISTANCE_FOR_NEAR_SHOOTING_INCHES) {
 			return 0.0022*hubDist + 0.2932 + offset.get();
 		} else {
 			return 0.0019*hubDist + 0.2718 + offset.get();
