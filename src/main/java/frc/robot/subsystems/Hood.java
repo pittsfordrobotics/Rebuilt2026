@@ -69,6 +69,10 @@ public class Hood extends SubsystemBase {
 		return run(() -> {setHoodPosition(position.getAsDouble());});
 	}
 
+  public Command runHoodClose() {
+		return run(() -> {setHoodPosition(HoodConstants.CLOSE_SHOOTING_SETPOINT);});
+	}
+
   public Command runHoodForShoot(Supplier<Pose2d> currentPose) {
     return runHood(() -> calculateHoodPositionFromPose(currentPose));
   }

@@ -109,11 +109,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
         NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
         NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+        NamedCommands.registerCommand("HoodDown", hood.runHoodClose());
 
 
       new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
       new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
-      new EventTrigger("HoodDown").whileTrue(hood.runHood(() -> HoodConstants.CLOSE_SHOOTING_SETPOINT));
+      new EventTrigger("HoodDown").whileTrue(hood.runHoodClose());
 
 
         autoChooser = shouldMirrorAutos ? AutoBuilder.buildAutoChooserWithOptionsModifier(this::mirrorAutos) : AutoBuilder.buildAutoChooser();
@@ -194,7 +195,7 @@ public class RobotContainer {
             .onFalse(Commands.runOnce(() ->{ vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum()); }).ignoringDisable(true));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-    }
+    } 
 
     private void testingShuffleboardInit(){
         testingDistToHub = Shuffleboard.getTab("testing").add("Testing Dist to Hub", 100).getEntry();

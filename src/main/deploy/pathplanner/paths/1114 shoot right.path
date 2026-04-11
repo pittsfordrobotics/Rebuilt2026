@@ -53,8 +53,8 @@
   "eventMarkers": [
     {
       "name": "HoodDown",
-      "waypointRelativePos": 0.20268376245847172,
-      "endWaypointRelativePos": 0.6795707018272428,
+      "waypointRelativePos": 0.1368355481727575,
+      "endWaypointRelativePos": 0.7002699335548176,
       "command": null
     }
   ],
