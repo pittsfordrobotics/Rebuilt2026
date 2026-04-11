@@ -194,7 +194,7 @@ public class TunerConstants {
         ).withDriveMotorGains(driveGains.withKS(0.24245).withKV(0.12233).withKA(0.023251));
 
     //circle drive
-    public static final double CIRCLE_DRIVE_SPEED_MULTIPLIER = 2;
+    public static final double CIRCLE_DRIVE_SPEED_MULTIPLIER = 1;
 
     /**
      * Creates a CommandSwerveDrivetrain instance.

@@ -176,4 +176,12 @@ public class Intake extends SubsystemBase {
             }
         });
     }
+
+    public Command resetEncoderOut() {
+        return runOnce(() -> {
+            if(DriverStation.isDisabled()) {
+                this.pivotMotor.getConfigurator().setPosition(21.5);
+            }
+        });
+    }
 }

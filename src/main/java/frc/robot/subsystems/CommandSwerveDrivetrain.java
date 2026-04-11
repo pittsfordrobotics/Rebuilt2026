@@ -570,6 +570,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             Translation2d hubPos = FieldConstants.flippedHubPosition.get();
             return hubPos.minus(new Translation2d(distX, distY));
+
+            // return FieldConstants.flippedHubPosition.get();
     }
 
     private double estFlightTime(){

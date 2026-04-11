@@ -173,6 +173,8 @@ public class RobotContainer {
         operatorController.povUp().onTrue(hood.runHood(() -> HoodConstants.FAR_SHOOTING_SETPOINT));
         operatorController.povDown().onTrue(hood.runHood(() -> HoodConstants.CLOSE_SHOOTING_SETPOINT));
 
+        operatorController.start().onTrue(intake.resetEncoderOut().ignoringDisable(true));
+
         operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
             .onFalse(intake.pivotOut());
         operatorController.rightTrigger().whileTrue(Commands.parallel(intake.extake(), indexer.runIndex(() -> -0.6)));
