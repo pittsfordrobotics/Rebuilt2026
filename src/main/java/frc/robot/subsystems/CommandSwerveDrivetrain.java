@@ -469,7 +469,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 position3d.minus(hubPosition3d).plus(new Translation3d(0, 0, 1)))
             ).toTranslation2d();
 
-        perpDirection = perpDirection.div(perpDirection.getNorm()).times(deadbandedDirection);
+        perpDirection = perpDirection.div(perpDirection.getNorm())
+            .times(deadbandedDirection)
+            .times(TunerConstants.CIRCLE_DRIVE_SPEED_MULTIPLIER);
 
         return perpDirection;
     }
