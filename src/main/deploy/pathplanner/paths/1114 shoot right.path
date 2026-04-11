@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 2.4771148726851857,
+        "x": 3.2152333622685187,
         "y": 2.5389486400462964
       },
       "prevControl": {
-        "x": 2.748826712913431,
+        "x": 3.486945202496764,
         "y": 2.5389486400462964
       },
       "nextControl": null,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5657483552631583,
+      "waypointRelativePos": 0.701500822368421,
       "rotationDegrees": 90.0
     }
   ],
@@ -38,7 +38,7 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.5617825793382814,
+      "maxWaypointRelativePos": 0.6005891818936878,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 3.0,
@@ -50,7 +50,14 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "HoodDown",
+      "waypointRelativePos": 0.20268376245847172,
+      "endWaypointRelativePos": 0.6795707018272428,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -61,7 +68,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 49.31167471376678
+    "rotation": 57.184183332326164
   },
   "reversed": false,
   "folder": "1114autos",

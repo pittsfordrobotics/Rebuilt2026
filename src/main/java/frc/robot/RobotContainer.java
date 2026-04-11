@@ -113,6 +113,7 @@ public class RobotContainer {
 
       new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
       new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
+      new EventTrigger("HoodDown").whileTrue(hood.runHood(() -> HoodConstants.CLOSE_SHOOTING_SETPOINT));
 
 
         autoChooser = shouldMirrorAutos ? AutoBuilder.buildAutoChooserWithOptionsModifier(this::mirrorAutos) : AutoBuilder.buildAutoChooser();
