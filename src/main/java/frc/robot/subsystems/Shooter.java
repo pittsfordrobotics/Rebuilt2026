@@ -210,7 +210,7 @@ public class Shooter extends SubsystemBase {
 		if(hubDist < HoodConstants.HUB_DISTANCE_FOR_NEAR_SHOOTING_INCHES) {
 			return 0.0022*hubDist + 0.2932;
 		} else {
-			return 0.0019*hubDist + 0.2718;
+			return 0.0019*hubDist + 0.2718 - .005;
 		}
 	}
 

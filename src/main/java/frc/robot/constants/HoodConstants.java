@@ -18,5 +18,5 @@ public class HoodConstants {
     // change position. It is in units per second.
     // For example, if it takes 1 second to go from 0.2 to 0.35,
     // the rate would be 0.15.
-    public static final double POSITION_CHANGE_RATE = 0.15;
+    public static final double POSITION_CHANGE_RATE = 0.1;
 }

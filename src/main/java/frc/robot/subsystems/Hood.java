@@ -57,7 +57,7 @@ public class Hood extends SubsystemBase {
     hoodPercent = Shuffleboard.getTab("testing").add("Hood Pos Percentage", 0.5).getEntry(); // 0.2 to 0.4
 		Shuffleboard.getTab("testing").add("Set Hood Pos", this.runHood(() -> hoodPercent.getDouble(0.5)));
 
-    runHood(() -> .35);
+    setHoodPosition(0.35);
   }
 
   @Override

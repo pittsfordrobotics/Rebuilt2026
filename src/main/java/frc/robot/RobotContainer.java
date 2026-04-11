@@ -159,7 +159,7 @@ public class RobotContainer {
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         // operatorController.x().whileTrue(climbDown());
         operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()).withName("RunIntake"));
-        operatorController.povUp().onTrue(intake.pivotIn().withName("PivotIn"));
+        operatorController.povLeft().onTrue(intake.pivotIn().withName("PivotIn"));
         operatorController.leftTrigger().whileTrue(intake.agitate().withName("ManualAgitate"));
         // operatorController.y().whileTrue(Commands.parallel(
         //             hood.runHood(() -> 0.4),
@@ -168,7 +168,10 @@ public class RobotContainer {
         //             intake.agitate(),
         //             drivetrain.pointAtAllianceZone()));
 
-        operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
+        operatorController.povRight().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
+
+        operatorController.povUp().onTrue(hood.runHood(() -> HoodConstants.FAR_SHOOTING_SETPOINT));
+        operatorController.povDown().onTrue(hood.runHood(() -> HoodConstants.CLOSE_SHOOTING_SETPOINT));
 
         operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
             .onFalse(intake.pivotOut());
@@ -243,7 +246,7 @@ public class RobotContainer {
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
-                        .until(() -> {return (shooter.isAtSpeed() && hood.isAtSetpoint());}))
+                        .until(() -> (shooter.isAtSpeed() && hood.isAtSetpoint())))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
