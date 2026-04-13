@@ -45,7 +45,7 @@ public class Vision extends SubsystemBase {
     private final Map<Integer, Double> lastTagDetectionTimes = new HashMap<>();
     private Pipelines pipeline = Pipelines.Test;
 
-    @Logged(name="Gyro–Vision Difference")
+    @Logged(name="Gyro-Vision Difference")
     private double gyroVisionDifference;
 
     StructArrayPublisher<Pose2d> visionPoseArrayPublisher = NetworkTableInstance.getDefault()
