@@ -51,6 +51,7 @@ import frc.robot.constants.VisionConstants;
 public class RobotContainer {
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
+    @Logged(name="Vision")
     public final Vision vision;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
