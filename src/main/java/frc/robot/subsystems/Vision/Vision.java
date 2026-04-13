@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,6 +44,9 @@ public class Vision extends SubsystemBase {
     private final VisionIO[] io;
     private final Map<Integer, Double> lastTagDetectionTimes = new HashMap<>();
     private Pipelines pipeline = Pipelines.Test;
+
+    @Logged(name="Gyro–Vision Difference")
+    private double gyroVisionDifference;
 
     StructArrayPublisher<Pose2d> visionPoseArrayPublisher = NetworkTableInstance.getDefault()
             .getStructArrayTopic("Vision Poses", Pose2d.struct).publish();
@@ -145,6 +149,7 @@ public class Vision extends SubsystemBase {
             // exit if the gyro does not match the vision
             double gyroAngle = MathUtil.inputModulus(gyroangle.get().getDegrees(), 0, 360);
             double calcPose = MathUtil.inputModulus(visionCalcPose.getRotation().getDegrees(), 0, 360);
+            gyroVisionDifference = Math.abs(gyroAngle - calcPose);
             if (Math.abs(gyroAngle - calcPose) > 5) {
                 System.out.println(gyroAngle + " " + calcPose);
                 System.out.println("Gyro and Vision do not match\n\n");

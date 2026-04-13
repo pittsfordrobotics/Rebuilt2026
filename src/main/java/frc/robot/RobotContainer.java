@@ -223,7 +223,9 @@ public class RobotContainer {
     //         .andThen(climber.runClimber(() -> -0.4));
     // }
 
-    private Command shootWhileMove(){
+    private Command shootWhileMove() {
+        //return autoDecideShooting(false);
+
         return Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
@@ -263,7 +265,7 @@ public class RobotContainer {
             //     indexer.runIndex(),
             //     intake.agitate(),
             //     drivetrain.pointAtHub());
-        }, Set.of(hood, shooter, indexer, drivetrain));
+        }, Set.of(shooter, indexer, drivetrain));
     }
 
     public Command autoDecideShooting() {
