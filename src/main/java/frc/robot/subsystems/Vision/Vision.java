@@ -30,6 +30,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.Timer;
 
+@Logged(name="Vision")
 public class Vision extends SubsystemBase {
 
     // Initialization
