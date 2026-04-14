@@ -558,8 +558,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Logged(name="SOTM Target")
     public Translation2d getPlaceToShootAt() {
-            double velocityX = this.getState().Speeds.vxMetersPerSecond;
-            double velocityY = this.getState().Speeds.vyMetersPerSecond;
+            ChassisSpeeds speeds = currChassisSpeeds();
+            double velocityX = speeds.vxMetersPerSecond;
+            double velocityY = speeds.vyMetersPerSecond;
 
             double speed = Math.sqrt(velocityX*velocityX + velocityY*velocityY);
             if(speed < .1) return FieldConstants.flippedHubPosition.get();
@@ -570,7 +571,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             double distY = velocityY * flightTime;
 
             Translation2d hubPos = FieldConstants.flippedHubPosition.get();
-            return hubPos.plus(new Translation2d(distX, distY));
+            return hubPos.minus(new Translation2d(distX, distY));
 
             // return FieldConstants.flippedHubPosition.get();
     }
@@ -636,6 +637,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getDriveMotor());
             TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getSteerMotor());
         }
+    }
+
+    private ChassisSpeeds currChassisSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(this.getState().Speeds, this.getState().RawHeading);
+    }
+
+    // @Logged(name="Velocity") //don't really want to clog up logs
+    public Translation2d getVelocity() {
+        ChassisSpeeds speeds = currChassisSpeeds();
+        return this.getState().Pose.getTranslation().plus(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
     }
 
     public BooleanSupplier isInCircleMode() {
