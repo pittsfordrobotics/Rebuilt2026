@@ -113,9 +113,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("HoodDown", hood.runHoodClose());
 
 
-      new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
-      new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
-      new EventTrigger("HoodDown").whileTrue(hood.runHoodClose());
+        new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
+        new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
+        new EventTrigger("HoodDown").whileTrue(hood.runHoodClose());
 
 
         autoChooser = shouldMirrorAutos ? AutoBuilder.buildAutoChooserWithOptionsModifier(this::mirrorAutos) : AutoBuilder.buildAutoChooser();
@@ -176,7 +176,7 @@ public class RobotContainer {
         operatorController.povUp().onTrue(hood.runHood(() -> HoodConstants.FAR_SHOOTING_SETPOINT));
         operatorController.povDown().onTrue(hood.runHood(() -> HoodConstants.CLOSE_SHOOTING_SETPOINT));
 
-        operatorController.start().onTrue(intake.resetEncoderOut().ignoringDisable(true));
+        operatorController.back().onTrue(intake.resetEncoderOut().ignoringDisable(true));
 
         operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
             .onFalse(intake.pivotOut());
