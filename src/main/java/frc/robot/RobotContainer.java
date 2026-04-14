@@ -225,7 +225,7 @@ public class RobotContainer {
     // }
 
     private Command shootWhileMove() {
-        //return autoDecideShooting(false);
+        // return autoDecideShooting(false);
 
         return Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
@@ -257,7 +257,7 @@ public class RobotContainer {
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
-                brake ? drivetrain.pointAtHubWithBrake() : drivetrain.pointAtHub());
+                brake ? drivetrain.pointAtHubStatic() : drivetrain.pointAtHub());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
