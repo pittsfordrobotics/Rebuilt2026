@@ -640,10 +640,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     private ChassisSpeeds currChassisSpeeds() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(this.getState().Speeds, this.getState().RawHeading);
+        return ChassisSpeeds.fromRobotRelativeSpeeds(this.getState().Speeds, this.getState().Pose.getRotation());
     }
 
-    // @Logged(name="Velocity") //don't really want to clog up logs
+    @Logged(name="Velocity")
     public Translation2d getVelocity() {
         ChassisSpeeds speeds = currChassisSpeeds();
         return this.getState().Pose.getTranslation().plus(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
