@@ -589,7 +589,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Translation2d currentPoint = this.getState().Pose.getTranslation();
         Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
         Rotation2d currentHeading = this.getState().Pose.getRotation();
-        return Math.abs(targetHeading.minus(currentHeading).getDegrees()) <= 5;
+        return Math.abs(targetHeading.minus(currentHeading).getDegrees()) <= 2;
     }
 
     public Command brake() {
