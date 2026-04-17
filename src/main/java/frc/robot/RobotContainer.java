@@ -136,7 +136,6 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true).withName("Idle")
         );
         
-        driverController.a().toggleOnTrue(drivetrain.brake().withName("Brake"));
         driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
