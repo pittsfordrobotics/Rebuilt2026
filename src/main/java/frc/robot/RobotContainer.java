@@ -51,6 +51,7 @@ import frc.robot.constants.VisionConstants;
 public class RobotContainer {
     private final Telemetry logger = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
+    @Logged(name="Vision")
     public final Vision vision;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -65,7 +66,7 @@ public class RobotContainer {
     @Logged(name = "Swerve")
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain(driverController);
 
-    @Logged(name = "PDH")
+    // @Logged(name = "PDH")
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
     @Logged(name = "Intake")
@@ -109,10 +110,12 @@ public class RobotContainer {
         NamedCommands.registerCommand("IntakeOut", intake.pivotOut());
         NamedCommands.registerCommand("IntakeIn", intake.pivotIn());
         NamedCommands.registerCommand("IntakeRun", intake.runIntake());
+        NamedCommands.registerCommand("HoodDown", hood.runHoodClose());
 
 
-      new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
-      new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
+        new EventTrigger("IntakeOutEvent").onTrue(intake.pivotOut());
+        new EventTrigger("RunIntakeEvent").whileTrue(intake.runIntake());
+        new EventTrigger("HoodDown").whileTrue(hood.runHoodClose());
 
 
         autoChooser = shouldMirrorAutos ? AutoBuilder.buildAutoChooserWithOptionsModifier(this::mirrorAutos) : AutoBuilder.buildAutoChooser();
@@ -133,7 +136,6 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true).withName("Idle")
         );
         
-        driverController.a().toggleOnTrue(drivetrain.brake().withName("Brake"));
         driverController.b().whileTrue(drivetrain.pointAtHub().withName("PointAtHub"));
         driverController.y().onTrue(Commands.runOnce(() -> drivetrain.enableSlowDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableSlowDrive()));
@@ -159,7 +161,7 @@ public class RobotContainer {
         // operatorController.y().whileFalse(climber.runClimber(() -> -0.05));
         // operatorController.x().whileTrue(climbDown());
         operatorController.a().whileTrue(intake.pivotOut().andThen(intake.runIntake()).withName("RunIntake"));
-        operatorController.povUp().onTrue(intake.pivotIn().withName("PivotIn"));
+        operatorController.povLeft().onTrue(intake.pivotIn().withName("PivotIn"));
         operatorController.leftTrigger().whileTrue(intake.agitate().withName("ManualAgitate"));
         // operatorController.y().whileTrue(Commands.parallel(
         //             hood.runHood(() -> 0.4),
@@ -168,7 +170,12 @@ public class RobotContainer {
         //             intake.agitate(),
         //             drivetrain.pointAtAllianceZone()));
 
-        operatorController.povDown().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
+        operatorController.povRight().onTrue(intake.resetEncoder().ignoringDisable(true).withName("ResetEncoder"));
+
+        operatorController.povUp().onTrue(hood.runHood(() -> HoodConstants.FAR_SHOOTING_SETPOINT));
+        operatorController.povDown().onTrue(hood.runHood(() -> HoodConstants.CLOSE_SHOOTING_SETPOINT));
+
+        operatorController.back().onTrue(intake.resetEncoderOut().ignoringDisable(true));
 
         operatorController.x().whileTrue(trenchShoot().withName("TrenchShoot"))
             .onFalse(intake.pivotOut());
@@ -188,7 +195,7 @@ public class RobotContainer {
             .onFalse(Commands.runOnce(() ->{ vision.setIMU(IMUMode.INTERNAL_EXTERNAL_ASSIST.getNum()); }).ignoringDisable(true));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-    }
+    } 
 
     private void testingShuffleboardInit(){
         testingDistToHub = Shuffleboard.getTab("testing").add("Testing Dist to Hub", 100).getEntry();
@@ -216,7 +223,9 @@ public class RobotContainer {
     //         .andThen(climber.runClimber(() -> -0.4));
     // }
 
-    private Command shootWhileMove(){
+    private Command shootWhileMove() {
+        // return autoDecideShooting(false);
+
         return Commands.parallel(
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
@@ -243,11 +252,11 @@ public class RobotContainer {
                 hood.runHoodForShoot(() -> drivetrain.getState().Pose),
                 Commands.waitSeconds(0.0) // Wait in case the hood needs to change position.
                     .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
-                        .until(() -> {return (shooter.isAtSpeed() && hood.isAtSetpoint());}))
+                        .until(() -> (shooter.isAtSpeed() && hood.isAtSetpoint())))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
                 intake.agitate(),
-                brake ? drivetrain.pointAtHubWithBrake() : drivetrain.pointAtHub());
+                brake ? drivetrain.pointAtHubStatic() : drivetrain.pointAtHub());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
             //     shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> false)
@@ -256,7 +265,7 @@ public class RobotContainer {
             //     indexer.runIndex(),
             //     intake.agitate(),
             //     drivetrain.pointAtHub());
-        }, Set.of(hood, shooter, indexer, drivetrain));
+        }, Set.of(shooter, indexer, drivetrain));
     }
 
     public Command autoDecideShooting() {

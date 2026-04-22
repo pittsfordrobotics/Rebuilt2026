@@ -429,7 +429,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Logged(name = "BR Drive Motor")
     public TalonFX getBackRightDriveMotor() {
-        return this.getModule(3).getSteerMotor();
+        return this.getModule(3).getDriveMotor();
     }
 
     @Logged(name = "BR Steer Motor")
@@ -469,7 +469,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 position3d.minus(hubPosition3d).plus(new Translation3d(0, 0, 1)))
             ).toTranslation2d();
 
-        perpDirection = perpDirection.div(perpDirection.getNorm()).times(deadbandedDirection);
+        perpDirection = perpDirection.div(perpDirection.getNorm())
+            .times(deadbandedDirection)
+            .times(TunerConstants.CIRCLE_DRIVE_SPEED_MULTIPLIER);
 
         return perpDirection;
     }
@@ -500,7 +502,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.applyRequest(() -> driveReq());
     }
 
-    private SwerveRequest driveReq(){
+    private SwerveRequest driveReq() {
         if(!circleModeEnabled) {
                 double[] leftDeadbanded = SwerveHelpers.swerveDeadband(new double[]{controller.getLeftX(), controller.getLeftY()}, .1);
                 Rotation2d heading = SwerveHelpers.getHeadingFromStick(() -> controller.getRightY(), () -> controller.getRightX());
@@ -554,36 +556,40 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.pointAt(() -> getPlaceToShootAt());
     }
 
+    @Logged(name="SOTM Target")
     public Translation2d getPlaceToShootAt() {
-            double velocityX = this.getState().Speeds.vxMetersPerSecond;
-            double velocityY = this.getState().Speeds.vyMetersPerSecond;
+            ChassisSpeeds speeds = currChassisSpeeds();
+            double velocityX = speeds.vxMetersPerSecond;
+            double velocityY = speeds.vyMetersPerSecond;
+
+            double speed = Math.sqrt(velocityX*velocityX + velocityY*velocityY);
+            if(speed < .1) return FieldConstants.flippedHubPosition.get();
 
             double flightTime = estFlightTime(); //seconds
 
             double distX = velocityX * flightTime;
             double distY = velocityY * flightTime;
 
-            double speed = Math.sqrt(velocityX*velocityX + velocityY*velocityY);
-            if(speed < .1) return FieldConstants.flippedHubPosition.get();
-
             Translation2d hubPos = FieldConstants.flippedHubPosition.get();
             return hubPos.minus(new Translation2d(distX, distY));
+
+            // return FieldConstants.flippedHubPosition.get();
     }
 
-    private double estFlightTime(){
+    private double estFlightTime() {
         return (0.005926*ShooterHelpers.getHubDistInches(() -> this.getState().Pose)) + 0.5556;
     }
 
-    public Command pointAtHubWithBrake() {
-        return pointAtHub().until(() -> isPointedAtHub()).andThen(this.brake());
+    public Command pointAtHubStatic() {
+        return this.pointAt(FieldConstants.flippedHubPosition).until(() -> isPointedAtHub()).andThen(this.brake());
     }
 
-    public boolean isPointedAtHub(){
+    public boolean isPointedAtHub() {
         Supplier<Translation2d> targetPoint = FieldConstants.flippedHubPosition;
         Translation2d currentPoint = this.getState().Pose.getTranslation();
         Rotation2d targetHeading = SwerveHelpers.getAngleToPoint(currentPoint, targetPoint.get());
         Rotation2d currentHeading = this.getState().Pose.getRotation();
-        return Math.abs(targetHeading.minus(currentHeading).getDegrees()) <= 5;
+        return Math.abs(targetHeading.minus(currentHeading).getDegrees()) <= 2;
     }
 
     public Command brake() {
@@ -612,13 +618,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
     }
 
-    public Command driveToDistFromBlueHub(DoubleSupplier dist){
+    public Command driveToDistFromBlueHub(DoubleSupplier dist) {
         return this.driveToPoint(() ->
             new Translation2d(Units.inchesToMeters(-0.7536*dist.getAsDouble()+182.11),
             Units.inchesToMeters(-0.6574*dist.getAsDouble()+158.85))).andThen(this.pointAtHub());
     }
 
-    public Command pointAtAllianceZone(){
+    public Command pointAtAllianceZone() {
         // return this.pointAt(() -> AllianceFlipUtil.apply(
         //     new Translation2d(0, this.getState().Pose.getY())
         // ));
@@ -626,13 +632,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return this.pointAt(() -> new Translation2d(AllianceFlipUtil.flipX(0), this.getState().Pose.getY()));
     }
 
-    private void configureMotorStatusFrames()
-    {
-        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.getModules())
-        {
+    private void configureMotorStatusFrames() {
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : this.getModules()) {
             TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getDriveMotor());
             TalonConfigurator.reduceCommonStatusFrameFrequencies(module.getSteerMotor());
         }
+    }
+
+    private ChassisSpeeds currChassisSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(this.getState().Speeds, this.getState().Pose.getRotation());
+    }
+
+    @Logged(name="Velocity")
+    public Translation2d getVelocity() {
+        ChassisSpeeds speeds = currChassisSpeeds();
+        return this.getState().Pose.getTranslation().plus(new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
     }
 
     public BooleanSupplier isInCircleMode() {

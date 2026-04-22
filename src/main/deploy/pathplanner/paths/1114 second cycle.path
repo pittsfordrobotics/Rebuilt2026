@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4771148726851857,
+        "x": 2.605908347800926,
         "y": 2.5389486400462964
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4771148726851857,
+        "x": 3.605908347800926,
         "y": 2.5389486400462964
       },
       "isLocked": false,
@@ -171,9 +171,9 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 2.1081940406976734,
-      "maxWaypointRelativePos": 4.4550327034883725,
+      "maxWaypointRelativePos": 4.636537063953488,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.3,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -226,7 +226,7 @@
   "folder": "1114autos",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 49.31167471376678
+    "rotation": 57.184183332326164
   },
   "useDefaultConstraints": true
 }
