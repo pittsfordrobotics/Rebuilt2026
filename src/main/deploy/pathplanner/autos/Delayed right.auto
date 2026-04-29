@@ -5,21 +5,33 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Over left Bump"
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "1114 mid left"
+            "pathName": "Over Right Bump"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "1114 shoot left"
+            "pathName": "1114 mid right short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 shoot right"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
@@ -29,7 +41,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.5
+                  "waitTime": 6.0
                 }
               },
               {
@@ -44,7 +56,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1114 left end"
+            "pathName": "1114 right end"
           }
         }
       ]
