@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7805577256944449,
-        "y": 5.783848741319447
+        "x": 1.008160662615741,
+        "y": 5.856479600694445
       },
       "isLocked": false,
       "linkedName": "depot"
     },
     {
       "anchor": {
-        "x": 1.426690248842593,
-        "y": 5.272217809606482
+        "x": 1.679881293402778,
+        "y": 3.8157296006944446
       },
       "prevControl": {
-        "x": 1.0501929325476613,
-        "y": 5.631956257137446
+        "x": 1.7376185619212965,
+        "y": 5.621200231481482
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.289406862500456
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "From Depot",
