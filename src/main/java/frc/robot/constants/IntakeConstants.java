@@ -11,5 +11,5 @@ public class IntakeConstants {
     public static final double PIVOT_EXTENDED = 21;
     public static final double PIVOT_AGITATE1 = 19;
     public static final double PIVOT_AGITATE2 = 15;
-    public static final double PIVOT_HOME = 5;
+    public static final double PIVOT_HOME = 4;
 }

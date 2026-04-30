@@ -129,7 +129,8 @@ public class RobotContainer {
 
     private void configureBindings() {
         drivetrain.setDefaultCommand(drivetrain.drive().withName("DefaultDrive"));
-        
+        shooter.setDefaultCommand(shooter.idleShooter());
+
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -234,7 +235,7 @@ public class RobotContainer {
                         .until(() -> shooter.isAtSpeed()))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
-                intake.agitate());
+                intake.agitatedSqueeze());
     }
 
     private Command autoDecideShooting(boolean brake) {
@@ -245,7 +246,7 @@ public class RobotContainer {
                     hood.runHood(() -> HoodConstants.PASSING_SETPOINT),
                     shooter.runShooter(() -> 0.9, () -> 0).until(() -> shooter.isAtSpeed()).andThen(shooter.runShooter(() -> 0.9, () -> 0.7)), 
                     indexer.runIndex(),
-                    intake.agitate(),
+                    intake.agitatedSqueeze(),
                     drivetrain.pointAtAllianceZone());
             }
             // In the alliance area, set the shooter to shoot in the hub.
@@ -256,7 +257,7 @@ public class RobotContainer {
                         .until(() -> (shooter.isAtSpeed() && hood.isAtSetpoint())))
                         .andThen(shooter.shootAtHub(() -> drivetrain.getState().Pose, () -> true)),
                 indexer.runIndex(),
-                intake.agitate(),
+                intake.agitatedSqueeze(),
                 brake ? drivetrain.pointAtHubStatic() : drivetrain.pointAtHub());
             // return Commands.parallel(
             //     hood.runHoodForShoot(() -> drivetrain.getState().Pose),
