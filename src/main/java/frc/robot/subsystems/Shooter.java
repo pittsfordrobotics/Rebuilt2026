@@ -145,10 +145,6 @@ public class Shooter extends SubsystemBase {
 		// Shuffleboard.getTab("testing").add("Shoot at Hub", this.)
 	}
 
-	public Command idleShooter() {
-		return runShooter(() -> .33, () -> 0);
-	}
-
 	public Command runShooter(DoubleSupplier shootSpeed, DoubleSupplier uptakeSpeed) {
 		return run(() -> {
 			currentSetSpeed = shootSpeed.getAsDouble();

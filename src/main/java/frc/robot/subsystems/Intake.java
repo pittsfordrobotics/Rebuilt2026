@@ -144,10 +144,6 @@ public class Intake extends SubsystemBase {
         );
     }
 
-    public Command agitatedSqueeze() {
-        return agitate().withTimeout(2).andThen(lemonSqueeze());
-    }
-
     public Command lemonSqueeze() {
         //get squeezed, lemons
         return runOnce(() -> pivotMotor.setControl(new PositionVoltage(IntakeConstants.PIVOT_HOME).withSlot(1)))
