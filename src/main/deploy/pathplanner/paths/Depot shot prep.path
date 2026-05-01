@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4580819589115721,
-        "y": 5.922418185771757
+        "x": 0.4607063802083339,
+        "y": 5.652693287037036
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.8514171006939792,
-        "y": 5.804253616906015
+        "x": 0.854041521990741,
+        "y": 5.534528718171295
       },
       "isLocked": false,
       "linkedName": "depot"
@@ -28,7 +28,12 @@
       "linkedName": "towerShoot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7605938732741615,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
