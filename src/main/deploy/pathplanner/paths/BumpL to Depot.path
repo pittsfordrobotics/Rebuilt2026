@@ -8,33 +8,38 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3485182291666673,
-        "y": 4.318503110532408
+        "x": 3.660794487846757,
+        "y": 6.426372685193053
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.614825520833334,
-        "y": 5.974644169560186
+        "x": 0.4580819589115721,
+        "y": 5.922418185771757
       },
       "prevControl": {
-        "x": 1.963384403935186,
-        "y": 6.027985532407407
+        "x": 0.755953776041202,
+        "y": 8.614155888318052
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "depot"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8602995562130171,
+      "rotationDegrees": -108.03753281121692
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "IntakeOutEvent",
-      "waypointRelativePos": 0.23431011212624592,
+      "waypointRelativePos": 0.4303081191588784,
       "endWaypointRelativePos": null,
       "command": null
     },
@@ -54,8 +59,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 178.83086067209263
+    "velocity": 0.5,
+    "rotation": -89.07764763125854
   },
   "reversed": false,
   "folder": "From BumpL",
