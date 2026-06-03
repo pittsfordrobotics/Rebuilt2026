@@ -5,15 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "BumpL to Depot"
+            "waitTime": 1.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Depot shot prep"
+            "pathName": "Over Right Bump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 mid right short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 shoot right"
           }
         },
         {
@@ -29,7 +41,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 9.0
+                  "waitTime": 6.0
                 }
               },
               {
@@ -39,6 +51,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1114 right end"
           }
         }
       ]

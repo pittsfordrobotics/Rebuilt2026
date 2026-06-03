@@ -3,42 +3,58 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4607063802083339,
-        "y": 5.652693287037036
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 0.854041521990741,
-        "y": 5.534528718171295
-      },
-      "isLocked": false,
-      "linkedName": "depot"
-    },
-    {
-      "anchor": {
         "x": 1.679881293402778,
         "y": 3.8157296006944446
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8108936545980625,
+        "y": 4.805650167229186
+      },
+      "isLocked": false,
+      "linkedName": "towerShoot"
+    },
+    {
+      "anchor": {
+        "x": 3.6107336516203707,
+        "y": 5.38992310474537
+      },
       "prevControl": {
-        "x": 1.7376185619212965,
-        "y": 5.621200231481482
+        "x": 3.078514619700042,
+        "y": 5.345109590835694
+      },
+      "nextControl": {
+        "x": 4.0580006510416675,
+        "y": 5.427583550347221
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.652074146412037,
+        "y": 5.38992310474537
+      },
+      "prevControl": {
+        "x": 5.147977804358025,
+        "y": 5.359388842432634
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "towerShoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7605938732741615,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.9213664940828401,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 1.0651467581775687,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
         "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
@@ -61,13 +77,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "From Depot",
+  "folder": null,
   "idealStartingState": {
-    "velocity": 0.5,
-    "rotation": -89.07764763125854
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
