@@ -94,7 +94,7 @@ public class Intake extends SubsystemBase {
         TalonConfigurator.reduceCommonStatusFrameFrequencies(driveMotorF);
         TalonConfigurator.reduceCommonStatusFrameFrequencies(pivotMotor);
 
-        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 1).getEntry();
+        intakeSpeed = Shuffleboard.getTab("testing").add("Intake Motor Speed", 0.9).getEntry();
         Shuffleboard.getTab("testing").add("Run Intake", this.runIntake(() -> intakeSpeed.getDouble(1)));
 
         // pivotOutSpeed = Shuffleboard.getTab("testing").add("Intake Pivot Out Speed", .4).getEntry();
@@ -109,7 +109,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command runIntake() {
-        return runIntake(() -> intakeSpeed.getDouble(1));
+        return runIntake(() -> intakeSpeed.getDouble(0.9));
     }
 
     public Command extake(){
