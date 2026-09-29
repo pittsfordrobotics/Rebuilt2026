@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction; //for sysid
@@ -265,7 +266,7 @@ public class RobotContainer {
             //     indexer.runIndex(),
             //     intake.agitate(),
             //     drivetrain.pointAtHub());
-        }, Set.of(shooter, indexer, drivetrain));
+        }, Set.of(shooter, indexer, drivetrain)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 
     public Command autoDecideShooting() {
