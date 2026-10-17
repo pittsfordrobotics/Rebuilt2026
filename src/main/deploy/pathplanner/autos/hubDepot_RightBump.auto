@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Over left Bump"
+            "pathName": "BumpL to Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "1114 mid left"
+            "pathName": "Depot shot prep"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "1114 shoot left"
+            "waitTime": 0.5
           }
         },
         {
@@ -29,7 +29,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.5
+                  "waitTime": 5.0
                 }
               },
               {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1114 left end"
+            "pathName": "towerToRightNeutral"
           }
         }
       ]

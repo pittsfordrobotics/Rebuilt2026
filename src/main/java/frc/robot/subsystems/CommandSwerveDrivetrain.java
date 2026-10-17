@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.HoodConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.VisionData;
@@ -537,6 +538,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     public void disableCircleDrive() {
         circleModeEnabled = false;
+    }
+
+    @Logged
+	public boolean isAtLongShoot(){
+        return (ShooterHelpers.getHubDistInches(() -> this.getState().Pose) >= HoodConstants.HUB_DISTANCE_FOR_NEAR_SHOOTING_INCHES);
     }
     
     public Command pointAt(Supplier<Translation2d> targetPoint) {

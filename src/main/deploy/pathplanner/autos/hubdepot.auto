@@ -23,9 +23,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "ShootatHub"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 9.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootatHub"
+                }
+              }
+            ]
           }
         }
       ]
