@@ -47,6 +47,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.subsystems.Vision.VisionIO.IMUMode;
 import frc.robot.constants.FieldConstants;
 import frc.robot.constants.HoodConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.VisionConstants;
 
 public class RobotContainer {
@@ -143,7 +144,7 @@ public class RobotContainer {
         driverController.x().onTrue(Commands.runOnce(() -> drivetrain.enableCircleDrive()))
             .onFalse(Commands.runOnce(() -> drivetrain.disableCircleDrive()));
 
-        operatorController.rightBumper().whileTrue(shooter.runShooter().withName("ManualRunShooter"));
+        operatorController.rightBumper().whileTrue(shooter.runShooter(() -> ShooterConstants.SHOOTER_PREP_SPEED, () -> 0).withName("ManualRunShooter"));
         operatorController.leftBumper().whileTrue(indexer.runIndex().withName("ManualRunIndex"));
         //Run Shooter
         operatorController.b().whileTrue(
