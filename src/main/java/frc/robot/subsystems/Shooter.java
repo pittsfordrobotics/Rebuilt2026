@@ -140,7 +140,7 @@ public class Shooter extends SubsystemBase {
 		uptakeMotor.getConfigurator().apply(uptakeConfig);
 		Shuffleboard.getTab("testing").add("Run Shooter", this.runShooter());
 
-		shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", .6).getEntry();
+		shooterSpeed = Shuffleboard.getTab("testing").add("Shooter Motor Speed", ShooterConstants.SHOOTER_PREP_SPEED).getEntry();
 		uptakeSpeed = Shuffleboard.getTab("testing").add("Uptake Motor Speed", .6).getEntry();
 		// Shuffleboard.getTab("testing").add("Shoot at Hub", this.)
 	}

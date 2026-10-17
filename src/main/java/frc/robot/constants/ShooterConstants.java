@@ -15,4 +15,6 @@ public class ShooterConstants {
     public static final double UPTAKE_SPEED = .25;
     public static final double SHOOTER_SPEED = .25;
     public static final double IS_AT_SPEED_PERCENTAGE = .669;
+
+    public static final double SHOOTER_PREP_SPEED = .15;
 }

@@ -12,4 +12,6 @@ public class IntakeConstants {
     public static final double PIVOT_AGITATE1 = 19;
     public static final double PIVOT_AGITATE2 = 14.6;
     public static final double PIVOT_HOME = 5;
+
+    public static final double INTAKE_SPEED = 0.9;
 }
